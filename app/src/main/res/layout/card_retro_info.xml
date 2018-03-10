@@ -5,16 +5,17 @@
     android:id="@+id/app_support"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/gradient">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/rectSelector"
+
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:minHeight="@dimen/md_listitem_height"
+
         android:orientation="horizontal"
         tools:ignore="PrivateResource">
 
@@ -22,7 +23,7 @@
             android:layout_width="52dp"
             android:layout_height="52dp"
             android:layout_margin="8dp"
-            android:contentDescription="@string/retro"
+
             android:src="@mipmap/ic_launcher" />
 
         <LinearLayout
