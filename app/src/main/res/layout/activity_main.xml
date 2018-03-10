@@ -18,8 +18,8 @@
         app:fabSize="mini"
         app:rippleColor="@color/md_brown_100"
         app:srcCompat="@drawable/play_circle_outline"
-        tools:layout_editor_absoluteX="40dp"
-        tools:layout_editor_absoluteY="470dp" />
+        tools:layout_editor_absoluteX="34dp"
+        tools:layout_editor_absoluteY="478dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
