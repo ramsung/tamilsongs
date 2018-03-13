@@ -1,4 +1,4 @@
-package in.beyonitysoftwares.besttamilsongs;
+package in.beyonitysoftwares.besttamilsongs.fragments;
 
 
 import android.os.Bundle;
@@ -7,14 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import in.beyonitysoftwares.besttamilsongs.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LibraryFragment extends Fragment {
+public class FavouritesFragment extends Fragment {
 
 
-    public LibraryFragment() {
+    public FavouritesFragment() {
         // Required empty public constructor
     }
 
@@ -23,7 +25,7 @@ public class LibraryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_library, container, false);
+        return inflater.inflate(R.layout.fragment_favourites, container, false);
     }
 
 }
