@@ -4,11 +4,23 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.androidnetworking.AndroidNetworking;
+import com.androidnetworking.common.Priority;
+import com.androidnetworking.error.ANError;
+import com.androidnetworking.interfaces.JSONObjectRequestListener;
+
+import org.json.JSONObject;
+
 import in.beyonitysoftwares.besttamilsongs.R;
+import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
+
+import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +39,10 @@ public class AllSongsFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    String presentOffset = "0";
+    RecyclerView allsongsrv;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -65,7 +81,29 @@ public class AllSongsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_all_songs, container, false);
+        View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
+
+        allsongsrv = (RecyclerView) view.findViewById(R.id.allSongsrv);
+
+
+                AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
+                        .addBodyParameter("limit", "15")
+                        .addBodyParameter("offset", presentOffset)
+                        .setTag("test")
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsJSONObject(new JSONObjectRequestListener() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                Log.d(TAG, "onResponse: "+response);
+                            }
+                            @Override
+                            public void onError(ANError error) {
+                                Log.e(TAG, "onError: "+error.getErrorDetail());
+                            }
+                        });
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
