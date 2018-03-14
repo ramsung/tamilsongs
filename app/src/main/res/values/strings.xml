@@ -10,6 +10,9 @@
     <string name="album">Album/Film:</string>
     <string name="song_title">Title of the Song:</string>
     <string name="submit">SUBMIT</string>
+    <string name="shareapp">Share App</string>
+    <string name="contact">Contact us</string>
+    <string name="rate">Rate us</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
