@@ -20,9 +20,9 @@
         app:srcCompat="@drawable/play_circle_outline" />
 
     <LinearLayout
+        android:id="@+id/bottomlayout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:id="@+id/bottomlayout"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -32,8 +32,7 @@
             layout="@layout/player"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-             />
+            android:layout_gravity="center" />
     </LinearLayout>
     <in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager
         android:layout_width="match_parent"

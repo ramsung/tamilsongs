@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Best Tamil Songs</string>
+    <string name="app_name">Tamil Songs &amp; Lyrics</string>
     <string name="title_player">Music Box</string>
     <string name="title_gallery">Library</string>
     <string name="title_Favourites">Favourites</string>
     <string name="title_about">About</string>
-    <string name="app_summary">The Best Song Collections of from Tamil Cinema</string>
+    <string name="app_summary">The Best Tamil Song Streaming App with Lyrics</string>
     <string name="share">Share</string>
     <string name="lyrics">Lyrics</string>
     <string name="album">Album/Film:</string>
