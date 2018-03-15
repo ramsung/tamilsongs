@@ -15,6 +15,8 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import in.beyonitysoftwares.besttamilsongs.R;
@@ -95,7 +97,16 @@ public class AllSongsFragment extends Fragment {
                         .getAsJSONObject(new JSONObjectRequestListener() {
                             @Override
                             public void onResponse(JSONObject response) {
-                                Log.d(TAG, "onResponse: "+response);
+                                //Log.d(TAG, "onResponse: "+response);
+                                try {
+                                    JSONArray array = response.getJSONArray("songs");
+                                    for(int a = 0;a< array.length();a++){
+                                        JSONObject object = array.getJSONObject(a);
+                                        getAlbumDetails(String.valueOf(object.get("album_id")));
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                             @Override
                             public void onError(ANError error) {
@@ -104,6 +115,26 @@ public class AllSongsFragment extends Fragment {
                         });
 
         return view;
+    }
+
+    private void getAlbumDetails(String album_id){
+
+        AndroidNetworking.post(AppConfig.GET_ALBUM_BY_DETAILS)
+                .addBodyParameter("album_id", album_id)
+                .setTag("Album Details")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: "+response);
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                    }
+                });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
