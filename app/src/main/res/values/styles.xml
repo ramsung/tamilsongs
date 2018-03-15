@@ -6,6 +6,7 @@
         <item name="colorPrimary">#FD6A83</item>
         <item name="colorPrimaryDark">#FD6A83</item>
         <item name="colorAccent">@color/md_black_1000</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 
 </resources>

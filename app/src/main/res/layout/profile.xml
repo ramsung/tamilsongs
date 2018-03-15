@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/gradient"
+    android:padding="5dp"
+    app:cardBackgroundColor="@color/md_pink_700"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="8dp"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+
+            android:orientation="horizontal"
+            tools:ignore="PrivateResource">
+
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/userImageProfile"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="5dp"
+                android:elevation="10dp"
+                android:src="@drawable/santhosh" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp">
+
+
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/acc_name"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:textColor="@color/md_white_1000"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:fontFamily="@font/convergence" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="5dp"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="TextView" />
+
+                        <TextView
+                            android:id="@+id/textView18"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="TextView" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/textView19"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="TextView" />
+
+                        <TextView
+                            android:id="@+id/textView20"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="TextView" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+</android.support.v7.widget.CardView>
