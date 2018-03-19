@@ -4,11 +4,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -19,8 +23,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import in.beyonitysoftwares.besttamilsongs.R;
+import in.beyonitysoftwares.besttamilsongs.adapters.AllSongAdapter;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
+import in.beyonitysoftwares.besttamilsongs.models.Songs;
 
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
@@ -42,9 +51,17 @@ public class AllSongsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    List<Songs> allSongList;
+    JSONObject Albumobject = new JSONObject();
     String presentOffset = "0";
     RecyclerView allsongsrv;
+    AllSongAdapter allSongAdapter;
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, visibleItemCount, totalItemCount;
 
+    ProgressBar progressBar;
 
     private OnFragmentInteractionListener mListener;
 
@@ -84,8 +101,35 @@ public class AllSongsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
-
+        allSongList = new ArrayList<>();
         allsongsrv = (RecyclerView) view.findViewById(R.id.allSongsrv);
+        allsongsrv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        allsongsrv.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        allsongsrv.setLayoutManager(layoutManager);
+        allSongAdapter = new AllSongAdapter(getContext(),allSongList);
+        allsongsrv.setAdapter(allSongAdapter);
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
+        allsongsrv.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                if(dy > 0) //check for scroll down
+                {
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+
+                }else {
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+
+                }
+            }
+        });
 
 
                 AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
@@ -101,9 +145,16 @@ public class AllSongsFragment extends Fragment {
                                 try {
                                     JSONArray array = response.getJSONArray("songs");
                                     for(int a = 0;a< array.length();a++){
-                                        JSONObject object = array.getJSONObject(a);
-                                        getAlbumDetails(String.valueOf(object.get("album_id")));
+                                        JSONObject songobject = array.getJSONObject(a);
+                                        Songs s = new Songs();
+                                        s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                        s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                        s.setSong_title(songobject.getString("song_title"));
+                                        allSongList.add(s);
+
                                     }
+                                    //Log.d(TAG, "onResponse: size = "+allSongList.size());
+                                    setSongs();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -114,27 +165,51 @@ public class AllSongsFragment extends Fragment {
                             }
                         });
 
+
+
+
         return view;
     }
 
-    private void getAlbumDetails(String album_id){
 
-        AndroidNetworking.post(AppConfig.GET_ALBUM_BY_DETAILS)
-                .addBodyParameter("album_id", album_id)
-                .setTag("Album Details")
-                .setPriority(Priority.MEDIUM)
-                .build()
-                .getAsJSONObject(new JSONObjectRequestListener() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, "onResponse: "+response);
+    public void setSongs(){
+        for(Songs s : allSongList){
 
-                    }
-                    @Override
-                    public void onError(ANError error) {
-                        Log.e(TAG, "onError: "+error.getErrorDetail());
-                    }
-                });
+            AndroidNetworking.post(AppConfig.GET_ALBUM_BY_DETAILS)
+                    .addBodyParameter("album_id", s.getAlbum_id())
+                    .setTag("Album Details")
+                    .setPriority(Priority.MEDIUM)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            //Log.d(TAG, "onResponse: "+response);
+                                    try {
+                                        JSONArray array = response.getJSONArray("album_details");
+                                        for(int a = 0;a< array.length();a++){
+                                            JSONObject songobject = array.getJSONObject(a);
+
+                                            if(Integer.parseInt(s.getAlbum_id())==Integer.parseInt(String.valueOf(songobject.get("album_id")))){
+                                                Log.d(TAG, "onResponse: song id = "+s.getAlbum_id()+" album id = "+songobject.get("album_id"));
+                                                int index = allSongList.indexOf(s);
+                                                allSongList.get(index).setAlbum_name(songobject.getString("album_name"));
+                                                allSongAdapter.notifyDataSetChanged();
+                                            }
+
+                                        }
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                        }
+                        @Override
+                        public void onError(ANError error) {
+                            Log.e(TAG, "onError: "+error.getErrorDetail());
+                        }
+                    });
+
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
