@@ -23,13 +23,26 @@
         android:id="@+id/bottomlayout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_gravity="bottom">
+        <in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar
+            android:id="@+id/google_now"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/transparent"
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:spb_stroke_width="2dp"
+            app:spb_speed="2"
+            style="@style/GNowProgressBar"
+            android:indeterminate="true"/>
 
         <include
             layout="@layout/player"
+            android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center" />

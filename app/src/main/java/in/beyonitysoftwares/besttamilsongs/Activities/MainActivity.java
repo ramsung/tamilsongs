@@ -5,10 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager;
+import in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar;
 import in.beyonitysoftwares.besttamilsongs.fragments.AboutFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.FavouritesFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.LibraryFragment;
@@ -25,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     LibraryFragment libraryFragment;
     LyricsFragment lyricsFragment;
     CustomViewPager viewPager;
-
+    public SmoothProgressBar loading;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -59,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
         lyricsFragment = new LyricsFragment();
         favouritesFragment = new FavouritesFragment();
         libraryFragment = new LibraryFragment();
-
-
+        loading = (SmoothProgressBar) findViewById(R.id.google_now);
+        loading.setVisibility(View.INVISIBLE);
         viewPager = (CustomViewPager) findViewById(R.id.mainVG);
         FragmentPageAdapter pageAdapter = new FragmentPageAdapter(getSupportFragmentManager());
         pageAdapter.addFragment(lyricsFragment,"Lyrics");
@@ -78,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
+    }
+
+    public void setVisibleTrue(){
+        loading.setVisibility(View.VISIBLE);
+    }
+    public void setVisibleFalse(){
+        loading.setVisibility(View.INVISIBLE);
     }
 
 }

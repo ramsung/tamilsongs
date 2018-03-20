@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
@@ -24,8 +25,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import in.beyonitysoftwares.besttamilsongs.Activities.MainActivity;
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.adapters.AllSongAdapter;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
@@ -51,6 +54,14 @@ public class AllSongsFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    public enum filterSongBy{
+        song,year,movie;
+    }
+    public enum orderSongBy{
+        ASC,DESC
+    }
+
+
     List<Songs> allSongList;
     JSONObject Albumobject = new JSONObject();
     String presentOffset = "0";
@@ -60,8 +71,13 @@ public class AllSongsFragment extends Fragment {
     private boolean loading = true;
     private int visibleThreshold = 5;
     int firstVisibleItem, visibleItemCount, totalItemCount;
+    int setTotalNumberOfSongs = 0;
 
+    HashMap<String,String> songfiltermap;
     ProgressBar progressBar;
+    final String filterSongKey = "songFilter";
+    final String orderByKey = "order";
+    boolean isLoading = false;
 
     private OnFragmentInteractionListener mListener;
 
@@ -101,6 +117,9 @@ public class AllSongsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_all_songs, container, false);
+        songfiltermap = new HashMap<>();
+        songfiltermap.put(filterSongKey, String.valueOf(filterSongBy.song));
+        songfiltermap.put(orderByKey,String.valueOf(orderSongBy.ASC));
         allSongList = new ArrayList<>();
         allsongsrv = (RecyclerView) view.findViewById(R.id.allSongsrv);
         allsongsrv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
@@ -109,8 +128,7 @@ public class AllSongsFragment extends Fragment {
         allsongsrv.setLayoutManager(layoutManager);
         allSongAdapter = new AllSongAdapter(getContext(),allSongList);
         allsongsrv.setAdapter(allSongAdapter);
-        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.INVISIBLE);
+
         allsongsrv.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
@@ -122,48 +140,23 @@ public class AllSongsFragment extends Fragment {
                     totalItemCount = layoutManager.getItemCount();
                     firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
 
-                }else {
-                    visibleItemCount = layoutManager.getChildCount();
-                    totalItemCount = layoutManager.getItemCount();
-                    firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                    int remainingItem = totalItemCount-(firstVisibleItem+visibleItemCount);
+                    Log.d(TAG, "onScrolled: remainging item "+remainingItem+" total items loaded "+totalItemCount);
+
+                    if(remainingItem<6&&(!isLoading)){
+
+                        presentOffset = String.valueOf(totalItemCount);
+                        isLoading = true;
+                        ((MainActivity)getActivity()).setVisibleTrue();
+                        initSongs();
+
+                    }
 
                 }
             }
         });
 
-
-                AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
-                        .addBodyParameter("limit", "15")
-                        .addBodyParameter("offset", presentOffset)
-                        .setTag("test")
-                        .setPriority(Priority.MEDIUM)
-                        .build()
-                        .getAsJSONObject(new JSONObjectRequestListener() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                //Log.d(TAG, "onResponse: "+response);
-                                try {
-                                    JSONArray array = response.getJSONArray("songs");
-                                    for(int a = 0;a< array.length();a++){
-                                        JSONObject songobject = array.getJSONObject(a);
-                                        Songs s = new Songs();
-                                        s.setAlbum_id(String.valueOf(songobject.get("album_id")));
-                                        s.setSong_id(String.valueOf(songobject.get("song_id")));
-                                        s.setSong_title(songobject.getString("song_title"));
-                                        allSongList.add(s);
-
-                                    }
-                                    //Log.d(TAG, "onResponse: size = "+allSongList.size());
-                                    setSongs();
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            @Override
-                            public void onError(ANError error) {
-                                Log.e(TAG, "onError: "+error.getErrorDetail());
-                            }
-                        });
+    initSongs();
 
 
 
@@ -171,7 +164,48 @@ public class AllSongsFragment extends Fragment {
         return view;
     }
 
+    public void initSongs(){
 
+        AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
+            .addBodyParameter("limit", "20")
+            .addBodyParameter("offset", presentOffset)
+            .setTag("test")
+            .setPriority(Priority.MEDIUM)
+            .build()
+            .getAsJSONObject(new JSONObjectRequestListener() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    //Log.d(TAG, "onResponse: "+response);
+                    try {
+
+
+                        JSONArray array = response.getJSONArray("songs");
+                        for(int a = 0;a< array.length();a++){
+                            JSONObject songobject = array.getJSONObject(a);
+                            Songs s = new Songs();
+                            s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                            s.setSong_id(String.valueOf(songobject.get("song_id")));
+                            s.setSong_title(songobject.getString("song_title"));
+
+                            allSongList.add(s);
+
+                        }
+                        //Log.d(TAG, "onResponse: size = "+allSongList.size());
+                        setSongs();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                @Override
+                public void onError(ANError error) {
+                    Log.e(TAG, "onError: "+error.getErrorDetail());
+                    Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                    ((MainActivity)getActivity()).setVisibleFalse();
+                    isLoading = false;
+                }
+            });
+
+    }
     public void setSongs(){
         for(Songs s : allSongList){
 
@@ -181,8 +215,12 @@ public class AllSongsFragment extends Fragment {
                     .setPriority(Priority.MEDIUM)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
+
                         @Override
                         public void onResponse(JSONObject response) {
+
+                            isLoading = false;
+                            ((MainActivity)getActivity()).setVisibleFalse();
                             //Log.d(TAG, "onResponse: "+response);
                                     try {
                                         JSONArray array = response.getJSONArray("album_details");
@@ -194,6 +232,7 @@ public class AllSongsFragment extends Fragment {
                                                 int index = allSongList.indexOf(s);
                                                 allSongList.get(index).setAlbum_name(songobject.getString("album_name"));
                                                 allSongAdapter.notifyDataSetChanged();
+                                                isLoading = false;
                                             }
 
                                         }
@@ -206,6 +245,9 @@ public class AllSongsFragment extends Fragment {
                         @Override
                         public void onError(ANError error) {
                             Log.e(TAG, "onError: "+error.getErrorDetail());
+                            Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                            ((MainActivity)getActivity()).setVisibleFalse();
+                            isLoading =false;
                         }
                     });
 
