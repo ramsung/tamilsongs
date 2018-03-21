@@ -22,30 +22,43 @@
     <LinearLayout
         android:id="@+id/bottomlayout"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_gravity="bottom">
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
+
         <in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar
             android:id="@+id/google_now"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/transparent"
-            android:layout_gravity="bottom"
+            style="@style/GNowProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:spb_stroke_width="2dp"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:background="@android:color/transparent"
+            android:indeterminate="true"
             app:spb_speed="2"
-            style="@style/GNowProgressBar"
-            android:indeterminate="true"/>
+            app:spb_stroke_width="2dp" />
 
         <include
             layout="@layout/player"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1" />
+
+        <in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar
+
+            style="@style/GNowProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:background="@android:color/transparent"
+            android:indeterminate="true"
+            app:spb_speed="2"
+            app:spb_stroke_width="2dp" />
     </LinearLayout>
     <in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager
         android:layout_width="match_parent"

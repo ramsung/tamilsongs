@@ -3,8 +3,8 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">#FD6A83</item>
-        <item name="colorPrimaryDark">#FD6A83</item>
+        <item name="colorPrimary">#FF0576B4</item>
+        <item name="colorPrimaryDark">#FF0576B4</item>
         <item name="colorAccent">@color/md_black_1000</item>
         <item name="android:windowFullscreen">true</item>
     </style>

@@ -16,10 +16,16 @@
         layout="@layout/song_request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <include
+        layout="@layout/theme_selector"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <include
         layout="@layout/profile"
-        layout_width="match_parent"
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
 </LinearLayout>
