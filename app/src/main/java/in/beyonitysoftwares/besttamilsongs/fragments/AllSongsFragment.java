@@ -120,6 +120,7 @@ public class AllSongsFragment extends Fragment {
         songfiltermap = new HashMap<>();
         songfiltermap.put(filterSongKey, String.valueOf(filterSongBy.song));
         songfiltermap.put(orderByKey,String.valueOf(orderSongBy.ASC));
+        songfiltermap.put("isFilter","no");
         allSongList = new ArrayList<>();
         allsongsrv = (RecyclerView) view.findViewById(R.id.allSongsrv);
         allsongsrv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
@@ -164,47 +165,95 @@ public class AllSongsFragment extends Fragment {
         return view;
     }
 
+
+
+
+
     public void initSongs(){
 
-        AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
-            .addBodyParameter("limit", "20")
-            .addBodyParameter("offset", presentOffset)
-            .setTag("test")
-            .setPriority(Priority.MEDIUM)
-            .build()
-            .getAsJSONObject(new JSONObjectRequestListener() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    //Log.d(TAG, "onResponse: "+response);
-                    try {
+        if(songfiltermap.get("isFilter").equals("no")){
+
+            AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
+                    .addBodyParameter("limit", "20")
+                    .addBodyParameter("offset", presentOffset)
+                    .setTag("test")
+                    .setPriority(Priority.MEDIUM)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            //Log.d(TAG, "onResponse: "+response);
+                            try {
 
 
-                        JSONArray array = response.getJSONArray("songs");
-                        for(int a = 0;a< array.length();a++){
-                            JSONObject songobject = array.getJSONObject(a);
-                            Songs s = new Songs();
-                            s.setAlbum_id(String.valueOf(songobject.get("album_id")));
-                            s.setSong_id(String.valueOf(songobject.get("song_id")));
-                            s.setSong_title(songobject.getString("song_title"));
+                                JSONArray array = response.getJSONArray("songs");
+                                for(int a = 0;a< array.length();a++){
+                                    JSONObject songobject = array.getJSONObject(a);
+                                    Songs s = new Songs();
+                                    s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                    s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                    s.setSong_title(songobject.getString("song_title"));
 
-                            allSongList.add(s);
+                                    allSongList.add(s);
 
+                                }
+                                //Log.d(TAG, "onResponse: size = "+allSongList.size());
+                                setSongs();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
-                        //Log.d(TAG, "onResponse: size = "+allSongList.size());
-                        setSongs();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                @Override
-                public void onError(ANError error) {
-                    Log.e(TAG, "onError: "+error.getErrorDetail());
-                    Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
-                    ((MainActivity)getActivity()).setVisibleFalse();
-                    isLoading = false;
-                }
-            });
+                        @Override
+                        public void onError(ANError error) {
+                            Log.e(TAG, "onError: "+error.getErrorDetail());
+                            Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                            ((MainActivity)getActivity()).setVisibleFalse();
+                            isLoading = false;
+                        }
+                    });
+        }
 
+
+    }
+    public void getSongs(){
+        AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
+                .addBodyParameter("limit", "20")
+                .addBodyParameter("offset", presentOffset)
+                .setTag("test")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        //Log.d(TAG, "onResponse: "+response);
+                        try {
+
+
+                            JSONArray array = response.getJSONArray("songs");
+                            for(int a = 0;a< array.length();a++){
+                                JSONObject songobject = array.getJSONObject(a);
+                                Songs s = new Songs();
+                                s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                s.setSong_title(songobject.getString("song_title"));
+
+                                allSongList.add(s);
+
+                            }
+                            //Log.d(TAG, "onResponse: size = "+allSongList.size());
+                            setSongs();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                        ((MainActivity)getActivity()).setVisibleFalse();
+                        isLoading = false;
+                    }
+                });
     }
     public void setSongs(){
         for(Songs s : allSongList){
