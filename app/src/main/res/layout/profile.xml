@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/gradient"
     android:padding="5dp"
-    app:cardBackgroundColor="@color/md_pink_700"
+    app:cardBackgroundColor="@color/md_light_green_A700"
     app:cardCornerRadius="8dp"
     app:cardElevation="8dp"
     app:cardUseCompatPadding="true">
