@@ -29,17 +29,6 @@
         android:layout_gravity="bottom"
         android:orientation="vertical">
 
-        <in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar
-            android:id="@+id/google_now"
-            style="@style/GNowProgressBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="bottom"
-            android:background="@android:color/transparent"
-            android:indeterminate="true"
-            app:spb_speed="2"
-            app:spb_stroke_width="2dp" />
 
         <include
             layout="@layout/player"
@@ -49,7 +38,7 @@
             android:layout_weight="1" />
 
         <in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar
-
+            android:id="@+id/google_now"
             style="@style/GNowProgressBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

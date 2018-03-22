@@ -47,6 +47,9 @@ public class AllSongAdapter extends RecyclerView.Adapter<AllSongAdapter.viewHold
         return allSongsList.size();
     }
 
+    public Songs getItem(int position){
+        return allSongsList.get(position);
+    }
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
 

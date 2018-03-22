@@ -19,7 +19,7 @@ import in.beyonitysoftwares.besttamilsongs.untils.mediaCache;
 
 public class AppController extends Application {
 
-	public static final String TAG = AppController.class.getSimpleName();
+	public static final String TAG = "logging";
 
 	private HttpProxyCacheServer proxy;
 	private RequestQueue mRequestQueue;

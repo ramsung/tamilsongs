@@ -33,6 +33,7 @@ import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.adapters.AllSongAdapter;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
 import in.beyonitysoftwares.besttamilsongs.models.Songs;
+import in.beyonitysoftwares.besttamilsongs.untils.RecyclerItemClickListener;
 
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
@@ -61,16 +62,17 @@ public class AllSongsFragment extends Fragment {
         ASC,DESC
     }
 
-
+    int count = 0;
     List<Songs> allSongList;
     JSONObject Albumobject = new JSONObject();
     String presentOffset = "0";
+    String limit = "20";
     RecyclerView allsongsrv;
     AllSongAdapter allSongAdapter;
     private int previousTotal = 0;
     private boolean loading = true;
     private int visibleThreshold = 5;
-    int firstVisibleItem, visibleItemCount, totalItemCount;
+    int firstVisibleItem, visibleItemCount, totalItemCount,totalItemcountInLayout;
     int setTotalNumberOfSongs = 0;
 
     HashMap<String,String> songfiltermap;
@@ -129,33 +131,58 @@ public class AllSongsFragment extends Fragment {
         allsongsrv.setLayoutManager(layoutManager);
         allSongAdapter = new AllSongAdapter(getContext(),allSongList);
         allsongsrv.setAdapter(allSongAdapter);
+        allsongsrv.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Songs clickedItem = allSongAdapter.getItem(position);
 
-        allsongsrv.addOnScrollListener(new RecyclerView.OnScrollListener()
+            }
+        }));
+       /* allsongsrv.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
-                if(dy > 0) //check for scroll down
-                {
-                    visibleItemCount = layoutManager.getChildCount();
-                    totalItemCount = layoutManager.getItemCount();
-                    firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                if(!isLoading) {
+                    if (dy > 0) //check for scroll down
+                    {
+                        visibleItemCount = layoutManager.getChildCount();
+                        totalItemcountInLayout = layoutManager.getItemCount();
+                        firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                        int remainingItem = totalItemcountInLayout - (firstVisibleItem + visibleItemCount);
+                        //Log.d(TAG, "onScrolled: remainging item " + remainingItem + " total items loaded " + totalItemcountInLayout);
+                        //Log.d(TAG, "onScrolled: loading or not " + isLoading);
+                        if (totalItemcountInLayout < totalItemCount) {
 
-                    int remainingItem = totalItemCount-(firstVisibleItem+visibleItemCount);
-                    Log.d(TAG, "onScrolled: remainging item "+remainingItem+" total items loaded "+totalItemCount);
 
-                    if(remainingItem<6&&(!isLoading)){
+                            if (remainingItem < 6 && (!isLoading)) {
+                                //Log.d(TAG, "onScrolled: calcualtion " + ((totalItemCount - totalItemcountInLayout) / 20));
+                                if (((totalItemCount - totalItemcountInLayout) / 20) != 0) {
+                                    //Log.d(TAG, "onScrolled: "+presentOffset);
+                                    presentOffset = String.valueOf(totalItemcountInLayout);
+                                    limit = "20";
+                                    isLoading = true;
 
-                        presentOffset = String.valueOf(totalItemCount);
-                        isLoading = true;
-                        ((MainActivity)getActivity()).setVisibleTrue();
-                        //initSongs();
+                                    ((MainActivity) getActivity()).setVisibleTrue();
+                                    Log.d(TAG, "onScrolled: count "+count++);
+                                    getSongs();
+
+                                } else {
+                                    presentOffset = String.valueOf(totalItemcountInLayout);
+                                    limit = String.valueOf(totalItemCount - totalItemcountInLayout);
+                                    isLoading = true;
+                                    ((MainActivity) getActivity()).setVisibleTrue();
+                                    getSongs();
+                                }
+
+
+                            }
+                        }
 
                     }
-
                 }
             }
-        });
+        });*/
 
     initSongs();
 
@@ -181,7 +208,13 @@ public class AllSongsFragment extends Fragment {
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            Log.d(TAG, "onResponse: "+response);
+                            //Log.d(TAG, "onResponse: "+response);
+                            try {
+                                totalItemCount = Integer.parseInt(String.valueOf(response.get("size")));
+                                getSongs();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
                         }
                         @Override
@@ -189,7 +222,7 @@ public class AllSongsFragment extends Fragment {
                             Log.e(TAG, "onError: "+error.getErrorDetail());
                             Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
                             ((MainActivity)getActivity()).setVisibleFalse();
-                            isLoading = false;
+                            //isLoading = false;
                         }
                     });
         }
@@ -197,9 +230,11 @@ public class AllSongsFragment extends Fragment {
 
     }
     public void getSongs(){
+
+        //Log.d(TAG, "getSongs: called get songs......");
         AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
                 .addBodyParameter("limit", "20")
-                .addBodyParameter("offset", presentOffset)
+                .addBodyParameter("offset", "0")
                 .setTag("test")
                 .setPriority(Priority.MEDIUM)
                 .build()
@@ -208,7 +243,7 @@ public class AllSongsFragment extends Fragment {
                     public void onResponse(JSONObject response) {
                         //Log.d(TAG, "onResponse: "+response);
                         try {
-
+                            ((MainActivity)getActivity()).setVisibleFalse();
 
                             JSONArray array = response.getJSONArray("songs");
                             for(int a = 0;a< array.length();a++){
@@ -217,8 +252,10 @@ public class AllSongsFragment extends Fragment {
                                 s.setAlbum_id(String.valueOf(songobject.get("album_id")));
                                 s.setSong_id(String.valueOf(songobject.get("song_id")));
                                 s.setSong_title(songobject.getString("song_title"));
+                                if(!allSongList.contains(s)){
+                                    allSongList.add(s);
+                                }
 
-                                allSongList.add(s);
 
                             }
                             //Log.d(TAG, "onResponse: size = "+allSongList.size());
@@ -232,7 +269,7 @@ public class AllSongsFragment extends Fragment {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
                         ((MainActivity)getActivity()).setVisibleFalse();
-                        isLoading = false;
+                        //isLoading = false;
                     }
                 });
     }
@@ -258,7 +295,7 @@ public class AllSongsFragment extends Fragment {
                                             JSONObject songobject = array.getJSONObject(a);
 
                                             if(Integer.parseInt(s.getAlbum_id())==Integer.parseInt(String.valueOf(songobject.get("album_id")))){
-                                                Log.d(TAG, "onResponse: song id = "+s.getAlbum_id()+" album id = "+songobject.get("album_id"));
+                                                //Log.d(TAG, "onResponse: song id = "+s.getAlbum_id()+" album id = "+songobject.get("album_id"));
                                                 int index = allSongList.indexOf(s);
                                                 allSongList.get(index).setAlbum_name(songobject.getString("album_name"));
                                                 allSongAdapter.notifyDataSetChanged();
