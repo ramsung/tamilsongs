@@ -13,6 +13,9 @@ public class AppConfig {
 	//server song request
 	public static String GET_SONGS_with_limits= "https://beyonitysoftwares.cf/tamillyrics/api/songs_with_limits.php";
 
+	//no of songs
+	public static String GET_NO_OF_SONGS= "https://beyonitysoftwares.cf/tamillyrics/api/getNoOfSongs.php";
+
 	//server song request
 	public static String GET_ALBUM_BY_DETAILS= "https://beyonitysoftwares.cf/tamillyrics/api/album_details.php";
 	//server lyrics request

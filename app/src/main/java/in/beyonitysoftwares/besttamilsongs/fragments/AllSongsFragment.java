@@ -149,7 +149,7 @@ public class AllSongsFragment extends Fragment {
                         presentOffset = String.valueOf(totalItemCount);
                         isLoading = true;
                         ((MainActivity)getActivity()).setVisibleTrue();
-                        initSongs();
+                        //initSongs();
 
                     }
 
@@ -173,35 +173,16 @@ public class AllSongsFragment extends Fragment {
 
         if(songfiltermap.get("isFilter").equals("no")){
 
-            AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
-                    .addBodyParameter("limit", "20")
-                    .addBodyParameter("offset", presentOffset)
+            AndroidNetworking.post(AppConfig.GET_NO_OF_SONGS)
+                    .addBodyParameter("filterSongs", "")
                     .setTag("test")
                     .setPriority(Priority.MEDIUM)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
                         public void onResponse(JSONObject response) {
-                            //Log.d(TAG, "onResponse: "+response);
-                            try {
+                            Log.d(TAG, "onResponse: "+response);
 
-
-                                JSONArray array = response.getJSONArray("songs");
-                                for(int a = 0;a< array.length();a++){
-                                    JSONObject songobject = array.getJSONObject(a);
-                                    Songs s = new Songs();
-                                    s.setAlbum_id(String.valueOf(songobject.get("album_id")));
-                                    s.setSong_id(String.valueOf(songobject.get("song_id")));
-                                    s.setSong_title(songobject.getString("song_title"));
-
-                                    allSongList.add(s);
-
-                                }
-                                //Log.d(TAG, "onResponse: size = "+allSongList.size());
-                                setSongs();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
                         }
                         @Override
                         public void onError(ANError error) {
