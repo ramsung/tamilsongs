@@ -32,6 +32,7 @@
         android:layout_weight="1"
         android:clickable="true"
         app:backgroundTint="@color/pocket_color_1"
+        app:fabSize="mini"
         app:srcCompat="@drawable/skipforward" />
 
     <android.support.design.widget.FloatingActionButton
@@ -46,6 +47,7 @@
         android:layout_marginRight="100dp"
         android:clickable="true"
         app:backgroundTint="@color/pocket_color_1"
+        app:fabSize="mini"
         app:srcCompat="@drawable/skipbackward" />
 
     <LinearLayout
