@@ -11,25 +11,22 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-import com.androidnetworking.AndroidNetworking;
 import com.danikula.videocache.HttpProxyCacheServer;
-import com.jacksonandroidnetworking.JacksonParserFactory;
 
 import in.beyonitysoftwares.besttamilsongs.untils.mediaCache;
 
 public class AppController extends Application {
 
-	public static final String TAG = "logging";
+	public static final String TAG = AppController.class.getSimpleName();
 
 	private HttpProxyCacheServer proxy;
 	private RequestQueue mRequestQueue;
-	private static String APP_LINK = "https://arrahmanlyrics.beyonitysoftwares.in";
+	private static String APP_LINK = "https://besttamilsongs.beyonitysoftwares.in";
 	private static AppController mInstance;
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		AndroidNetworking.setParserFactory(new JacksonParserFactory());
 		StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
 		StrictMode.setVmPolicy(builder.build());
 		mInstance = this;

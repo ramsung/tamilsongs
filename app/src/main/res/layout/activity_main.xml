@@ -8,20 +8,21 @@
     tools:context="in.beyonitysoftwares.besttamilsongs.Activities.MainActivity">
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
+        android:id="@+id/PlayButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:scaleType="center"
+        android:clickable="true"
         app:backgroundTint="@color/pocket_color_2"
         app:elevation="10dp"
         app:fabSize="normal"
         app:srcCompat="@drawable/play" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton2"
+        android:id="@+id/SkipNext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -38,7 +39,7 @@
         app:srcCompat="@drawable/next" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton3"
+        android:id="@+id/SkipPrev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -64,24 +65,59 @@
         android:orientation="vertical">
 
 
-        <include
-            layout="@layout/player"
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="1" />
 
-        <in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar
-            android:id="@+id/google_now"
-            style="@style/GNowProgressBar"
+            android:background="@drawable/gradient"
+            android:orientation="horizontal">
+
+
+            <ImageButton
+                android:id="@+id/ButtonPlaylist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginStart="5dp"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/playlist_play" />
+
+            <SeekBar
+                android:id="@+id/seekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="145dp"
+                android:layout_marginRight="145dp"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="bottom"
-            android:background="@android:color/transparent"
-            android:indeterminate="true"
-            app:spb_speed="2"
-            app:spb_stroke_width="2dp" />
+            android:orientation="horizontal">
+
+
+            <in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar
+                android:id="@+id/google_now"
+                style="@style/GNowProgressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_gravity="bottom"
+                android:background="@android:color/transparent"
+                android:indeterminate="true"
+                app:spb_speed="2"
+                app:spb_stroke_width="2dp" />
+
+        </LinearLayout>
+
 
     </LinearLayout>
     <in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager

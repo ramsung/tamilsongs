@@ -137,6 +137,7 @@ public class AllSongsFragment extends Fragment {
                 Songs clickedItem = allSongAdapter.getItem(position);
                 LoadingVisibleTrue();
                 getLyrics(clickedItem);
+                ((MainActivity)getActivity()).playSong(clickedItem);
 
             }
         }));
@@ -216,6 +217,7 @@ public class AllSongsFragment extends Fragment {
                                 String lyrics_three = object.getString("lyrics_three");
                                 String lyrics_four = object.getString("lyrics_four");
                                 ((MainActivity)getActivity()).setLyrics(lyrics_one,lyrics_two,lyrics_three,lyrics_four);
+
                                 LoadingVisibleFalse();
                             } catch (JSONException e) {
                                 e.printStackTrace();
