@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    android:gravity="bottom"
+    android:orientation="vertical"
+
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="PlayList"
+        android:textColor="@color/holo_blue_dark"
+        android:fontFamily="@font/convergence"
+        android:layout_gravity="center"
+        android:gravity="top|center"
+        android:textSize="35dp"
+
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <!--<ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/search"
+        android:id="@+id/searchsongs"
+        android:background="@android:color/transparent"
+        android:layout_weight="1"/>-->
+    <SearchView
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:queryHint="Search by Song title, year"
+        android:background="@color/md_blue_900"
+        android:id="@+id/songsearch"
+        android:layout_weight="5" />
+</LinearLayout>
+
+</LinearLayout>

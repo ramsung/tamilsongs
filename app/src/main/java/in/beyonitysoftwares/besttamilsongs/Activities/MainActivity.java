@@ -12,7 +12,14 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +42,7 @@ import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 
 import in.beyonitysoftwares.besttamilsongs.R;
+import in.beyonitysoftwares.besttamilsongs.adapters.playListAdapter;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
 import in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager;
 import in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar;
@@ -63,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     BottomNavigationView navigation;
     public static final String Broadcast_PLAY_NEW_AUDIO = "in.beyonitysoftwares.besttamilsongs.Activites.PlayNewAudio";
     public static final String Broadcast_NEW_ALBUM = "in.beyonitysoftwares.besttamilsongs.Activites.PlayNewAlbum";
-
+    NavigationView navigationView;
     boolean serviceBound = false;
     MusicService player;
     String l1,l2,l3,l4;
@@ -72,7 +80,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     SeekBar seekBar;
     private Handler mHandler = new Handler();
     ArrayList<Songs> playlist;
-
+    playListAdapter playlistadapter;
+    RecyclerView rvPlayList;
     private static final String TAG = "MainActivity";
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -164,6 +173,32 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
             }
         });
+
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+        playlistButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                } else {
+                    drawer.openDrawer(GravityCompat.START);
+                }
+            }
+        });
+
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View view = navigationView.getHeaderView(0);
+        rvPlayList = (RecyclerView) findViewById(R.id.rvPlaylist);
+        rvPlayList.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
+        rvPlayList.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
+        rvPlayList.setLayoutManager(layoutManager);
+        playlistadapter = new playListAdapter(getApplicationContext(),playlist);
+        rvPlayList.setAdapter(playlistadapter);
+        playlistadapter.notifyDataSetChanged();
         mHandler.post(runnable);
 
     }
@@ -409,18 +444,39 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         setVisibleTrue();
         playlist.clear();
         playlist.add(song);
-            storageUtil.storeAudio(playlist);
-            storageUtil.storeAudioIndex(0);
-            Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
-            Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
-            sendBroadcast(setplaylist);
-            Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
-            sendBroadcast(broadcastIntent);
+        playlistadapter.notifyDataSetChanged();
+        storageUtil.storeAudio(playlist);
+        storageUtil.storeAudioIndex(0);
+        Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
+        Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
+        sendBroadcast(setplaylist);
+        Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+        sendBroadcast(broadcastIntent);
 
 
 
 
     }
+    @Override
+    public void onBackPressed() {
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else if (drawer.isDrawerOpen(GravityCompat.END)) {
+            drawer.closeDrawer(GravityCompat.END);
+        } else {
 
+            super.onBackPressed();
+        }
+    }
+
+    public void closeDrawer() {
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else if (drawer.isDrawerOpen(GravityCompat.END)) {
+            drawer.closeDrawer(GravityCompat.END);
+        }
+    }
 
 }
