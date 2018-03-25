@@ -28,6 +28,7 @@ public class LyricsFragment extends Fragment {
     }
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -47,6 +48,11 @@ public class LyricsFragment extends Fragment {
         tabLayout.setupWithViewPager(viewPager, true);
 
         return view;
+    }
+
+    public void setLyrics(String l1,String l2, String l3,String l4){
+        englishFragment.setLyrics(l1,l2);
+        tamilFragment.setLyrics(l3,l4);
     }
 
 }

@@ -135,9 +135,12 @@ public class AllSongsFragment extends Fragment {
             @Override
             public void onItemClick(View view, int position) {
                 Songs clickedItem = allSongAdapter.getItem(position);
+                LoadingVisibleTrue();
+                getLyrics(clickedItem);
 
             }
         }));
+
        /* allsongsrv.addOnScrollListener(new RecyclerView.OnScrollListener()
         {
             @Override
@@ -192,8 +195,47 @@ public class AllSongsFragment extends Fragment {
         return view;
     }
 
+    private void getLyrics(Songs clickedItem) {
+        if(songfiltermap.get("isFilter").equals("no")){
+
+            AndroidNetworking.post(AppConfig.GET_LYRICS)
+                    .addBodyParameter("song_id", clickedItem.getSong_id())
+                    .setTag("lyrics")
+                    .setPriority(Priority.MEDIUM)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            //Log.d(TAG, "onResponse: "+response);
+
+                            try {
+                                JSONArray lyrics = response.getJSONArray("lyrics");
+                                JSONObject object = lyrics.getJSONObject(0);
+                                String lyrics_one = object.getString("lyrics_one");
+                                String lyrics_two = object.getString("lyrics_two");
+                                String lyrics_three = object.getString("lyrics_three");
+                                String lyrics_four = object.getString("lyrics_four");
+                                ((MainActivity)getActivity()).setLyrics(lyrics_one,lyrics_two,lyrics_three,lyrics_four);
+                                LoadingVisibleFalse();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                LoadingVisibleFalse();
+                            }
 
 
+                        }
+                        @Override
+                        public void onError(ANError error) {
+                            Log.e(TAG, "onError: "+error.getErrorDetail());
+                            Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                           LoadingVisibleFalse();
+
+                            //isLoading = false;
+                        }
+                    });
+        }
+
+    }
 
 
     public void initSongs(){
@@ -348,5 +390,12 @@ public class AllSongsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void LoadingVisibleTrue(){
+        ((MainActivity) getActivity()).setVisibleTrue();
+    }
+    public void LoadingVisibleFalse(){
+        ((MainActivity) getActivity()).setVisibleFalse();
     }
 }

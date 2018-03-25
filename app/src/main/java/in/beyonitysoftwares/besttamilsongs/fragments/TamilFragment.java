@@ -7,6 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import in.beyonitysoftwares.besttamilsongs.R;
 
@@ -27,7 +31,8 @@ public class TamilFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    TextView tamilone,tamiltwo;
+    AdView adViewtop,adViewMiddle;
     private OnFragmentInteractionListener mListener;
 
     public TamilFragment() {
@@ -65,7 +70,21 @@ public class TamilFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.activity_lyrics, container, false);
+        View view = inflater.inflate(R.layout.activity_lyrics, container, false);
+        tamilone = (TextView) view.findViewById(R.id.tamilone);
+        tamiltwo = (TextView) view.findViewById(R.id.tamiltwo);
+        adViewtop = (AdView) view.findViewById(R.id.tamil_top);
+        adViewMiddle= (AdView) view.findViewById(R.id.tamil_middle);
+
+
+        AdRequest adRequest1 = new AdRequest.Builder()
+                .build();
+        adViewtop.loadAd(adRequest1);
+
+        AdRequest adRequest2 = new AdRequest.Builder()
+                 .build();
+        adViewMiddle.loadAd(adRequest2);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -95,5 +114,11 @@ public class TamilFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void setLyrics(String l1,String l2){
+        tamilone.setText(l1);
+        tamiltwo.setText(l2);
+
     }
 }

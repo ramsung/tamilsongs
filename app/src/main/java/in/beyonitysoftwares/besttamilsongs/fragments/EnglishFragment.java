@@ -7,6 +7,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import in.beyonitysoftwares.besttamilsongs.R;
 
@@ -27,8 +31,9 @@ public class EnglishFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    TextView englishone,englishtwo;
     private OnFragmentInteractionListener mListener;
+    AdView adViewtop,adViewMiddle;
 
     public EnglishFragment() {
         // Required empty public constructor
@@ -65,7 +70,21 @@ public class EnglishFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.activity_lyrics_eng, container, false);
+        View view = inflater.inflate(R.layout.activity_lyrics_eng, container, false);
+        englishone = (TextView) view.findViewById(R.id.englishone);
+        englishtwo = (TextView) view.findViewById(R.id.englishtwo);
+        adViewtop = (AdView) view.findViewById(R.id.english_top);
+        adViewMiddle= (AdView) view.findViewById(R.id.english_middle);
+
+
+        AdRequest adRequest1 = new AdRequest.Builder()
+                .build();
+        adViewtop.loadAd(adRequest1);
+
+        AdRequest adRequest2 = new AdRequest.Builder()
+                .build();
+        adViewMiddle.loadAd(adRequest2);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -96,5 +115,11 @@ public class EnglishFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void setLyrics(String l1,String l2){
+        englishone.setText(l1);
+        englishtwo.setText(l2);
+
     }
 }
