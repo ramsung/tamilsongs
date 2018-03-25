@@ -16,6 +16,7 @@
         android:layout_alignParentRight="true"
         android:scaleType="center"
         app:backgroundTint="@color/pocket_color_2"
+        app:elevation="10dp"
         app:fabSize="normal"
         app:srcCompat="@drawable/play" />
 
@@ -32,8 +33,9 @@
         android:layout_weight="1"
         android:clickable="true"
         app:backgroundTint="@color/pocket_color_1"
+        app:elevation="10dp"
         app:fabSize="mini"
-        app:srcCompat="@drawable/skipforward" />
+        app:srcCompat="@drawable/next" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton3"
@@ -47,8 +49,9 @@
         android:layout_marginRight="100dp"
         android:clickable="true"
         app:backgroundTint="@color/pocket_color_1"
+        app:elevation="10dp"
         app:fabSize="mini"
-        app:srcCompat="@drawable/skipbackward" />
+        app:srcCompat="@drawable/back" />
 
     <LinearLayout
         android:id="@+id/bottomlayout"
