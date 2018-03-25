@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
 
-    android:background="#FF0576B4"
+    android:background="@drawable/gradient"
     android:orientation="horizontal">
 
 
@@ -25,32 +25,8 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
+      android:layout_marginEnd="120dp"
+      android:layout_marginRight="90120dp"
       android:layout_weight="1" />
-
-  <ImageButton
-      android:id="@+id/imageButton3"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:layout_marginEnd="5dp"
-      android:layout_marginLeft="5dp"
-      android:layout_marginRight="5dp"
-      android:layout_marginStart="5dp"
-      android:background="@android:color/transparent"
-      android:elevation="5dp"
-      app:srcCompat="@drawable/skip_previous_circle_outline" />
-
-  <ImageButton
-      android:id="@+id/imageButton4"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      android:layout_marginEnd="60dp"
-      android:layout_marginLeft="60dp"
-      android:layout_marginRight="5dp"
-      android:layout_marginStart="5dp"
-      android:background="@android:color/transparent"
-      android:elevation="5dp"
-      app:srcCompat="@drawable/skip_next_circle_outline" />
 
 </LinearLayout>
