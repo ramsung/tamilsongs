@@ -19,6 +19,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="Artist"
+            android:textColor="@color/md_teal_900"
             android:textSize="10sp"
             android:textStyle="bold" />
 
@@ -30,6 +31,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="Hero"
+            android:textColor="@color/md_teal_900"
             android:textSize="10sp"
             android:textStyle="bold" />
 
@@ -41,6 +43,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="Heroine"
+            android:textColor="@color/md_teal_900"
             android:textSize="10sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -60,6 +63,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="sad"
+            android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
 
@@ -71,6 +75,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="happy"
+            android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
 
@@ -82,6 +87,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="folk"
+            android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
 
@@ -93,6 +99,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="duet"
+            android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -112,6 +119,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="gaana"
+            android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
 
@@ -123,6 +131,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="item"
+            android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
 
@@ -134,6 +143,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="intro"
+            android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
 
@@ -145,6 +155,7 @@
             android:layout_weight="1"
             android:fontFamily="@font/convergence"
             android:text="others"
+            android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
     </LinearLayout>
