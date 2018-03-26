@@ -46,8 +46,8 @@ public class LibraryFragment extends Fragment {
 
         viewPager.setAdapter(pageAdapter);
 
-        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager,true);
+        //TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
+        //tabLayout.setupWithViewPager(viewPager,true);
 
 
         return view;

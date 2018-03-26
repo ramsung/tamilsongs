@@ -12,7 +12,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -74,7 +77,7 @@ public class AllSongsFragment extends Fragment {
     private int visibleThreshold = 5;
     int firstVisibleItem, visibleItemCount, totalItemCount,totalItemcountInLayout;
     int setTotalNumberOfSongs = 0;
-
+    Spinner artistSpinner,albumSpinner,herospinner,heroinSpinner,yearSpinner,genreSpinner;
     HashMap<String,String> songfiltermap;
     ProgressBar progressBar;
     final String filterSongKey = "songFilter";
@@ -123,6 +126,45 @@ public class AllSongsFragment extends Fragment {
         songfiltermap.put(filterSongKey, String.valueOf(filterSongBy.song));
         songfiltermap.put(orderByKey,String.valueOf(orderSongBy.ASC));
         songfiltermap.put("isFilter","no");
+        artistSpinner = (Spinner) view.findViewById(R.id.ArtistSpinner);
+        albumSpinner = (Spinner) view.findViewById(R.id.AlbumSpinner);
+        herospinner = (Spinner) view.findViewById(R.id.HeroSpinner);
+        heroinSpinner = (Spinner) view.findViewById(R.id.HeroinSpinner);
+        yearSpinner = (Spinner) view.findViewById(R.id.YearSpinner);
+        genreSpinner = (Spinner) view.findViewById(R.id.GenreSpinner);
+
+
+        List<String> categories = new ArrayList<String>();
+        categories.add("Automobile");
+        categories.add("Business Services");
+        categories.add("Computers");
+        categories.add("Education");
+        categories.add("Personal");
+        categories.add("Travel");
+        ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
+        dataAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        artistSpinner.setAdapter(dataAdapter1);
+        ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
+        ArrayAdapter<String> dataAdapter3 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
+        ArrayAdapter<String> dataAdapter4 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
+        ArrayAdapter<String> dataAdapter5 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
+        ArrayAdapter<String> dataAdapter6 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
+
+
+        dataAdapter2.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        dataAdapter3.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        dataAdapter4.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        dataAdapter5.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+        dataAdapter6.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+
+
+
+        albumSpinner.setAdapter(dataAdapter2);
+        herospinner.setAdapter(dataAdapter3);
+        heroinSpinner.setAdapter(dataAdapter4);
+        yearSpinner.setAdapter(dataAdapter5);
+        genreSpinner.setAdapter(dataAdapter6);
+
         allSongList = new ArrayList<>();
         allsongsrv = (RecyclerView) view.findViewById(R.id.allSongsrv);
         allsongsrv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));

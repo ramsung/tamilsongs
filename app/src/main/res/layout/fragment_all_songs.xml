@@ -5,10 +5,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="in.beyonitysoftwares.besttamilsongs.fragments.AllSongsFragment">
 
+    <include
+        layout="@layout/filter"
+        android:id="@+id/filterlayout"
+        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+
+
+    </include>
+
     <!-- TODO: Update blank fragment layout -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/allSongsrv"
-
+        android:layout_marginTop="7dp"
+        android:layout_below="@id/filterlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

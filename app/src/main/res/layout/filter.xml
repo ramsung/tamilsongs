@@ -6,49 +6,66 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/gradient"
+        android:background="@drawable/gradient2"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/button2"
+        <Spinner
+            android:id="@+id/ArtistSpinner"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:fontFamily="@font/convergence"
-            android:text="Artist"
-            android:textColor="@color/md_teal_900"
-            android:textSize="10sp"
-            android:textStyle="bold" />
+           />
+        <Spinner
+            android:id="@+id/AlbumSpinner"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+        <Spinner
+            android:id="@+id/GenreSpinner"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
 
-        <Button
-            android:id="@+id/button3"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/convergence"
-            android:text="Hero"
-            android:textColor="@color/md_teal_900"
-            android:textSize="10sp"
-            android:textStyle="bold" />
-
-        <Button
-            android:id="@+id/button4"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-            android:fontFamily="@font/convergence"
-            android:text="Heroine"
-            android:textColor="@color/md_teal_900"
-            android:textSize="10sp"
-            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/gradient2"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/HeroSpinner"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+
+        <Spinner
+            android:id="@+id/HeroinSpinner"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+        <Spinner
+            android:id="@+id/YearSpinner"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+   <!-- <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -158,6 +175,6 @@
             android:textColor="@color/md_white_1000"
             android:textSize="10sp"
             android:textStyle="bold" />
-    </LinearLayout>
+    </LinearLayout>-->
 
 </LinearLayout>
