@@ -34,7 +34,7 @@ public class TamilFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     TextView tamilone,tamiltwo;
-    AdView adViewtop,adViewMiddle;
+   // AdView adViewtop,adViewMiddle;
     private OnFragmentInteractionListener mListener;
 
     public TamilFragment() {
@@ -75,7 +75,7 @@ public class TamilFragment extends Fragment {
         View view = inflater.inflate(R.layout.activity_lyrics, container, false);
         tamilone = (TextView) view.findViewById(R.id.tamilone);
         tamiltwo = (TextView) view.findViewById(R.id.tamiltwo);
-        adViewtop = (AdView) view.findViewById(R.id.tamil_top);
+        /*adViewtop = (AdView) view.findViewById(R.id.tamil_top);
         adViewMiddle= (AdView) view.findViewById(R.id.tamil_middle);
 
 
@@ -152,7 +152,7 @@ public class TamilFragment extends Fragment {
                 // to the app after tapping on an ad.
                 Log.i("Ads", "onAdClosed");
             }
-        });
+        });*/
         return view;
     }
 

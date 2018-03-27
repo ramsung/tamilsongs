@@ -46,6 +46,7 @@ import in.beyonitysoftwares.besttamilsongs.adapters.playListAdapter;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
 import in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager;
 import in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar;
+import in.beyonitysoftwares.besttamilsongs.databaseHandler.DatabaseHandler;
 import in.beyonitysoftwares.besttamilsongs.fragments.AboutFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.FavouritesFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.LibraryFragment;
@@ -83,6 +84,11 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     playListAdapter playlistadapter;
     RecyclerView rvPlayList;
     private static final String TAG = "MainActivity";
+
+    //db
+    DatabaseHandler db;
+
+
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -111,6 +117,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MobileAds.initialize(this, "ca-app-pub-7987343674758455~6065686189");
+        db = new DatabaseHandler(getApplicationContext());
+
         //init
         playpause = (FloatingActionButton) findViewById(R.id.PlayButton);
         skipnext = (FloatingActionButton) findViewById(R.id.SkipNext);
@@ -200,8 +208,67 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         rvPlayList.setAdapter(playlistadapter);
         playlistadapter.notifyDataSetChanged();
         mHandler.post(runnable);
+        
+        
+        getupdatetime();
 
     }
+
+    private void getupdatetime() {
+
+        AndroidNetworking.post(AppConfig.GET_UPDATE_TIME)
+                .addBodyParameter("updated", "checking update")
+                .setTag("update time")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: "+response);
+                        try {
+                            JSONArray update = response.getJSONArray("update");
+                            //Log.d(TAG, "onResponse: length = "+update.length());
+                            for(int a =0;a<update.length();a++){
+                                JSONObject object = update.getJSONObject(a);
+
+                                String table_name = String.valueOf(object.get("table_name"));
+                                String remote_time = String.valueOf(object.get("update_time"));
+                                String local_time = db.getUpdateDetails(table_name);
+                                long local_time_long = Long.parseLong(local_time);
+                                long remote_time_long = Long.parseLong(remote_time);
+
+                                if(local_time.equals("")){
+                                    db.insertUpdate(table_name,remote_time);
+                                }else if(remote_time_long>local_time_long){
+
+                                    if(db.updateUpdateTable(table_name,remote_time)){
+                                        Log.d(TAG, "onResponse: table name = "+table_name+" local time = "+local_time+" remote time = "+remote_time);
+                                        Toast.makeText(getApplicationContext(),"Successfully Updated",Toast.LENGTH_LONG).show();
+                                    }
+
+                                }
+
+
+
+
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+                        //isLoading = false;
+                    }
+                });
+    }
+
     private Runnable runnable = new Runnable() {
         @Override
         public void run() {
