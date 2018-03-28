@@ -134,23 +134,73 @@ public class AllSongsFragment extends Fragment {
         genreSpinner = (Spinner) view.findViewById(R.id.GenreSpinner);
 
 
-        List<String> categories = new ArrayList<String>();
-        categories.add("Automobile");
-        categories.add("Business Services");
-        categories.add("Computers");
-        categories.add("Education");
-        categories.add("Personal");
-        categories.add("Travel");
-        ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
-        dataAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        artistSpinner.setAdapter(dataAdapter1);
-        ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
-        ArrayAdapter<String> dataAdapter3 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
-        ArrayAdapter<String> dataAdapter4 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
-        ArrayAdapter<String> dataAdapter5 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
-        ArrayAdapter<String> dataAdapter6 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, categories);
+        List<String> artistcategories = new ArrayList<String>();
+        artistcategories.add("Artist");
+        artistcategories.add("Ilayaraja");
+        artistcategories.add("A R Rahman");
+        artistcategories.add("Yuvan");
+        artistcategories.add("Haris");
+        artistcategories.add("Saanthosh Narayanan");
+        artistcategories.add("Ghibran");
+        artistcategories.add("GV Prakash");
+        artistcategories.add("Anirudh");
+        artistcategories.add("Others");
 
+        List<String> herocategories = new ArrayList<String>();
+        herocategories.add("Hero");
+        herocategories.add("Kammal");
+        herocategories.add("Rajini");
+        herocategories.add("Ajith");
+        herocategories.add("Vijay");
+        herocategories.add("Surya");
+        herocategories.add("Karthi");
+        herocategories.add("Dhanush");
+        herocategories.add("Madhavan");
+        herocategories.add("Sivakarthikeyan");
+        herocategories.add("Others");
 
+        List<String> heroinecategories = new ArrayList<String>();
+        heroinecategories.add("Heroine");
+        heroinecategories.add("Simran");
+        heroinecategories.add("Jyothika");
+        heroinecategories.add("Sridevi");
+        heroinecategories.add("Meena");
+        heroinecategories.add("Gauthami");
+        heroinecategories.add("Revathi");
+        heroinecategories.add("Nayanthara");
+        heroinecategories.add("Anushka");
+        heroinecategories.add("Others");
+
+        List<String> yearcategories = new ArrayList<String>();
+        yearcategories.add("Year");
+        yearcategories.add("1970's");
+        yearcategories.add("1980's");
+        yearcategories.add("1990's");
+        yearcategories.add("2000's");
+        yearcategories.add("2010's");
+
+        List<String> genrecategories = new ArrayList<String>();
+        genrecategories.add("Genre");
+        genrecategories.add("Happy");
+        genrecategories.add("Sad");
+        genrecategories.add("Folk");
+        genrecategories.add("Duet");
+        genrecategories.add("Romance");
+        genrecategories.add("Motivation");
+        genrecategories.add("Item");
+        genrecategories.add("Girls Love");
+        genrecategories.add("Boys Love");
+        genrecategories.add("Friendship");
+        genrecategories.add("Others");
+
+        ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, artistcategories);
+        ArrayAdapter<String> dataAdapter2 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, artistcategories);
+        ArrayAdapter<String> dataAdapter3 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, herocategories);
+        ArrayAdapter<String> dataAdapter4 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, heroinecategories);
+        ArrayAdapter<String> dataAdapter5 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, yearcategories);
+        ArrayAdapter<String> dataAdapter6 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, genrecategories);
+
+        dataAdapter1.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         dataAdapter2.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         dataAdapter3.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         dataAdapter4.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
@@ -158,7 +208,7 @@ public class AllSongsFragment extends Fragment {
         dataAdapter6.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
 
 
-
+        artistSpinner.setAdapter(dataAdapter1);
         albumSpinner.setAdapter(dataAdapter2);
         herospinner.setAdapter(dataAdapter3);
         heroinSpinner.setAdapter(dataAdapter4);

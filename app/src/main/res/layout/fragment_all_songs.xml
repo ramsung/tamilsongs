@@ -6,12 +6,11 @@
     tools:context="in.beyonitysoftwares.besttamilsongs.fragments.AllSongsFragment">
 
     <include
-        layout="@layout/filter"
         android:id="@+id/filterlayout"
-        android:layout_alignParentTop="true"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
-
+        layout="@layout/filter"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentTop="true">
 
 
     </include>
