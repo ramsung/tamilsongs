@@ -38,7 +38,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.channels.SelectionKey;
 import java.util.ArrayList;
 
 import in.beyonitysoftwares.besttamilsongs.R;
@@ -55,8 +54,6 @@ import in.beyonitysoftwares.besttamilsongs.models.Songs;
 import in.beyonitysoftwares.besttamilsongs.music.MusicService;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
-
-import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
 public class MainActivity extends AppCompatActivity implements MusicService.mainActivityCallback,View.OnClickListener{
 
@@ -84,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     playListAdapter playlistadapter;
     RecyclerView rvPlayList;
     private static final String TAG = "MainActivity";
+
 
     //db
     DatabaseHandler db;
@@ -236,15 +234,50 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 String local_time = db.getUpdateDetails(table_name);
                                 long local_time_long = Long.parseLong(local_time);
                                 long remote_time_long = Long.parseLong(remote_time);
+                                Log.d(TAG, "onResponse: table name = "+table_name+" remote time = "+remote_time+" local time = "+local_time);
+                                if(local_time.equals("0")){
+                                    if(table_name.equals("albums")){
+                                        getAlbums(table_name,remote_time,local_time);
 
-                                if(local_time.equals("")){
-                                    db.insertUpdate(table_name,remote_time);
+                                    }else if (table_name.equals("artist")){
+                                        getArtists(table_name,remote_time,local_time);
+
+                                    }else if (table_name.equals("hero")){
+                                        getHeros(table_name,remote_time,local_time);
+
+                                    }else if (table_name.equals("heroin")){
+                                        getHeroins(table_name,remote_time,local_time);
+
+                                    }else if (table_name.equals("lyricist")){
+                                        getLyricists(table_name,remote_time,local_time);
+
+                                    }else if (table_name.equals("genre")){
+                                        getGenres(table_name,remote_time,local_time);
+
+                                    }
+
                                 }else if(remote_time_long>local_time_long){
 
-                                    if(db.updateUpdateTable(table_name,remote_time)){
-                                        Log.d(TAG, "onResponse: table name = "+table_name+" local time = "+local_time+" remote time = "+remote_time);
-                                        Toast.makeText(getApplicationContext(),"Successfully Updated",Toast.LENGTH_LONG).show();
+                                    if(table_name.equals("albums")){
+                                        getAlbums(table_name, remote_time, local_time);
+
+                                    }else if (table_name.equals("artist")){
+                                        getArtists(table_name, remote_time, local_time);
+
+                                    }else if (table_name.equals("hero")){
+                                        getHeros(table_name, remote_time, local_time);
+
+                                    }else if (table_name.equals("heroin")){
+                                        getHeroins(table_name, remote_time, local_time);
+
+                                    }else if (table_name.equals("lyricist")){
+                                        getLyricists(table_name, remote_time, local_time);
+
+                                    }else if (table_name.equals("genre")){
+                                        getGenres(table_name, remote_time, local_time);
+
                                     }
+
 
                                 }
 
@@ -544,6 +577,360 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         } else if (drawer.isDrawerOpen(GravityCompat.END)) {
             drawer.closeDrawer(GravityCompat.END);
         }
+    }
+
+
+
+    public void getAlbums(String table_name, String remote_time, String local_time){
+        AndroidNetworking.post(AppConfig.GET_ALBUMS)
+                .addBodyParameter("albums", "all")
+                .setTag("albums")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: "+response);
+
+                        try {
+
+                            if(response.getString("error").equals("false")) {
+
+                                if(!local_time.equals("0")){
+                                    db.deleteRecords(table_name);
+                                }
+                                JSONArray array = response.getJSONArray("albums");
+                                for(int a = 0;a<array.length();a++){
+                                    JSONObject object = array.getJSONObject(a);
+                                    String album_id = String.valueOf(object.get("album_id"));
+                                    String album_name = String.valueOf(object.get("album_name"));
+                                    String artist_id = String.valueOf(object.get("artist_id"));
+                                    String hero_id = String.valueOf(object.get("hero_id"));
+                                    String heroin_id = String.valueOf(object.get("heroin_id"));
+                                    String year = String.valueOf(object.get("year"));
+                                    if(db.insertAlbums(album_id,album_name,artist_id,hero_id,heroin_id,year)){
+
+                                    }else {
+                                        Log.d(TAG, "onResponse: error inserting albums in local database");
+                                    }
+
+
+                                }
+                                if(local_time.equals("0")){
+                                    db.insertUpdate(table_name,remote_time);
+                                }else {
+                                    db.updateUpdateTable(table_name,remote_time);
+                                }
+                                Log.d(TAG, "onResponse: length " + array.length());
+
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Failed to get albums from database", Toast.LENGTH_SHORT).show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading albums from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+                        //isLoading = false;
+                    }
+                });
+    }
+
+    public void getArtists(String table_name, String remote_time, String local_time){
+        AndroidNetworking.post(AppConfig.GET_ARTISTS)
+                .addBodyParameter("artist", "all")
+                .setTag("artists")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: "+response);
+                        try {
+                            if(response.getString("error").equals("false")) {
+                                if(!local_time.equals("0")){
+                                    db.deleteRecords(table_name);
+                                }
+                                JSONArray array = response.getJSONArray("artists");
+                                for(int a = 0;a<array.length();a++){
+                                    JSONObject object = array.getJSONObject(a);
+                                    String artist_id = String.valueOf(object.get("artist_id"));
+                                    String artist_name = String.valueOf(object.get("artist_name"));
+                                    if(db.insertArtist(artist_id,artist_name)){
+
+                                    }else {
+                                        Log.d(TAG, "onResponse: error inserting artists in local database");
+                                    }
+
+
+                                }
+                                if(local_time.equals("0")){
+                                    db.insertUpdate(table_name,remote_time);
+                                }else {
+                                    db.updateUpdateTable(table_name,remote_time);
+                                }
+                                Log.d(TAG, "onResponse: length " + array.length());
+
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Failed to get artists from database", Toast.LENGTH_SHORT).show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading artists from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+                        //isLoading = false;
+                    }
+                });
+    }
+
+    public void getHeros(String table_name, String remote_time, String local_time){
+        AndroidNetworking.post(AppConfig.GET_HEROS)
+                .addBodyParameter("hero", "all")
+                .setTag("heros")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: "+response);
+                        try {
+                            if(response.getString("error").equals("false")) {
+                                if(!local_time.equals("0")){
+                                    db.deleteRecords(table_name);
+                                }
+                                JSONArray array = response.getJSONArray("heros");
+                                for(int a = 0;a<array.length();a++){
+                                    JSONObject object = array.getJSONObject(a);
+                                    String hero_id = String.valueOf(object.get("hero_id"));
+                                    String hero_name = String.valueOf(object.get("hero_name"));
+                                    if(db.insertHero(hero_id,hero_name)){
+
+                                    }else {
+                                        Log.d(TAG, "onResponse: error inserting heros in local database");
+                                    }
+
+
+                                }
+                                if(local_time.equals("0")){
+                                    db.insertUpdate(table_name,remote_time);
+                                }else {
+                                    db.updateUpdateTable(table_name,remote_time);
+                                }
+                                Log.d(TAG, "onResponse: length " + array.length());
+
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Failed to get heros from database", Toast.LENGTH_SHORT).show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading heros from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+                        //isLoading = false;
+                    }
+                });
+    }
+
+
+    public void getHeroins(String table_name, String remote_time, String local_time){
+        AndroidNetworking.post(AppConfig.GET_HEROINS)
+                .addBodyParameter("heroin", "all")
+                .setTag("heroins")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                       Log.d(TAG, "onResponse: "+response);
+                        try {
+                            if(response.getString("error").equals("false")) {
+                                JSONArray array = response.getJSONArray("heroins");
+                                if(!local_time.equals("0")){
+                                    db.deleteRecords(table_name);
+                                }
+                                for(int a = 0;a<array.length();a++){
+                                    JSONObject object = array.getJSONObject(a);
+                                    String heroin_id = String.valueOf(object.get("heroin_id"));
+                                    String heroin_name = String.valueOf(object.get("heroin_name"));
+                                    if(db.insertHeroin(heroin_id,heroin_name)){
+
+                                    }else {
+                                        Log.d(TAG, "onResponse: error inserting heroins in local database");
+                                    }
+
+
+                                }
+                                if(local_time.equals("0")){
+                                    db.insertUpdate(table_name,remote_time);
+                                }else {
+                                    db.updateUpdateTable(table_name,remote_time);
+                                }
+                                Log.d(TAG, "onResponse: length " + array.length());
+
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Failed to get heroins from database", Toast.LENGTH_SHORT).show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading heroins from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+                        //isLoading = false;
+                    }
+                });
+    }
+
+    public void getLyricists(String table_name, String remote_time, String local_time){
+        AndroidNetworking.post(AppConfig.GET_LYRICISTS)
+                .addBodyParameter("lyricist", "all")
+                .setTag("lyricists")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: "+response);
+                        try {
+                            if(response.getString("error").equals("false")) {
+                                JSONArray array = response.getJSONArray("lyricists");
+                                if(!local_time.equals("0")){
+                                    db.deleteRecords(table_name);
+                                }
+                                for(int a = 0;a<array.length();a++){
+                                    JSONObject object = array.getJSONObject(a);
+                                    String lyricist_id = String.valueOf(object.get("lyricist_id"));
+                                    String lyricist_name = String.valueOf(object.get("lyricist_name"));
+                                    if(db.insertLyricist(lyricist_id,lyricist_name)){
+
+                                    }else {
+                                        Log.d(TAG, "onResponse: error inserting lyricists in local database");
+                                    }
+
+
+                                }
+                                if(local_time.equals("0")){
+                                    db.insertUpdate(table_name,remote_time);
+                                }else {
+                                    db.updateUpdateTable(table_name,remote_time);
+                                }
+                                Log.d(TAG, "onResponse: length " + array.length());
+
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Failed to get lyricists from database", Toast.LENGTH_SHORT).show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading lyricists from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+                        //isLoading = false;
+                    }
+                });
+    }
+
+    public void getGenres(String table_name, String remote_time, String local_time){
+
+        AndroidNetworking.post(AppConfig.GET_GENRES)
+                .addBodyParameter("genre", "all")
+                .setTag("genres")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        boolean answer = false;
+                       Log.d(TAG, "onResponse: "+response);
+                        try {
+                            if(response.getString("error").equals("false")) {
+                                if(!local_time.equals("0")){
+                                    db.deleteRecords(table_name);
+                                }
+                                JSONArray array = response.getJSONArray("genres");
+                                for(int a = 0;a<array.length();a++){
+                                    JSONObject object = array.getJSONObject(a);
+                                    String genre_id = String.valueOf(object.get("genre_id"));
+                                    String genre_name = String.valueOf(object.get("genre_name"));
+                                    db.insertGenre(genre_id,genre_name);
+
+                                }
+
+                                    if(local_time.equals("0")){
+                                        db.insertUpdate(table_name,remote_time);
+                                    }else {
+                                        db.updateUpdateTable(table_name,remote_time);
+                                    }
+
+                                Log.d(TAG, "onResponse: length " + array.length());
+
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Failed to get genres from database", Toast.LENGTH_SHORT).show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading genre from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+
+                        //isLoading = false;
+                    }
+                });
+
+
     }
 
 }

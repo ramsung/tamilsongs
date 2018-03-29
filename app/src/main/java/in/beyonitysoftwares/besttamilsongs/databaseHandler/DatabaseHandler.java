@@ -78,7 +78,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_ALBUMS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_ALBUMS + " (" + KEY_ALBUM_ID + " INTEGER UNIQUE, " + KEY_ALBUM_NAME + " varchar(255), " + KEY_ALBUM_YEAR + " INTERGER)";
+        String CREATE_ALBUMS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_ALBUMS + " (" + KEY_ALBUM_ID + " INTEGER UNIQUE, " + KEY_ALBUM_NAME + " varchar(255), " + KEY_ARTIST_ID +" INTEGER, "+KEY_HERO_ID+ " INTEGER, " +KEY_HEROIN_ID+ " INTEGER, " +  KEY_ALBUM_YEAR + " INTERGER)";
         String CREATE_ARTIST_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_ARTIST + " (" + KEY_ARTIST_ID + " INTEGER UNIQUE, " + KEY_ARTIST_NAME + " varchar(255))";
         String CREATE_HERO_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_HERO + " (" + KEY_HERO_ID + " INTEGER UNIQUE, " + KEY_HERO_NAME + " varchar(255))";
         String CREATE_HEROIN_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_HEROIN + " (" + KEY_HEROIN_ID + " INTEGER UNIQUE, " + KEY_HEROIN_NAME + " varchar(255))";
@@ -104,12 +104,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public boolean insertAlbums(String album_id, String album_name, String year) {
+    public boolean insertAlbums(String album_id, String album_name, String artist_id,String hero_id,String heroin_id,String year) {
 
         SQLiteDatabase db = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(KEY_ALBUM_ID, album_id);
         contentValues.put(KEY_ALBUM_NAME, album_name);
+        contentValues.put(KEY_ARTIST_ID, artist_id);
+        contentValues.put(KEY_HERO_ID, hero_id);
+        contentValues.put(KEY_HEROIN_ID, heroin_id);
         contentValues.put(KEY_ALBUM_YEAR, year);
 
 
@@ -279,6 +282,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return true;
 
 
+    }
+
+    public void deleteRecords(String table_name){
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("delete from "+ table_name);
+        db.close();
     }
 
 }

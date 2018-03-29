@@ -10,6 +10,21 @@ public class AppConfig {
 	//server album request
 	public static String GET_ALBUMS= "https://beyonitysoftwares.cf/tamillyrics/api/albums.php";
 
+	//server artist request
+	public static String GET_ARTISTS= "https://beyonitysoftwares.cf/tamillyrics/api/artist.php";
+
+	//server hero request
+	public static String GET_HEROS= "https://beyonitysoftwares.cf/tamillyrics/api/hero.php";
+
+	//server heroin request
+	public static String GET_HEROINS= "https://beyonitysoftwares.cf/tamillyrics/api/heroin.php";
+
+	//server lyricist request
+	public static String GET_LYRICISTS= "https://beyonitysoftwares.cf/tamillyrics/api/lyricist.php";
+
+	//server genre request
+	public static String GET_GENRES= "https://beyonitysoftwares.cf/tamillyrics/api/genre.php";
+
 	//server song request
 	public static String GET_SONGS_with_limits= "https://beyonitysoftwares.cf/tamillyrics/api/songs_with_limits.php";
 
