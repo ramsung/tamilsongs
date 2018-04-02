@@ -9,12 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.mopub.mobileads.MoPubErrorCode;
+import com.mopub.mobileads.MoPubView;
 
 import in.beyonitysoftwares.besttamilsongs.R;
+
+import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +35,7 @@ public class TamilFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private MoPubView moPubView;
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -73,6 +79,37 @@ public class TamilFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_lyrics, container, false);
+        moPubView = (MoPubView) view.findViewById(R.id.adview);
+        moPubView.setAdUnitId("e03d6b92e6e74211b6472e662d8f1dd7"); // Enter your Ad Unit ID from www.mopub.com
+        moPubView.loadAd();
+        moPubView.setBannerAdListener(new MoPubView.BannerAdListener() {
+            @Override
+            public void onBannerLoaded(MoPubView banner) {
+                Toast.makeText(getContext(),
+                        "Banner successfully loaded.", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onBannerFailed(MoPubView banner, MoPubErrorCode errorCode) {
+                Log.d(TAG, "onBannerFailed: "+errorCode);
+
+            }
+
+            @Override
+            public void onBannerClicked(MoPubView banner) {
+
+            }
+
+            @Override
+            public void onBannerExpanded(MoPubView banner) {
+
+            }
+
+            @Override
+            public void onBannerCollapsed(MoPubView banner) {
+
+            }
+        });
         tamilone = (TextView) view.findViewById(R.id.tamilone);
         tamiltwo = (TextView) view.findViewById(R.id.tamiltwo);
         /*adViewtop = (AdView) view.findViewById(R.id.tamil_top);
@@ -189,5 +226,13 @@ public class TamilFragment extends Fragment {
         tamilone.setText(l1);
         tamiltwo.setText(l2);
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(moPubView !=null){
+            moPubView.destroy();
+        }
     }
 }

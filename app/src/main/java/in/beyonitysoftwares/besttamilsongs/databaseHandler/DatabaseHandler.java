@@ -290,4 +290,116 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    public ArrayList<String> getAlbumNames(){
+        ArrayList<String> list = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT album_name FROM " + TABLE_ALBUMS;
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String albumName = c.getString(c.getColumnIndex(KEY_ALBUM_NAME));
+                list.add(albumName);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return list;
+    }
+
+    public ArrayList<String> getArtistNames(){
+        ArrayList<String> list = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT artist_name FROM " + TABLE_ARTIST;
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String artistname= c.getString(c.getColumnIndex(KEY_ARTIST_NAME));
+                list.add(artistname);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return list;
+    }
+
+    public ArrayList<String> getHeroNames(){
+        ArrayList<String> list = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT hero_name FROM " + TABLE_HERO;
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String name= c.getString(c.getColumnIndex(KEY_HERO_NAME));
+                list.add(name);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return list;
+    }
+
+    public ArrayList<String> getHeroinNames(){
+        ArrayList<String> list = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT heroin_name FROM " + TABLE_HEROIN;
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String name= c.getString(c.getColumnIndex(KEY_HEROIN_NAME));
+                list.add(name);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return list;
+    }
+    public ArrayList<String> getGnereNames(){
+        ArrayList<String> list = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT genre_name FROM " + TABLE_GENRE;
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String name= c.getString(c.getColumnIndex(KEY_GENRE_NAME));
+                list.add(name);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return list;
+    }
+
+    public ArrayList<String> getAllYears(){
+        ArrayList<String> list = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT album_year FROM " + TABLE_ALBUMS;
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String year= c.getString(c.getColumnIndex(KEY_ALBUM_YEAR));
+                list.add(year);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return list;
+    }
 }

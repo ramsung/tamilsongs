@@ -7,39 +7,58 @@
 
 
     <!-- TODO: Update blank fragment layout -->
-    <in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager
+    <!--<in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/librayVG">
 
 
 
-    </in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager>
+    </in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager>-->
 
-  <!--  <LinearLayout
+    <include
+        android:id="@+id/filterlayout"
+        layout="@layout/filter"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="10dp">
+        android:layout_height="70dp"
+        android:layout_alignParentTop="true">
 
-        <include
-            layout="@layout/library_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
 
-        <include
-            layout="@layout/library_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </LinearLayout>
-    <android.support.design.widget.TabLayout
+    </include>
+
+    <!-- TODO: Update blank fragment layout -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/allSongsrv"
+        android:layout_marginTop="7dp"
+        android:layout_below="@id/filterlayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tabs"
-        app:tabBackground="@drawable/tab_selector"
-        android:layout_alignParentBottom="true"
-        app:tabGravity="center"
-        app:tabIndicatorHeight="0dp"/>-->
+        android:layout_height="match_parent" />
+
+
+    <!--  <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:paddingTop="10dp">
+
+          <include
+              layout="@layout/library_view"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_weight="1" />
+
+          <include
+              layout="@layout/library_view"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_weight="1" />
+      </LinearLayout>
+      <android.support.design.widget.TabLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/tabs"
+          app:tabBackground="@drawable/tab_selector"
+          android:layout_alignParentBottom="true"
+          app:tabGravity="center"
+          app:tabIndicatorHeight="0dp"/>-->
 </RelativeLayout>

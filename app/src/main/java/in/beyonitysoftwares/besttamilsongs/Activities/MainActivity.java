@@ -279,6 +279,45 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     }
 
 
+                                }else{
+                                    if(table_name.equals("albums")){
+                                        try{
+                                            libraryFragment.setAlbums(db.getAlbumNames());
+                                            libraryFragment.setYears(db.getAllYears());
+
+                                        }catch (Exception e){
+                                            Log.d(TAG, "onResponse: "+e.getMessage());
+                                        }
+
+                                    }else  if(table_name.equals("artist")){
+                                        try{
+                                            libraryFragment.setArtists(db.getArtistNames());
+                                        }catch (Exception e){
+                                            Log.d(TAG, "onResponse: "+e.getMessage());
+                                        }
+
+                                    }else  if(table_name.equals("hero")){
+                                        try{
+                                            libraryFragment.setHeros(db.getHeroNames());
+                                        }catch (Exception e){
+                                            Log.d(TAG, "onResponse: "+e.getMessage());
+                                        }
+
+                                    }else  if(table_name.equals("heroin")){
+                                        try{
+                                            libraryFragment.setHeroins(db.getHeroinNames());
+                                        }catch (Exception e){
+                                            Log.d(TAG, "onResponse: "+e.getMessage());
+                                        }
+
+                                    }else  if(table_name.equals("genre")){
+                                        try{
+                                            libraryFragment.setGenres(db.getGnereNames());
+                                        }catch (Exception e){
+                                            Log.d(TAG, "onResponse: "+e.getMessage());
+                                        }
+
+                                    }
                                 }
 
 

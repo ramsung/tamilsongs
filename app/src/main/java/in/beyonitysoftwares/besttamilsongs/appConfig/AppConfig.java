@@ -45,7 +45,6 @@ public class AppConfig {
 	//server get favorites
 	public static String GET_FAV= "https://beyonitysoftwares.cf/tamillyrics/api/getFav.php";
 
-//server get favorites
 	public static String GET_UPDATE_TIME= "https://beyonitysoftwares.cf/tamillyrics/api/getUpdateTime.php";
 
 
