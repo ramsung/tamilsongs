@@ -15,7 +15,7 @@
         app:cardElevation="8dp"
         app:cardUseCompatPadding="true">
 
-        <!--<com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
+       <!-- <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/tamil_top"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,10 +26,13 @@
             android:layout_marginTop="2dp"
             ads:adSize="BANNER"
             ads:adUnitId="ca-app-pub-3940256099942544/6300978111"></com.google.android.gms.ads.AdView>-->
-        <com.mopub.mobileads.MoPubView
-            android:id="@+id/adview"
-            android:layout_width="fill_parent"
+        <com.inmobi.ads.InMobiBanner
+            android:layout_width="320dp"
             android:layout_height="50dp"
+            android:id="@+id/banner"
+            android:layout_gravity="center"
+            ads:placementId="1522667975690"
+            ads:refreshInterval="60"
             />
 
 

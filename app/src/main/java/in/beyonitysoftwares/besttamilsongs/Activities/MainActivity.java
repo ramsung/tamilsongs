@@ -33,6 +33,7 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.android.gms.ads.MobileAds;
+import com.inmobi.sdk.InMobiSdk;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         setContentView(R.layout.activity_main);
         MobileAds.initialize(this, "ca-app-pub-7987343674758455~6065686189");
         db = new DatabaseHandler(getApplicationContext());
-
+        InMobiSdk.init(MainActivity.this, "f8fcaf8d25c04b7586fb741b3dd266f8");
         //init
         playpause = (FloatingActionButton) findViewById(R.id.PlayButton);
         skipnext = (FloatingActionButton) findViewById(R.id.SkipNext);
@@ -660,6 +661,14 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
                                 }
+                                try{
+                                    libraryFragment.setAlbums(db.getAlbumNames());
+                                    libraryFragment.setYears(db.getAllYears());
+
+                                }catch (Exception e){
+                                    Log.d(TAG, "onResponse: "+e.getMessage());
+                                }
+
                                 Log.d(TAG, "onResponse: length " + array.length());
 
                             }else {
@@ -709,12 +718,17 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                         Log.d(TAG, "onResponse: error inserting artists in local database");
                                     }
 
-
                                 }
                                 if(local_time.equals("0")){
                                     db.insertUpdate(table_name,remote_time);
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
+                                }
+
+                                try{
+                                    libraryFragment.setArtists(db.getArtistNames());
+                                }catch (Exception e){
+                                    Log.d(TAG, "onResponse: "+e.getMessage());
                                 }
                                 Log.d(TAG, "onResponse: length " + array.length());
 
@@ -774,6 +788,11 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
                                 }
+                                try{
+                                    libraryFragment.setHeros(db.getHeroNames());
+                                }catch (Exception e){
+                                    Log.d(TAG, "onResponse: "+e.getMessage());
+                                }
                                 Log.d(TAG, "onResponse: length " + array.length());
 
                             }else {
@@ -830,6 +849,11 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     db.insertUpdate(table_name,remote_time);
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
+                                }
+                                try{
+                                    libraryFragment.setHeroins(db.getHeroinNames());
+                                }catch (Exception e){
+                                    Log.d(TAG, "onResponse: "+e.getMessage());
                                 }
                                 Log.d(TAG, "onResponse: length " + array.length());
 
@@ -938,12 +962,16 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     db.insertGenre(genre_id,genre_name);
 
                                 }
-
                                     if(local_time.equals("0")){
                                         db.insertUpdate(table_name,remote_time);
                                     }else {
                                         db.updateUpdateTable(table_name,remote_time);
                                     }
+                                try{
+                                    libraryFragment.setGenres(db.getGnereNames());
+                                }catch (Exception e){
+                                    Log.d(TAG, "onResponse: "+e.getMessage());
+                                }
 
                                 Log.d(TAG, "onResponse: length " + array.length());
 
@@ -954,10 +982,6 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-
-
-
-
                     }
                     @Override
                     public void onError(ANError error) {

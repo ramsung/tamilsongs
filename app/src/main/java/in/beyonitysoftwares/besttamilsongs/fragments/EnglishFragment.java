@@ -35,7 +35,7 @@ public class EnglishFragment extends Fragment {
     private String mParam2;
     TextView englishone,englishtwo;
     private OnFragmentInteractionListener mListener;
-    //AdView adViewtop,adViewMiddle;
+    AdView adViewtop,adViewMiddle;
 
     public EnglishFragment() {
         // Required empty public constructor
@@ -75,11 +75,11 @@ public class EnglishFragment extends Fragment {
         View view = inflater.inflate(R.layout.activity_lyrics_eng, container, false);
         englishone = (TextView) view.findViewById(R.id.englishone);
         englishtwo = (TextView) view.findViewById(R.id.englishtwo);
-        /*adViewtop = (AdView) view.findViewById(R.id.english_top);
-        adViewMiddle= (AdView) view.findViewById(R.id.english_middle);*/
+        adViewtop = (AdView) view.findViewById(R.id.english_top);
+        adViewMiddle= (AdView) view.findViewById(R.id.english_middle);
 
 
-        /*AdRequest adRequest1 = new AdRequest.Builder()
+        AdRequest adRequest1 = new AdRequest.Builder()
                 .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
                 .build();
 
@@ -156,7 +156,7 @@ public class EnglishFragment extends Fragment {
                 // to the app after tapping on an ad.
                 Log.i("Ads", "onAdClosed");
             }
-        });*/
+        });
         return view;
     }
 

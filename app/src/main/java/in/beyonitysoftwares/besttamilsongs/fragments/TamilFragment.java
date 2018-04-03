@@ -14,8 +14,10 @@ import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.mopub.mobileads.MoPubErrorCode;
-import com.mopub.mobileads.MoPubView;
+import com.inmobi.ads.InMobiAdRequestStatus;
+import com.inmobi.ads.InMobiBanner;
+
+import java.util.Map;
 
 import in.beyonitysoftwares.besttamilsongs.R;
 
@@ -35,12 +37,12 @@ public class TamilFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    private MoPubView moPubView;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     TextView tamilone,tamiltwo;
-   // AdView adViewtop,adViewMiddle;
+    AdView adViewtop,adViewMiddle;
     private OnFragmentInteractionListener mListener;
 
     public TamilFragment() {
@@ -79,47 +81,54 @@ public class TamilFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.activity_lyrics, container, false);
-        moPubView = (MoPubView) view.findViewById(R.id.adview);
-        moPubView.setAdUnitId("e03d6b92e6e74211b6472e662d8f1dd7"); // Enter your Ad Unit ID from www.mopub.com
-        moPubView.loadAd();
-        moPubView.setBannerAdListener(new MoPubView.BannerAdListener() {
+
+        tamilone = (TextView) view.findViewById(R.id.tamilone);
+        tamiltwo = (TextView) view.findViewById(R.id.tamiltwo);
+        //adViewtop = (AdView) view.findViewById(R.id.tamil_top);
+        adViewMiddle= (AdView) view.findViewById(R.id.tamil_middle);
+
+        InMobiBanner bannerAd = (InMobiBanner) view.findViewById(R.id.banner);
+        bannerAd.load();
+        bannerAd.setListener(new InMobiBanner.BannerAdListener() {
             @Override
-            public void onBannerLoaded(MoPubView banner) {
-                Toast.makeText(getContext(),
-                        "Banner successfully loaded.", Toast.LENGTH_SHORT).show();
+            public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
+                Log.d(TAG, "onAdLoadSucceeded: loaded successfully");
             }
 
             @Override
-            public void onBannerFailed(MoPubView banner, MoPubErrorCode errorCode) {
-                Log.d(TAG, "onBannerFailed: "+errorCode);
+            public void onAdLoadFailed(InMobiBanner inMobiBanner, InMobiAdRequestStatus inMobiAdRequestStatus) {
+                Log.d(TAG, "onAdLoadFailed: "+inMobiAdRequestStatus);
+            }
+
+            @Override
+            public void onAdDisplayed(InMobiBanner inMobiBanner) {
 
             }
 
             @Override
-            public void onBannerClicked(MoPubView banner) {
+            public void onAdDismissed(InMobiBanner inMobiBanner) {
 
             }
 
             @Override
-            public void onBannerExpanded(MoPubView banner) {
+            public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
 
             }
 
             @Override
-            public void onBannerCollapsed(MoPubView banner) {
+            public void onUserLeftApplication(InMobiBanner inMobiBanner) {
+
+            }
+
+            @Override
+            public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
 
             }
         });
-        tamilone = (TextView) view.findViewById(R.id.tamilone);
-        tamiltwo = (TextView) view.findViewById(R.id.tamiltwo);
-        /*adViewtop = (AdView) view.findViewById(R.id.tamil_top);
-        adViewMiddle= (AdView) view.findViewById(R.id.tamil_middle);
-
-
         AdRequest adRequest1 = new AdRequest.Builder()
                 .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
                 .build();
-        adViewtop.loadAd(adRequest1);
+        /*adViewtop.loadAd(adRequest1);
         adViewtop.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
@@ -152,7 +161,7 @@ public class TamilFragment extends Fragment {
                 // to the app after tapping on an ad.
                 Log.i("Ads", "onAdClosed");
             }
-        });
+        });*/
         AdRequest adRequest2 = new AdRequest.Builder()
                  .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
                  .build();
@@ -189,7 +198,7 @@ public class TamilFragment extends Fragment {
                 // to the app after tapping on an ad.
                 Log.i("Ads", "onAdClosed");
             }
-        });*/
+        });
         return view;
     }
 
@@ -228,11 +237,5 @@ public class TamilFragment extends Fragment {
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if(moPubView !=null){
-            moPubView.destroy();
-        }
-    }
+
 }
