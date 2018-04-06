@@ -74,5 +74,82 @@ public class StorageUtil {
 		editor.commit();
 	}
 
+	public void setArtistFilter(String artist){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+
+		SharedPreferences.Editor editor = preferences.edit();
+ 		editor.putString("artistFilter", artist);
+		editor.apply();
+	}
+	public String getArtistFilter(){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+		String answer = preferences.getString("artistFilter", "All Artist");
+		return answer;
+	}
+	public void setAlbumilter(String album){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+
+		SharedPreferences.Editor editor = preferences.edit();
+ 		editor.putString("albumFilter", album);
+		editor.apply();
+	}
+	public String getAlbumFilter(){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+		String answer = preferences.getString("albumFilter", "All Albums");
+		return answer;
+	}
+
+	public void setGenreFilter(String genre){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("genreFilter", genre);
+		editor.apply();
+	}
+	public String getGenreFilter(){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+		String answer = preferences.getString("genreFilter", "All Genre");
+		return answer;
+	}
+
+	public void setHeroFilter(String hero){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("heroFilter", hero);
+		editor.apply();
+	}
+	public String getHeroFilter(){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+		String answer = preferences.getString("heroFilter", "All Heros");
+		return answer;
+	}
+
+	public void setHeroinFilter(String heroin){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("heroinFilter", heroin);
+		editor.apply();
+	}
+	public String getHeroinFilter(){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+		String answer = preferences.getString("heroinFilter", "All Heroins");
+		return answer;
+	}
+
+	public void setHYearFilter(String year){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("yearFilter", year);
+		editor.apply();
+	}
+	public String getYearFilter(){
+		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
+		String answer = preferences.getString("yearFilter", "All Years");
+		return answer;
+	}
+
 
 }

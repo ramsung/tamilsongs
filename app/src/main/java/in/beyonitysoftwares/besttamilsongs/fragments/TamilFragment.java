@@ -84,51 +84,14 @@ public class TamilFragment extends Fragment {
 
         tamilone = (TextView) view.findViewById(R.id.tamilone);
         tamiltwo = (TextView) view.findViewById(R.id.tamiltwo);
-        //adViewtop = (AdView) view.findViewById(R.id.tamil_top);
+        adViewtop = (AdView) view.findViewById(R.id.tamil_top);
         adViewMiddle= (AdView) view.findViewById(R.id.tamil_middle);
 
-        InMobiBanner bannerAd = (InMobiBanner) view.findViewById(R.id.banner);
-        bannerAd.load();
-        bannerAd.setListener(new InMobiBanner.BannerAdListener() {
-            @Override
-            public void onAdLoadSucceeded(InMobiBanner inMobiBanner) {
-                Log.d(TAG, "onAdLoadSucceeded: loaded successfully");
-            }
 
-            @Override
-            public void onAdLoadFailed(InMobiBanner inMobiBanner, InMobiAdRequestStatus inMobiAdRequestStatus) {
-                Log.d(TAG, "onAdLoadFailed: "+inMobiAdRequestStatus);
-            }
-
-            @Override
-            public void onAdDisplayed(InMobiBanner inMobiBanner) {
-
-            }
-
-            @Override
-            public void onAdDismissed(InMobiBanner inMobiBanner) {
-
-            }
-
-            @Override
-            public void onAdInteraction(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-
-            }
-
-            @Override
-            public void onUserLeftApplication(InMobiBanner inMobiBanner) {
-
-            }
-
-            @Override
-            public void onAdRewardActionCompleted(InMobiBanner inMobiBanner, Map<Object, Object> map) {
-
-            }
-        });
         AdRequest adRequest1 = new AdRequest.Builder()
                 .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
                 .build();
-        /*adViewtop.loadAd(adRequest1);
+        adViewtop.loadAd(adRequest1);
         adViewtop.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
@@ -161,7 +124,7 @@ public class TamilFragment extends Fragment {
                 // to the app after tapping on an ad.
                 Log.i("Ads", "onAdClosed");
             }
-        });*/
+        });
         AdRequest adRequest2 = new AdRequest.Builder()
                  .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
                  .build();

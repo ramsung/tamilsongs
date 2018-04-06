@@ -1,6 +1,7 @@
 package in.beyonitysoftwares.besttamilsongs.Activities;
 
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -51,6 +52,7 @@ import in.beyonitysoftwares.besttamilsongs.fragments.AboutFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.FavouritesFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.LibraryFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.LyricsFragment;
+import in.beyonitysoftwares.besttamilsongs.models.FilteredAlbum;
 import in.beyonitysoftwares.besttamilsongs.models.Songs;
 import in.beyonitysoftwares.besttamilsongs.music.MusicService;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
@@ -59,7 +61,7 @@ import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
 public class MainActivity extends AppCompatActivity implements MusicService.mainActivityCallback,View.OnClickListener{
 
     private TextView mTextMessage;
-
+    int updateAll = 0;
     //fragments
     AboutFragment aboutFragment;
     FavouritesFragment favouritesFragment;
@@ -83,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     RecyclerView rvPlayList;
     private static final String TAG = "MainActivity";
 
-
+    private ProgressDialog pDialog;
     //db
     DatabaseHandler db;
 
@@ -118,6 +120,62 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         MobileAds.initialize(this, "ca-app-pub-7987343674758455~6065686189");
         db = new DatabaseHandler(getApplicationContext());
         InMobiSdk.init(MainActivity.this, "f8fcaf8d25c04b7586fb741b3dd266f8");
+       pDialog = new ProgressDialog(this);
+       pDialog.setCancelable(true);
+        pDialog.setMessage("Loading songs");
+        init();
+        showDialog();
+        getupdatetime();
+
+
+    }
+
+    public void callBackAfterNetworking(){
+        Log.d(TAG, "callBackAfterNetworking: "+updateAll);
+        if(updateAll==6) {
+           /* libraryFragment.setAlbums(db.getAlbumNames());
+            libraryFragment.setYears(db.getAllYears());
+            libraryFragment.setArtists(db.getArtistNames());
+            libraryFragment.setHeros(db.getHeroNames());
+            libraryFragment.setHeroins(db.getHeroinNames());
+            libraryFragment.setGenres(db.getGnereNames());*/
+
+           StorageUtil filters = new StorageUtil(getApplicationContext());
+           String artist = filters.getArtistFilter();
+           String hero = filters.getHeroFilter();
+           String heroin = filters.getHeroinFilter();
+           String genre = filters.getGenreFilter();
+           String year = filters.getYearFilter();
+
+           ArrayList<FilteredAlbum> albums = db.getAlbumsByFilter("Yuvan",hero,heroin,year);
+           for(FilteredAlbum album : albums){
+               Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_id());
+               Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_name());
+               Log.d(TAG, "callBackAfterNetworking: "+album.getArtist_id());
+               Log.d(TAG, "callBackAfterNetworking: "+album.getArtist_name());
+               Log.d(TAG, "callBackAfterNetworking: "+album.getHero_id());
+               Log.d(TAG, "callBackAfterNetworking: "+album.getHero_name());
+               Log.d(TAG, "callBackAfterNetworking: "+album.getHeroin_name());
+               Log.d(TAG, "callBackAfterNetworking: "+album.getYear());
+               Log.d(TAG, "callBackAfterNetworking: ------------------------------------------- \n");
+
+
+           }
+
+        }
+    }
+
+    private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
+
+    public void init(){
         //init
         playpause = (FloatingActionButton) findViewById(R.id.PlayButton);
         skipnext = (FloatingActionButton) findViewById(R.id.SkipNext);
@@ -207,9 +265,6 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         rvPlayList.setAdapter(playlistadapter);
         playlistadapter.notifyDataSetChanged();
         mHandler.post(runnable);
-        
-        
-        getupdatetime();
 
     }
 
@@ -238,21 +293,27 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 Log.d(TAG, "onResponse: table name = "+table_name+" remote time = "+remote_time+" local time = "+local_time);
                                 if(local_time.equals("0")){
                                     if(table_name.equals("albums")){
+                                        updateAll++;
                                         getAlbums(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("artist")){
+                                        updateAll++;
                                         getArtists(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("hero")){
+                                        updateAll++;
                                         getHeros(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("heroin")){
+                                        updateAll++;
                                         getHeroins(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("lyricist")){
+                                        updateAll++;
                                         getLyricists(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("genre")){
+                                        updateAll++;
                                         getGenres(table_name,remote_time,local_time);
 
                                     }
@@ -260,21 +321,27 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else if(remote_time_long>local_time_long){
 
                                     if(table_name.equals("albums")){
+                                        updateAll++;
                                         getAlbums(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("artist")){
+                                        updateAll++;
                                         getArtists(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("hero")){
+                                        updateAll++;
                                         getHeros(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("heroin")){
+                                        updateAll++;
                                         getHeroins(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("lyricist")){
+                                        updateAll++;
                                         getLyricists(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("genre")){
+                                        updateAll++;
                                         getGenres(table_name, remote_time, local_time);
 
                                     }
@@ -282,41 +349,30 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
                                 }else{
                                     if(table_name.equals("albums")){
-                                        try{
-                                            libraryFragment.setAlbums(db.getAlbumNames());
-                                            libraryFragment.setYears(db.getAllYears());
+                                        updateAll++;
+                                        callBackAfterNetworking();
 
-                                        }catch (Exception e){
-                                            Log.d(TAG, "onResponse: "+e.getMessage());
-                                        }
 
                                     }else  if(table_name.equals("artist")){
-                                        try{
-                                            libraryFragment.setArtists(db.getArtistNames());
-                                        }catch (Exception e){
-                                            Log.d(TAG, "onResponse: "+e.getMessage());
-                                        }
+                                        updateAll++;
+                                        callBackAfterNetworking();
 
                                     }else  if(table_name.equals("hero")){
-                                        try{
-                                            libraryFragment.setHeros(db.getHeroNames());
-                                        }catch (Exception e){
-                                            Log.d(TAG, "onResponse: "+e.getMessage());
-                                        }
+                                        updateAll++;
+                                        callBackAfterNetworking();
 
                                     }else  if(table_name.equals("heroin")){
-                                        try{
-                                            libraryFragment.setHeroins(db.getHeroinNames());
-                                        }catch (Exception e){
-                                            Log.d(TAG, "onResponse: "+e.getMessage());
-                                        }
+                                        updateAll++;
+                                        callBackAfterNetworking();
+
 
                                     }else  if(table_name.equals("genre")){
-                                        try{
-                                            libraryFragment.setGenres(db.getGnereNames());
-                                        }catch (Exception e){
-                                            Log.d(TAG, "onResponse: "+e.getMessage());
-                                        }
+                                        updateAll++;
+                                        callBackAfterNetworking();
+
+                                    }else  if(table_name.equals("lyricist")){
+                                        updateAll++;
+                                        callBackAfterNetworking();
 
                                     }
                                 }
@@ -325,6 +381,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
 
                             }
+                            hideDialog();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -336,6 +393,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                        hideDialog();
                         setVisibleFalse();
                         //isLoading = false;
                     }
@@ -515,6 +573,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     }
 
 
+
     @Override
     public void updateSongDownload(MediaPlayer mediaPlayer,int Progress) {
         seekBar.setMax(mediaPlayer.getDuration());
@@ -661,13 +720,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
                                 }
-                                try{
-                                    libraryFragment.setAlbums(db.getAlbumNames());
-                                    libraryFragment.setYears(db.getAllYears());
 
-                                }catch (Exception e){
-                                    Log.d(TAG, "onResponse: "+e.getMessage());
-                                }
+                                callBackAfterNetworking();
+
 
                                 Log.d(TAG, "onResponse: length " + array.length());
 
@@ -724,12 +779,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
                                 }
+                                callBackAfterNetworking();
 
-                                try{
-                                    libraryFragment.setArtists(db.getArtistNames());
-                                }catch (Exception e){
-                                    Log.d(TAG, "onResponse: "+e.getMessage());
-                                }
                                 Log.d(TAG, "onResponse: length " + array.length());
 
                             }else {
@@ -788,11 +839,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
                                 }
-                                try{
-                                    libraryFragment.setHeros(db.getHeroNames());
-                                }catch (Exception e){
-                                    Log.d(TAG, "onResponse: "+e.getMessage());
-                                }
+                                callBackAfterNetworking();
+
                                 Log.d(TAG, "onResponse: length " + array.length());
 
                             }else {
@@ -850,11 +898,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
                                 }
-                                try{
-                                    libraryFragment.setHeroins(db.getHeroinNames());
-                                }catch (Exception e){
-                                    Log.d(TAG, "onResponse: "+e.getMessage());
-                                }
+                                callBackAfterNetworking();
+
                                 Log.d(TAG, "onResponse: length " + array.length());
 
                             }else {
@@ -913,6 +958,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     db.updateUpdateTable(table_name,remote_time);
                                 }
+                                callBackAfterNetworking();
                                 Log.d(TAG, "onResponse: length " + array.length());
 
                             }else {
@@ -967,11 +1013,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     }else {
                                         db.updateUpdateTable(table_name,remote_time);
                                     }
-                                try{
-                                    libraryFragment.setGenres(db.getGnereNames());
-                                }catch (Exception e){
-                                    Log.d(TAG, "onResponse: "+e.getMessage());
-                                }
+                                callBackAfterNetworking();
+
 
                                 Log.d(TAG, "onResponse: length " + array.length());
 

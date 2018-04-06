@@ -38,6 +38,7 @@ import in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager;
 import in.beyonitysoftwares.besttamilsongs.models.Songs;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.RecyclerItemClickListener;
+import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
 
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
@@ -336,7 +337,7 @@ public class LibraryFragment extends Fragment {
     public void setAlbums(ArrayList<String> values){
         if(albumList !=null){
             albumList.clear();
-            albumList.add("All Albums");
+            albumList.add(new StorageUtil(getContext()).getAlbumFilter());
             albumList.addAll(values);
             albumSpinner.setSelection(0);
 
@@ -349,7 +350,7 @@ public class LibraryFragment extends Fragment {
     public void setHeros(ArrayList<String> values){
         if(heroList !=null){
             heroList.clear();
-            heroList.add("All Heros");
+            heroList.add(new StorageUtil(getContext()).getHeroFilter());
             heroList.addAll(values);
             herospinner.setSelection(0);
             dataAdapter3.notifyDataSetChanged();
@@ -359,7 +360,7 @@ public class LibraryFragment extends Fragment {
     public void setHeroins(ArrayList<String> values){
         if(heroinList !=null){
             heroinList.clear();
-            heroinList.add("All Actress");
+            heroinList.add(new StorageUtil(getContext()).getHeroinFilter());
             heroinList.addAll(values);
             heroinSpinner.setSelection(0);
             dataAdapter4.notifyDataSetChanged();
@@ -369,7 +370,7 @@ public class LibraryFragment extends Fragment {
     }public void setGenres(ArrayList<String> values){
         if(genreList!=null){
             genreList.clear();
-            genreList.add("All Genre");
+            genreList.add(new StorageUtil(getContext()).getGenreFilter());
             genreList.addAll(values);
             genreSpinner.setSelection(0);
             dataAdapter6.notifyDataSetChanged();
@@ -379,7 +380,7 @@ public class LibraryFragment extends Fragment {
     public void setYears(ArrayList<String> values){
         if(yearList !=null){
             yearList.clear();
-            yearList.add("All Years");
+            yearList.add(new StorageUtil(getContext()).getYearFilter());
             yearList.addAll(values);
             yearSpinner.setSelection(0);
             dataAdapter5.notifyDataSetChanged();
@@ -389,7 +390,7 @@ public class LibraryFragment extends Fragment {
     public void setArtists(ArrayList<String> values){
         if(artistList !=null){
             artistList.clear();
-            artistList.add("All Artist");
+            artistList.add(new StorageUtil(getContext()).getArtistFilter());
             artistList.addAll(values);
             artistSpinner.setSelection(0);
             dataAdapter1.notifyDataSetChanged();
@@ -424,6 +425,8 @@ public class LibraryFragment extends Fragment {
         dataAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         albumSpinner.setAdapter(dataAdapter2);
     }
+
+
 
 
 }

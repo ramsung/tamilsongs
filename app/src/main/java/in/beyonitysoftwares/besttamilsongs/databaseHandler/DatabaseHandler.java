@@ -10,6 +10,9 @@ import android.util.Log;
 
 
 import java.util.ArrayList;
+import java.util.logging.Filter;
+
+import in.beyonitysoftwares.besttamilsongs.models.FilteredAlbum;
 
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
@@ -103,6 +106,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
 
     public boolean insertAlbums(String album_id, String album_name, String artist_id,String hero_id,String heroin_id,String year) {
 
@@ -309,6 +313,71 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return list;
     }
 
+    public String getArtistName(int artist_id) {
+        String artistName = "";
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT artist_name FROM " + TABLE_ARTIST+ " WHERE artist_id = '" + artist_id + "'";
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                artistName = c.getString(c.getColumnIndex(KEY_ARTIST_NAME));
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return artistName;
+    }
+    public String getHeroName(int hero_id) {
+        String heroName = "";
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT hero_name FROM " + TABLE_HERO+ " WHERE hero_id = '" + hero_id + "'";
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                heroName = c.getString(c.getColumnIndex(KEY_HERO_NAME));
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return heroName;
+    }
+
+    public String getHeroinName(int heroin_id) {
+        String heroinName = "";
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT heroin_name FROM " + TABLE_HEROIN+ " WHERE heroin_id = '" + heroin_id + "'";
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                heroinName = c.getString(c.getColumnIndex(KEY_HEROIN_NAME));
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return heroinName;
+    }
+    public String getGenreName(int genre_id) {
+        String genreName = "";
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT genre_name FROM " + TABLE_GENRE+ " WHERE genre_id = '" + genre_id + "'";
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                genreName = c.getString(c.getColumnIndex(KEY_GENRE_NAME));
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return genreName;
+    }
     public ArrayList<String> getArtistNames(){
         ArrayList<String> list = new ArrayList<>();
 
@@ -401,5 +470,261 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         return list;
+    }
+
+    public ArrayList<FilteredAlbum> getAlbumsByFilter(String artist,String hero,String heroin,String year){
+        ArrayList<FilteredAlbum> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        if(artist.equals("All Artist")) {
+            String st = "SELECT album_id,album_name,artist_id,hero_id,heroin_id,album_year from " + TABLE_ALBUMS;
+            Cursor c = db.rawQuery(st, null);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    String album_id = c.getString(c.getColumnIndex(KEY_ALBUM_ID));
+                    String album_name = c.getString(c.getColumnIndex(KEY_ALBUM_NAME));
+                    String artist_id = c.getString(c.getColumnIndex(KEY_ARTIST_ID));
+                    String artist_name = getArtistName(Integer.parseInt(artist_id));
+                    String hero_id = c.getString(c.getColumnIndex(KEY_HERO_ID));
+                    String hero_name = getHeroName(Integer.parseInt(hero_id));
+                    String heroin_id = c.getString(c.getColumnIndex(KEY_HEROIN_ID));
+                    String heroin_name = getHeroinName(Integer.parseInt(heroin_id));
+                    String album_year = c.getString(c.getColumnIndex(KEY_ALBUM_YEAR));
+                    FilteredAlbum album = new FilteredAlbum(
+                            album_id,
+                            album_name,
+                            artist_id,
+                            artist_name,
+                            hero_id,
+                            hero_name,
+                            heroin_id,
+                            heroin_name,
+                            album_year
+                    );
+                    list.add(album);
+
+
+                }
+            }
+            if(c!=null){
+                c.close();
+            }
+
+            if(hero.equals("All Heros")){
+                ArrayList<FilteredAlbum> listheros = list;
+                if(heroin.equals("All Heroins")){
+                    ArrayList<FilteredAlbum> listheroins = listheros;
+                    if(year.equals("All Years")){
+                        list = listheroins;
+                    }else {
+                        ArrayList<FilteredAlbum> listyears = new ArrayList<>();
+                        for(FilteredAlbum album:list){
+                            if(album.getYear().equals(year)){
+                                listyears.add(album);
+                            }
+                        }
+                        list = listyears;
+                    }
+
+                }else {
+                    ArrayList<FilteredAlbum> listheroins = new ArrayList<>();
+                    for(FilteredAlbum album:list){
+                        if(album.getHeroin_name().equals(heroin)){
+                            listheroins.add(album);
+                        }
+                    }
+
+                    if(year.equals("All Years")){
+                        list = listheroins;
+                    }else {
+                        ArrayList<FilteredAlbum> listyears = new ArrayList<>();
+                        for(FilteredAlbum album:list){
+                            if(album.getYear().equals(year)){
+                                listyears.add(album);
+                            }
+                        }
+                        list = listyears;
+                    }
+
+
+                }
+            }else {
+                ArrayList<FilteredAlbum> listheros = new ArrayList<>();
+                for(FilteredAlbum album:list){
+                    if(album.getHero_name().equals(hero)){
+                        listheros.add(album);
+                    }
+                }
+
+                if(heroin.equals("All Heroins")){
+                    ArrayList<FilteredAlbum> listheroins = listheros;
+                    if(year.equals("All Years")){
+                        list = listheroins;
+                    }else {
+                        ArrayList<FilteredAlbum> listyears = new ArrayList<>();
+                        for(FilteredAlbum album:list){
+                            if(album.getYear().equals(year)){
+                                listyears.add(album);
+                            }
+                        }
+                        list = listyears;
+                    }
+
+                }else {
+                    ArrayList<FilteredAlbum> listheroins = new ArrayList<>();
+                    for(FilteredAlbum album:list){
+                        if(album.getHeroin_name().equals(heroin)){
+                            listheroins.add(album);
+                        }
+                    }
+
+                    if(year.equals("All Years")){
+                        list = listheroins;
+                    }else {
+                        ArrayList<FilteredAlbum> listyears = new ArrayList<>();
+                        for(FilteredAlbum album:list){
+                            if(album.getYear().equals(year)){
+                                listyears.add(album);
+                            }
+                        }
+                        list = listyears;
+                    }
+
+                }
+
+            }
+
+        }else{
+            ArrayList<FilteredAlbum> listArtist = new ArrayList<>();
+           String artist_id = getArtistId(artist);
+           String st = "SELECT album_id,album_name,hero_id,heroin_id,album_year from "+TABLE_ALBUMS+" WHERE "+KEY_ARTIST_ID+" = '"+artist_id+"'";
+           Cursor c = db.rawQuery(st,null);
+            if (c != null) {
+                while (c.moveToNext()) {
+                    String album_id = c.getString(c.getColumnIndex(KEY_ALBUM_ID));
+                    String album_name = c.getString(c.getColumnIndex(KEY_ALBUM_NAME));
+                    String artist_name = artist;
+                    String hero_id = c.getString(c.getColumnIndex(KEY_HERO_ID));
+                    String hero_name = getHeroName(Integer.parseInt(hero_id));
+                    String heroin_id = c.getString(c.getColumnIndex(KEY_HEROIN_ID));
+                    String heroin_name = getHeroinName(Integer.parseInt(heroin_id));
+                    String album_year = c.getString(c.getColumnIndex(KEY_ALBUM_YEAR));
+                    FilteredAlbum album = new FilteredAlbum(
+                            album_id,
+                            album_name,
+                            artist_id,
+                            artist_name,
+                            hero_id,
+                            hero_name,
+                            heroin_id,
+                            heroin_name,
+                            album_year
+                    );
+                    listArtist.add(album);
+                }
+            }
+            if(c!=null){
+                c.close();
+            }
+
+            if(hero.equals("All Heros")){
+                ArrayList<FilteredAlbum> listheros = listArtist;
+                if(heroin.equals("All Heroins")){
+                    ArrayList<FilteredAlbum> listheroins = listheros;
+                    if(year.equals("All Years")){
+                        list = listheroins;
+                    }else {
+                        ArrayList<FilteredAlbum> listyears = new ArrayList<>();
+                        for(FilteredAlbum album:list){
+                            if(album.getYear().equals(year)){
+                                listyears.add(album);
+                            }
+                        }
+                        list = listyears;
+                    }
+
+                }else {
+                    ArrayList<FilteredAlbum> listheroins = new ArrayList<>();
+                    for(FilteredAlbum album:list){
+                        if(album.getHeroin_name().equals(heroin)){
+                            listheroins.add(album);
+                        }
+                    }
+
+                    if(year.equals("All Years")){
+                        list = listheroins;
+                    }else {
+                        ArrayList<FilteredAlbum> listyears = new ArrayList<>();
+                        for(FilteredAlbum album:list){
+                            if(album.getYear().equals(year)){
+                                listyears.add(album);
+                            }
+                        }
+                        list = listyears;
+                    }
+
+
+                }
+            }else {
+                ArrayList<FilteredAlbum> listheros = new ArrayList<>();
+                for(FilteredAlbum album:list){
+                    if(album.getHero_name().equals(hero)){
+                        listheros.add(album);
+                    }
+                }
+
+                if(heroin.equals("All Heroins")){
+                    ArrayList<FilteredAlbum> listheroins = listheros;
+                    if(year.equals("All Years")){
+                        list = listheroins;
+                    }else {
+                        ArrayList<FilteredAlbum> listyears = new ArrayList<>();
+                        for(FilteredAlbum album:list){
+                            if(album.getYear().equals(year)){
+                                listyears.add(album);
+                            }
+                        }
+                        list = listyears;
+                    }
+
+                }else {
+                    ArrayList<FilteredAlbum> listheroins = new ArrayList<>();
+                    for(FilteredAlbum album:list){
+                        if(album.getHeroin_name().equals(heroin)){
+                            listheroins.add(album);
+                        }
+                    }
+
+                    if(year.equals("All Years")){
+                        list = listheroins;
+                    }else {
+                        ArrayList<FilteredAlbum> listyears = new ArrayList<>();
+                        for(FilteredAlbum album:list){
+                            if(album.getYear().equals(year)){
+                                listyears.add(album);
+                            }
+                        }
+                        list = listyears;
+                    }
+
+                }
+
+            }
+
+        }
+
+        return list;
+    }
+
+    public String getArtistId(String artist_name){
+        SQLiteDatabase db = getReadableDatabase();
+        String id = "";
+        String st = "SELECT artist_id from "+TABLE_ARTIST+" WHERE "+KEY_ARTIST_NAME+" = '"+artist_name+"'";
+        Cursor c = db.rawQuery(st,null);
+        if(c!=null){
+            while (c.moveToNext()){
+                id = c.getString(c.getColumnIndex(KEY_ARTIST_ID));
+            }
+        }
+        return id;
     }
 }
