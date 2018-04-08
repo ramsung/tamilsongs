@@ -416,6 +416,124 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return list;
     }
 
+    public ArrayList<String> getHeroNamesByArtist(String artist){
+        ArrayList<String> list = new ArrayList<>();
+
+        SQLiteDatabase db = getReadableDatabase();
+
+        String st = "SELECT hero_id FROM " + TABLE_ALBUMS;
+        if(!artist.equals("All Artist")){
+            String artist_id = getArtistId(artist);
+            st = st + " WHERE artist_id = '"+artist_id+"'";
+        }
+        Log.d(TAG, "getHeroinNamesByFilters: "+st);
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String id= c.getString(c.getColumnIndex(KEY_HERO_ID));
+                list.add(id);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+        ArrayList<String> names = new ArrayList<>();
+        for(String id : list){
+            names.add(getHeroName(Integer.parseInt(id)));
+        }
+
+        return names;
+    }
+
+    public ArrayList<String> getHeroinNamesByFilters(String artist,String hero){
+        ArrayList<String> list = new ArrayList<>();
+        int count = 0;
+        SQLiteDatabase db = getReadableDatabase();
+
+        String st = "SELECT heroin_id FROM " + TABLE_ALBUMS;
+        if(!artist.equals("All Artist")){
+            String artist_id = getArtistId(artist);
+            st = st + " WHERE artist_id = '"+artist_id+"'";
+            count++;
+        }
+        if(!hero.equals("All Heros")){
+            if(count == 0){
+                String hero_id = getHeroId(hero);
+                st = st + " WHERE hero_id = '"+hero_id+"'";
+                count++;
+            }else {
+                String hero_id = getHeroId(hero);
+                st = st + "AND hero_id = '"+hero_id+"'";
+                count++;
+            }
+        }
+
+        Log.d(TAG, "getHeroinNamesByFilters: "+st);
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String id = c.getString(c.getColumnIndex(KEY_HEROIN_ID));
+                list.add(id);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+        ArrayList<String> names = new ArrayList<>();
+        for(String id : list){
+            names.add(getHeroinName(Integer.parseInt(id)));
+        }
+        return names;
+    }
+
+    public ArrayList<String> getYearsByFilters(String artist,String hero,String heroin){
+        ArrayList<String> list = new ArrayList<>();
+        int count = 0;
+        SQLiteDatabase db = getReadableDatabase();
+
+        String st = "SELECT album_year FROM " + TABLE_ALBUMS;
+        if(!artist.equals("All Artist")){
+            String artist_id = getArtistId(artist);
+            st = st + " WHERE artist_id = '"+artist_id+"'";
+            count++;
+        }
+        if(!hero.equals("All Heros")){
+            if(count == 0){
+                String hero_id = getHeroId(hero);
+                st = st + " WHERE hero_id = '"+hero_id+"'";
+                count++;
+            }else {
+                String hero_id = getHeroId(hero);
+                st = st + "AND hero_id = '"+hero_id+"'";
+                count++;
+            }
+        }
+        if(!heroin.equals("All Heroins")){
+            if(count == 0){
+                String heroin_id = getHeroinId(heroin);
+                st = st + " WHERE heroin_id = '"+heroin_id+"'";
+                count++;
+            }else {
+                String heroin_id = getHeroinId(heroin);
+                st = st + "AND heroin_id = '"+heroin_id+"'";
+                count++;
+            }
+        }
+        Log.d(TAG, "getHeroinNamesByFilters: "+st);
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String year = c.getString(c.getColumnIndex(KEY_ALBUM_YEAR));
+                list.add(year);
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return list;
+    }
+
     public ArrayList<String> getHeroinNames(){
         ArrayList<String> list = new ArrayList<>();
 
@@ -473,8 +591,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public ArrayList<FilteredAlbum> getAlbumsByFilter(String artist,String hero,String heroin,String year){
+        int count = 0;
         ArrayList<FilteredAlbum> list = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
+        /*SQLiteDatabase db = getReadableDatabase();
         if(artist.equals("All Artist")) {
             String st = "SELECT album_id,album_name,artist_id,hero_id,heroin_id,album_year from " + TABLE_ALBUMS;
             Cursor c = db.rawQuery(st, null);
@@ -711,8 +830,94 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
 
         }
+*/
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT album_id,album_name,artist_id,hero_id,heroin_id,album_year from " + TABLE_ALBUMS;
+        String where = " WHERE";
+        if(!artist.equals("All Artist")){
+            String artist_id = getArtistId(artist);
+            if(artist_id!=""){
+                st = st + where +" artist_id = '"+artist_id+"'";
+                count++;
+            }
+        }
+        if(!hero.equals("All Heros")){
+            String hero_id = getHeroId(hero);
+            if(hero_id!=""){
+                if(count == 0){
+                    st = st + where +" hero_id = '"+hero_id+"'";
+                    count++;
+                }else {
+                    st = st + " AND hero_id = '"+hero_id+"'";
+                    count++;
+                }
+
+            }
+        }
+        if(!heroin.equals("All Heroins")){
+            String heroin_id = getHeroinId(heroin);
+            if(heroin_id!=""){
+                if(count == 0){
+                    st = st + where +" heroin_id = '"+heroin_id+"'";
+                    count++;
+                }else {
+                    st = st + " AND heroin_id = '"+heroin_id+"'";
+                    count++;
+                }
+
+
+            }
+        }
+        if(!year.equals("All Years")){
+            if(year!=""){
+                if(count == 0){
+                    st = st + where +" album_year = '"+year+"'";
+                    count++;
+                }else {
+                    st = st + " AND album_year = '"+year+"'";
+                    count++;
+                }
+
+
+            }
+        }
+
+        Log.d(TAG, "getAlbumsByFilter: "+st);
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                String album_id = c.getString(c.getColumnIndex(KEY_ALBUM_ID));
+                String album_name = c.getString(c.getColumnIndex(KEY_ALBUM_NAME));
+                String artist_id = c.getString(c.getColumnIndex(KEY_ARTIST_ID));
+                String artist_name = getArtistName(Integer.parseInt(artist_id));
+                String hero_id = c.getString(c.getColumnIndex(KEY_HERO_ID));
+                String hero_name = getHeroName(Integer.parseInt(hero_id));
+                String heroin_id = c.getString(c.getColumnIndex(KEY_HEROIN_ID));
+                String heroin_name = getHeroinName(Integer.parseInt(heroin_id));
+                String album_year = c.getString(c.getColumnIndex(KEY_ALBUM_YEAR));
+                FilteredAlbum album = new FilteredAlbum(
+                        album_id,
+                        album_name,
+                        artist_id,
+                        artist_name,
+                        hero_id,
+                        hero_name,
+                        heroin_id,
+                        heroin_name,
+                        album_year
+                );
+                list.add(album);
+
+
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
 
         return list;
+
+
     }
 
     public String getArtistId(String artist_name){
@@ -723,6 +928,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(c!=null){
             while (c.moveToNext()){
                 id = c.getString(c.getColumnIndex(KEY_ARTIST_ID));
+            }
+        }
+        return id;
+    }
+    public String getHeroId(String hero_name){
+        SQLiteDatabase db = getReadableDatabase();
+        String id = "";
+        String st = "SELECT hero_id from "+TABLE_HERO+" WHERE "+KEY_HERO_NAME+" = '"+hero_name+"'";
+        Cursor c = db.rawQuery(st,null);
+        if(c!=null){
+            while (c.moveToNext()){
+                id = c.getString(c.getColumnIndex(KEY_HERO_ID));
+            }
+        }
+        return id;
+    }
+
+    public String getHeroinId(String heroin_name){
+        SQLiteDatabase db = getReadableDatabase();
+        String id = "";
+        String st = "SELECT heroin_id from "+TABLE_HEROIN+" WHERE "+KEY_HEROIN_NAME+" = '"+heroin_name+"'";
+        Cursor c = db.rawQuery(st,null);
+        if(c!=null){
+            while (c.moveToNext()){
+                id = c.getString(c.getColumnIndex(KEY_HEROIN_ID));
             }
         }
         return id;

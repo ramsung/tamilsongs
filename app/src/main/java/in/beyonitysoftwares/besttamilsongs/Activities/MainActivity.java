@@ -40,6 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import in.beyonitysoftwares.besttamilsongs.R;
@@ -133,21 +134,23 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     public void callBackAfterNetworking(){
         Log.d(TAG, "callBackAfterNetworking: "+updateAll);
         if(updateAll==6) {
-           /* libraryFragment.setAlbums(db.getAlbumNames());
-            libraryFragment.setYears(db.getAllYears());
-            libraryFragment.setArtists(db.getArtistNames());
-            libraryFragment.setHeros(db.getHeroNames());
-            libraryFragment.setHeroins(db.getHeroinNames());
-            libraryFragment.setGenres(db.getGnereNames());*/
+
 
            StorageUtil filters = new StorageUtil(getApplicationContext());
-           String artist = filters.getArtistFilter();
+           //String artist = filters.getArtistFilter();
+           String artist = "Ilaiyaraaja";
            String hero = filters.getHeroFilter();
            String heroin = filters.getHeroinFilter();
            String genre = filters.getGenreFilter();
            String year = filters.getYearFilter();
 
-           ArrayList<FilteredAlbum> albums = db.getAlbumsByFilter("Yuvan",hero,heroin,year);
+            ArrayList<String> albumNames = new ArrayList<>();
+            ArrayList<String> artistNames = new ArrayList<>();
+            ArrayList<String> heroNames = new ArrayList<>();
+            ArrayList<String> heroinNames = new ArrayList<>();
+            ArrayList<String> years = new ArrayList<>();
+
+           ArrayList<FilteredAlbum> albums = db.getAlbumsByFilter(artist,hero,heroin,year);
            for(FilteredAlbum album : albums){
                Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_id());
                Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_name());
@@ -158,10 +161,20 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                Log.d(TAG, "callBackAfterNetworking: "+album.getHeroin_name());
                Log.d(TAG, "callBackAfterNetworking: "+album.getYear());
                Log.d(TAG, "callBackAfterNetworking: ------------------------------------------- \n");
-
+               albumNames.add(album.getAlbum_name());
 
            }
 
+           heroNames = db.getHeroNamesByArtist(artist);
+           heroinNames = db.getHeroinNamesByFilters(artist,hero);
+           years = db.getYearsByFilters(artist,hero,heroin);
+
+            libraryFragment.setAlbums(albumNames);
+            libraryFragment.setYears(years);
+            libraryFragment.setArtists(db.getArtistNames());
+            libraryFragment.setHeros(heroNames);
+            libraryFragment.setHeroins(heroinNames);
+            libraryFragment.setGenres(db.getGnereNames());
         }
     }
 
