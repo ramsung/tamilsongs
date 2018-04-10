@@ -1,8 +1,8 @@
 package in.beyonitysoftwares.besttamilsongs.fragments;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -34,9 +35,10 @@ import in.beyonitysoftwares.besttamilsongs.Activities.MainActivity;
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.adapters.AllSongAdapter;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
+import in.beyonitysoftwares.besttamilsongs.appConfig.AppController;
 import in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager;
+import in.beyonitysoftwares.besttamilsongs.models.FilteredAlbum;
 import in.beyonitysoftwares.besttamilsongs.models.Songs;
-import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.RecyclerItemClickListener;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
 
@@ -88,8 +90,8 @@ public class LibraryFragment extends Fragment {
     ArrayAdapter<String> dataAdapter4;
     ArrayAdapter<String> dataAdapter5;
     ArrayAdapter<String> dataAdapter6;
-
-
+    ProgressDialog pDialog;
+    StorageUtil sp;
     public LibraryFragment() {
         // Required empty public constructor
     }
@@ -115,6 +117,8 @@ public class LibraryFragment extends Fragment {
 
         //TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tabs);
         //tabLayout.setupWithViewPager(viewPager,true);
+        sp = new StorageUtil(getContext());
+        pDialog = new ProgressDialog(getContext());
         songfiltermap = new HashMap<>();
         songfiltermap.put(filterSongKey, String.valueOf(LibraryFragment.filterSongBy.song));
         songfiltermap.put(orderByKey,String.valueOf(LibraryFragment.orderSongBy.ASC));
@@ -126,6 +130,56 @@ public class LibraryFragment extends Fragment {
         yearSpinner = (Spinner) view.findViewById(R.id.YearSpinner);
         genreSpinner = (Spinner) view.findViewById(R.id.GenreSpinner);
 
+        artistSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sp.setArtistFilter(parent.getItemAtPosition(position).toString());
+                setSpinners();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        herospinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sp.setHeroFilter(parent.getItemAtPosition(position).toString());
+                setSpinners();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        heroinSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sp.setHeroinFilter(parent.getItemAtPosition(position).toString());
+                setSpinners();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        yearSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sp.setYearFilter(parent.getItemAtPosition(position).toString());
+                setSpinners();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         albumList = new ArrayList<>();
         artistList = new ArrayList<>();
@@ -155,7 +209,7 @@ public class LibraryFragment extends Fragment {
 
             }
         }));
-        initSongs();
+        //initSongs();
         return view;
     }
     private void getLyrics(Songs clickedItem) {
@@ -202,7 +256,7 @@ public class LibraryFragment extends Fragment {
     }
 
 
-    public void initSongs(){
+    /*public void initSongs(){
 
         if(songfiltermap.get("isFilter").equals("no")){
 
@@ -234,11 +288,11 @@ public class LibraryFragment extends Fragment {
         }
 
 
-    }
+    }*/
     public void getSongs(){
 
         //Log.d(TAG, "getSongs: called get songs......");
-        AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
+       /* AndroidNetworking.post(AppConfig.GET_SONGS_with_limits)
                 .addBodyParameter("limit", "20")
                 .addBodyParameter("offset", "0")
                 .setTag("test")
@@ -277,13 +331,15 @@ public class LibraryFragment extends Fragment {
                         ((MainActivity)getActivity()).setVisibleFalse();
                         //isLoading = false;
                     }
-                });
+                });*/
     }
-    public void setSongs(){
-        for(Songs s : allSongList){
+    public void setSongs(ArrayList<FilteredAlbum> albums){
+        allSongList.clear();
+        for(FilteredAlbum album : albums){
 
-            AndroidNetworking.post(AppConfig.GET_ALBUM_BY_DETAILS)
-                    .addBodyParameter("album_id", s.getAlbum_id())
+            Log.d(TAG, "setSongs: "+album.getAlbum_id());
+            AndroidNetworking.post(AppConfig.GET_SONGS)
+                    .addBodyParameter("album_id", album.getAlbum_id())
                     .setTag("Album Details")
                     .setPriority(Priority.MEDIUM)
                     .build()
@@ -294,8 +350,34 @@ public class LibraryFragment extends Fragment {
 
                             isLoading = false;
                             ((MainActivity)getActivity()).setVisibleFalse();
-                            //Log.d(TAG, "onResponse: "+response);
+                            Log.d(TAG, "onResponse: "+response);
+
                             try {
+                                ((MainActivity)getActivity()).setVisibleFalse();
+
+                                JSONArray array = response.getJSONArray("songs");
+
+                                for(int a = 0;a< array.length();a++){
+                                    JSONObject songobject = array.getJSONObject(a);
+                                    Songs s = new Songs();
+                                    s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                    s.setAlbum_name(album.getAlbum_name());
+                                    s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                    s.setSong_title(songobject.getString("song_title"));
+                                    if(!allSongList.contains(s)){
+                                        allSongList.add(s);
+                                    }
+
+
+                                }
+
+                                allSongAdapter.notifyDataSetChanged();
+                                Log.d(TAG, "onResponse: size = "+allSongList.size());
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                           /* try {
                                 JSONArray array = response.getJSONArray("album_details");
                                 for(int a = 0;a< array.length();a++){
                                     JSONObject songobject = array.getJSONObject(a);
@@ -312,7 +394,7 @@ public class LibraryFragment extends Fragment {
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                            }
+                            }*/
 
                         }
                         @Override
@@ -321,10 +403,15 @@ public class LibraryFragment extends Fragment {
                             Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
                             ((MainActivity)getActivity()).setVisibleFalse();
                             isLoading =false;
+                            hideDialog();
                         }
                     });
 
         }
+        allSongAdapter.notifyDataSetChanged();
+        hideDialog();
+
+
     }
 
     public void LoadingVisibleTrue(){
@@ -337,10 +424,14 @@ public class LibraryFragment extends Fragment {
     public void setAlbums(ArrayList<String> values){
         if(albumList !=null){
             albumList.clear();
-            albumList.add(new StorageUtil(getContext()).getAlbumFilter());
+            albumList.add("All Albums");
             albumList.addAll(values);
-            albumSpinner.setSelection(0);
 
+            if((sp.getAlbumFilter().equals("All Albums"))){
+                albumSpinner.setSelection(0);
+            }else {
+                albumSpinner.setSelection(albumList.indexOf(sp.getAlbumFilter()));
+            }
             dataAdapter2.notifyDataSetChanged();
 
 
@@ -350,9 +441,13 @@ public class LibraryFragment extends Fragment {
     public void setHeros(ArrayList<String> values){
         if(heroList !=null){
             heroList.clear();
-            heroList.add(new StorageUtil(getContext()).getHeroFilter());
+            heroList.add("All Heros");
             heroList.addAll(values);
-            herospinner.setSelection(0);
+            if((sp.getHeroFilter().equals("All Heros"))){
+                herospinner.setSelection(0);
+            }else {
+                herospinner.setSelection(heroList.indexOf(sp.getHeroFilter()));
+            }
             dataAdapter3.notifyDataSetChanged();
         }
 
@@ -360,9 +455,13 @@ public class LibraryFragment extends Fragment {
     public void setHeroins(ArrayList<String> values){
         if(heroinList !=null){
             heroinList.clear();
-            heroinList.add(new StorageUtil(getContext()).getHeroinFilter());
+            heroinList.add("All Heroins");
             heroinList.addAll(values);
-            heroinSpinner.setSelection(0);
+            if((sp.getHeroinFilter().equals("All Heroins"))){
+                heroinSpinner.setSelection(0);
+            }else {
+                heroinSpinner.setSelection(heroinList.indexOf(sp.getHeroinFilter()));
+            }
             dataAdapter4.notifyDataSetChanged();
         }
 
@@ -370,9 +469,13 @@ public class LibraryFragment extends Fragment {
     }public void setGenres(ArrayList<String> values){
         if(genreList!=null){
             genreList.clear();
-            genreList.add(new StorageUtil(getContext()).getGenreFilter());
+            genreList.add("All Genre");
             genreList.addAll(values);
-            genreSpinner.setSelection(0);
+            if((sp.getGenreFilter().equals("All Genre"))){
+                genreSpinner.setSelection(0);
+            }else {
+                genreSpinner.setSelection(genreList.indexOf(sp.getGenreFilter()));
+            }
             dataAdapter6.notifyDataSetChanged();
         }
 
@@ -380,9 +483,13 @@ public class LibraryFragment extends Fragment {
     public void setYears(ArrayList<String> values){
         if(yearList !=null){
             yearList.clear();
-            yearList.add(new StorageUtil(getContext()).getYearFilter());
+            yearList.add("All Years");
             yearList.addAll(values);
-            yearSpinner.setSelection(0);
+            if((sp.getYearFilter().equals("All Years"))){
+                yearSpinner.setSelection(0);
+            }else {
+                yearSpinner.setSelection(yearList.indexOf(sp.getYearFilter()));
+            }
             dataAdapter5.notifyDataSetChanged();
         }
 
@@ -390,9 +497,13 @@ public class LibraryFragment extends Fragment {
     public void setArtists(ArrayList<String> values){
         if(artistList !=null){
             artistList.clear();
-            artistList.add(new StorageUtil(getContext()).getArtistFilter());
+            artistList.add("All Artist");
             artistList.addAll(values);
-            artistSpinner.setSelection(0);
+            if((sp.getArtistFilter().equals("All Artist"))){
+                artistSpinner.setSelection(0);
+            }else {
+                artistSpinner.setSelection(artistList.indexOf(sp.getArtistFilter()));
+            }
             dataAdapter1.notifyDataSetChanged();
         }
     }
@@ -426,7 +537,58 @@ public class LibraryFragment extends Fragment {
         albumSpinner.setAdapter(dataAdapter2);
     }
 
+    public void setSpinners(){
+       pDialog.setMessage("Loading Songs");
+       showDialog();
+        //String artist = filters.getArtistFilter();
+        String artist = sp.getArtistFilter();
+        String hero = sp.getHeroFilter();
+        String heroin = sp.getHeroinFilter();
+        String genre = sp.getGenreFilter();
+        String year = sp.getYearFilter();
 
+        ArrayList<String> albumNames = new ArrayList<>();
+        ArrayList<String> artistNames = new ArrayList<>();
+        ArrayList<String> heroNames = new ArrayList<>();
+        ArrayList<String> heroinNames = new ArrayList<>();
+        ArrayList<String> years = new ArrayList<>();
 
+        ArrayList<FilteredAlbum> albums = AppController.getDb().getAlbumsByFilter(artist,hero,heroin,year);
+        for(FilteredAlbum album : albums){
+            Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_id());
+            Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_name());
+            Log.d(TAG, "callBackAfterNetworking: "+album.getArtist_id());
+            Log.d(TAG, "callBackAfterNetworking: "+album.getArtist_name());
+            Log.d(TAG, "callBackAfterNetworking: "+album.getHero_id());
+            Log.d(TAG, "callBackAfterNetworking: "+album.getHero_name());
+            Log.d(TAG, "callBackAfterNetworking: "+album.getHeroin_name());
+            Log.d(TAG, "callBackAfterNetworking: "+album.getYear());
+            Log.d(TAG, "callBackAfterNetworking: ------------------------------------------- \n");
+            albumNames.add(album.getAlbum_name());
+
+        }
+
+        heroNames = AppController.getDb().getHeroNamesByArtist(artist);
+        heroinNames = AppController.getDb().getHeroinNamesByFilters(artist,hero);
+        years = AppController.getDb().getYearsByFilters(artist,hero,heroin);
+
+        setAlbums(albumNames);
+        setYears(years);
+        setArtists(AppController.getDb().getArtistNames());
+        setHeros(heroNames);
+        setHeroins(heroinNames);
+        setGenres(AppController.getDb().getGnereNames());
+        setSongs(albums);
+
+    }
+    private void showDialog() {
+        if (!pDialog.isShowing())
+            pDialog.show();
+    }
+
+    private void hideDialog() {
+        if (pDialog.isShowing())
+            pDialog.dismiss();
+    }
 
 }

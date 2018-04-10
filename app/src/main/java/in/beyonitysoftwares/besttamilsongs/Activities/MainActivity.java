@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.adapters.playListAdapter;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
+import in.beyonitysoftwares.besttamilsongs.appConfig.AppController;
 import in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager;
 import in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar;
 import in.beyonitysoftwares.besttamilsongs.databaseHandler.DatabaseHandler;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
     private ProgressDialog pDialog;
     //db
-    DatabaseHandler db;
+    //DatabaseHandler db;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         MobileAds.initialize(this, "ca-app-pub-7987343674758455~6065686189");
-        db = new DatabaseHandler(getApplicationContext());
+        //db = new DatabaseHandler(getApplicationContext());
         InMobiSdk.init(MainActivity.this, "f8fcaf8d25c04b7586fb741b3dd266f8");
        pDialog = new ProgressDialog(this);
        pDialog.setCancelable(true);
@@ -135,46 +136,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         Log.d(TAG, "callBackAfterNetworking: "+updateAll);
         if(updateAll==6) {
 
+            libraryFragment.setSpinners();
 
-           StorageUtil filters = new StorageUtil(getApplicationContext());
-           //String artist = filters.getArtistFilter();
-           String artist = "Ilaiyaraaja";
-           String hero = filters.getHeroFilter();
-           String heroin = filters.getHeroinFilter();
-           String genre = filters.getGenreFilter();
-           String year = filters.getYearFilter();
-
-            ArrayList<String> albumNames = new ArrayList<>();
-            ArrayList<String> artistNames = new ArrayList<>();
-            ArrayList<String> heroNames = new ArrayList<>();
-            ArrayList<String> heroinNames = new ArrayList<>();
-            ArrayList<String> years = new ArrayList<>();
-
-           ArrayList<FilteredAlbum> albums = db.getAlbumsByFilter(artist,hero,heroin,year);
-           for(FilteredAlbum album : albums){
-               Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_id());
-               Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_name());
-               Log.d(TAG, "callBackAfterNetworking: "+album.getArtist_id());
-               Log.d(TAG, "callBackAfterNetworking: "+album.getArtist_name());
-               Log.d(TAG, "callBackAfterNetworking: "+album.getHero_id());
-               Log.d(TAG, "callBackAfterNetworking: "+album.getHero_name());
-               Log.d(TAG, "callBackAfterNetworking: "+album.getHeroin_name());
-               Log.d(TAG, "callBackAfterNetworking: "+album.getYear());
-               Log.d(TAG, "callBackAfterNetworking: ------------------------------------------- \n");
-               albumNames.add(album.getAlbum_name());
-
-           }
-
-           heroNames = db.getHeroNamesByArtist(artist);
-           heroinNames = db.getHeroinNamesByFilters(artist,hero);
-           years = db.getYearsByFilters(artist,hero,heroin);
-
-            libraryFragment.setAlbums(albumNames);
-            libraryFragment.setYears(years);
-            libraryFragment.setArtists(db.getArtistNames());
-            libraryFragment.setHeros(heroNames);
-            libraryFragment.setHeroins(heroinNames);
-            libraryFragment.setGenres(db.getGnereNames());
         }
     }
 
@@ -300,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
                                 String table_name = String.valueOf(object.get("table_name"));
                                 String remote_time = String.valueOf(object.get("update_time"));
-                                String local_time = db.getUpdateDetails(table_name);
+                                String local_time = AppController.getDb().getUpdateDetails(table_name);
                                 long local_time_long = Long.parseLong(local_time);
                                 long remote_time_long = Long.parseLong(remote_time);
                                 Log.d(TAG, "onResponse: table name = "+table_name+" remote time = "+remote_time+" local time = "+local_time);
@@ -709,7 +672,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                             if(response.getString("error").equals("false")) {
 
                                 if(!local_time.equals("0")){
-                                    db.deleteRecords(table_name);
+                                    AppController.getDb().deleteRecords(table_name);
                                 }
                                 JSONArray array = response.getJSONArray("albums");
                                 for(int a = 0;a<array.length();a++){
@@ -720,7 +683,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     String hero_id = String.valueOf(object.get("hero_id"));
                                     String heroin_id = String.valueOf(object.get("heroin_id"));
                                     String year = String.valueOf(object.get("year"));
-                                    if(db.insertAlbums(album_id,album_name,artist_id,hero_id,heroin_id,year)){
+                                    if(AppController.getDb().insertAlbums(album_id,album_name,artist_id,hero_id,heroin_id,year)){
 
                                     }else {
                                         Log.d(TAG, "onResponse: error inserting albums in local database");
@@ -729,9 +692,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
                                 }
                                 if(local_time.equals("0")){
-                                    db.insertUpdate(table_name,remote_time);
+                                    AppController.getDb().insertUpdate(table_name,remote_time);
                                 }else {
-                                    db.updateUpdateTable(table_name,remote_time);
+                                    AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
 
                                 callBackAfterNetworking();
@@ -773,14 +736,14 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         try {
                             if(response.getString("error").equals("false")) {
                                 if(!local_time.equals("0")){
-                                    db.deleteRecords(table_name);
+                                    AppController.getDb().deleteRecords(table_name);
                                 }
                                 JSONArray array = response.getJSONArray("artists");
                                 for(int a = 0;a<array.length();a++){
                                     JSONObject object = array.getJSONObject(a);
                                     String artist_id = String.valueOf(object.get("artist_id"));
                                     String artist_name = String.valueOf(object.get("artist_name"));
-                                    if(db.insertArtist(artist_id,artist_name)){
+                                    if(AppController.getDb().insertArtist(artist_id,artist_name)){
 
                                     }else {
                                         Log.d(TAG, "onResponse: error inserting artists in local database");
@@ -788,9 +751,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
                                 }
                                 if(local_time.equals("0")){
-                                    db.insertUpdate(table_name,remote_time);
+                                    AppController.getDb().insertUpdate(table_name,remote_time);
                                 }else {
-                                    db.updateUpdateTable(table_name,remote_time);
+                                    AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
                                 callBackAfterNetworking();
 
@@ -832,14 +795,14 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         try {
                             if(response.getString("error").equals("false")) {
                                 if(!local_time.equals("0")){
-                                    db.deleteRecords(table_name);
+                                    AppController.getDb().deleteRecords(table_name);
                                 }
                                 JSONArray array = response.getJSONArray("heros");
                                 for(int a = 0;a<array.length();a++){
                                     JSONObject object = array.getJSONObject(a);
                                     String hero_id = String.valueOf(object.get("hero_id"));
                                     String hero_name = String.valueOf(object.get("hero_name"));
-                                    if(db.insertHero(hero_id,hero_name)){
+                                    if(AppController.getDb().insertHero(hero_id,hero_name)){
 
                                     }else {
                                         Log.d(TAG, "onResponse: error inserting heros in local database");
@@ -848,9 +811,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
                                 }
                                 if(local_time.equals("0")){
-                                    db.insertUpdate(table_name,remote_time);
+                                    AppController.getDb().insertUpdate(table_name,remote_time);
                                 }else {
-                                    db.updateUpdateTable(table_name,remote_time);
+                                    AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
                                 callBackAfterNetworking();
 
@@ -892,13 +855,13 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                             if(response.getString("error").equals("false")) {
                                 JSONArray array = response.getJSONArray("heroins");
                                 if(!local_time.equals("0")){
-                                    db.deleteRecords(table_name);
+                                    AppController.getDb().deleteRecords(table_name);
                                 }
                                 for(int a = 0;a<array.length();a++){
                                     JSONObject object = array.getJSONObject(a);
                                     String heroin_id = String.valueOf(object.get("heroin_id"));
                                     String heroin_name = String.valueOf(object.get("heroin_name"));
-                                    if(db.insertHeroin(heroin_id,heroin_name)){
+                                    if(AppController.getDb().insertHeroin(heroin_id,heroin_name)){
 
                                     }else {
                                         Log.d(TAG, "onResponse: error inserting heroins in local database");
@@ -907,9 +870,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
                                 }
                                 if(local_time.equals("0")){
-                                    db.insertUpdate(table_name,remote_time);
+                                    AppController.getDb().insertUpdate(table_name,remote_time);
                                 }else {
-                                    db.updateUpdateTable(table_name,remote_time);
+                                    AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
                                 callBackAfterNetworking();
 
@@ -952,13 +915,13 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                             if(response.getString("error").equals("false")) {
                                 JSONArray array = response.getJSONArray("lyricists");
                                 if(!local_time.equals("0")){
-                                    db.deleteRecords(table_name);
+                                    AppController.getDb().deleteRecords(table_name);
                                 }
                                 for(int a = 0;a<array.length();a++){
                                     JSONObject object = array.getJSONObject(a);
                                     String lyricist_id = String.valueOf(object.get("lyricist_id"));
                                     String lyricist_name = String.valueOf(object.get("lyricist_name"));
-                                    if(db.insertLyricist(lyricist_id,lyricist_name)){
+                                    if(AppController.getDb().insertLyricist(lyricist_id,lyricist_name)){
 
                                     }else {
                                         Log.d(TAG, "onResponse: error inserting lyricists in local database");
@@ -967,9 +930,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
                                 }
                                 if(local_time.equals("0")){
-                                    db.insertUpdate(table_name,remote_time);
+                                    AppController.getDb().insertUpdate(table_name,remote_time);
                                 }else {
-                                    db.updateUpdateTable(table_name,remote_time);
+                                    AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
                                 callBackAfterNetworking();
                                 Log.d(TAG, "onResponse: length " + array.length());
@@ -1011,20 +974,20 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         try {
                             if(response.getString("error").equals("false")) {
                                 if(!local_time.equals("0")){
-                                    db.deleteRecords(table_name);
+                                    AppController.getDb().deleteRecords(table_name);
                                 }
                                 JSONArray array = response.getJSONArray("genres");
                                 for(int a = 0;a<array.length();a++){
                                     JSONObject object = array.getJSONObject(a);
                                     String genre_id = String.valueOf(object.get("genre_id"));
                                     String genre_name = String.valueOf(object.get("genre_name"));
-                                    db.insertGenre(genre_id,genre_name);
+                                    AppController.getDb().insertGenre(genre_id,genre_name);
 
                                 }
                                     if(local_time.equals("0")){
-                                        db.insertUpdate(table_name,remote_time);
+                                        AppController.getDb().insertUpdate(table_name,remote_time);
                                     }else {
-                                        db.updateUpdateTable(table_name,remote_time);
+                                        AppController.getDb().updateUpdateTable(table_name,remote_time);
                                     }
                                 callBackAfterNetworking();
 

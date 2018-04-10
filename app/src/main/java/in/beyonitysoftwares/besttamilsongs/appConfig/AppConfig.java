@@ -47,7 +47,8 @@ public class AppConfig {
 
 	public static String GET_UPDATE_TIME= "https://beyonitysoftwares.cf/tamillyrics/api/getUpdateTime.php";
 
-
+	//no of songs
+	public static String GET_SONGS= "https://beyonitysoftwares.cf/tamillyrics/api/getSongs.php";
 
 
 

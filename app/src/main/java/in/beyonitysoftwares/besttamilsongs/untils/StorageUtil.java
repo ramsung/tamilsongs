@@ -138,7 +138,7 @@ public class StorageUtil {
 		return answer;
 	}
 
-	public void setHYearFilter(String year){
+	public void setYearFilter(String year){
 		preferences = context.getSharedPreferences(STORAGE, Context.MODE_PRIVATE);
 
 		SharedPreferences.Editor editor = preferences.edit();
