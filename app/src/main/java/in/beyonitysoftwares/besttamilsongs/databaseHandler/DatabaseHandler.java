@@ -590,6 +590,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return list;
     }
 
+    public String getAlbumIdByName(String album_name){
+        String name = "";
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "Select album_id from albums where album_name = '"+album_name+"'";
+        Cursor c = db.rawQuery(st,null);
+        if(c!=null){
+
+            while(c.moveToNext()){
+                name = c.getString(c.getColumnIndex(KEY_ALBUM_ID));
+            }
+        }
+
+        if(c!=null){
+            c.close();
+        }
+
+        return name;
+    }
     public ArrayList<FilteredAlbum> getAlbumsByFilter(String artist,String hero,String heroin,String year){
         int count = 0;
         ArrayList<FilteredAlbum> list = new ArrayList<>();

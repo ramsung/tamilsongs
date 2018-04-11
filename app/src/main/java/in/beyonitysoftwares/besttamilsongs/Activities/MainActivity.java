@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     public void callBackAfterNetworking(){
         Log.d(TAG, "callBackAfterNetworking: "+updateAll);
         if(updateAll==6) {
-
+            Log.d(TAG, "callBackAfterNetworking: called library");
             libraryFragment.setSpinners();
 
         }

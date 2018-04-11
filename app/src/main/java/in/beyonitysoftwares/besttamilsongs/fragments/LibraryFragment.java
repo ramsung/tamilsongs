@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -43,6 +44,7 @@ import in.beyonitysoftwares.besttamilsongs.untils.RecyclerItemClickListener;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
 
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
+import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.getAppLink;
 
 
 /**
@@ -92,6 +94,8 @@ public class LibraryFragment extends Fragment {
     ArrayAdapter<String> dataAdapter6;
     ProgressDialog pDialog;
     StorageUtil sp;
+    int songCountsCalls = 0;
+    ArrayList<FilteredAlbum> albums;
     public LibraryFragment() {
         // Required empty public constructor
     }
@@ -129,57 +133,8 @@ public class LibraryFragment extends Fragment {
         heroinSpinner = (Spinner) view.findViewById(R.id.HeroinSpinner);
         yearSpinner = (Spinner) view.findViewById(R.id.YearSpinner);
         genreSpinner = (Spinner) view.findViewById(R.id.GenreSpinner);
+        setSelection();
 
-        artistSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sp.setArtistFilter(parent.getItemAtPosition(position).toString());
-                setSpinners();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        herospinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sp.setHeroFilter(parent.getItemAtPosition(position).toString());
-                setSpinners();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        heroinSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sp.setHeroinFilter(parent.getItemAtPosition(position).toString());
-                setSpinners();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-        yearSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                sp.setYearFilter(parent.getItemAtPosition(position).toString());
-                setSpinners();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
 
         albumList = new ArrayList<>();
         artistList = new ArrayList<>();
@@ -188,7 +143,9 @@ public class LibraryFragment extends Fragment {
         heroList = new ArrayList<>();
         genreList = new ArrayList<>();
         lyricistList = new ArrayList<>();
+
         setAdapters();
+
 
 
         allSongList = new ArrayList<>();
@@ -212,6 +169,8 @@ public class LibraryFragment extends Fragment {
         //initSongs();
         return view;
     }
+
+
     private void getLyrics(Songs clickedItem) {
         if(songfiltermap.get("isFilter").equals("no")){
 
@@ -334,10 +293,12 @@ public class LibraryFragment extends Fragment {
                 });*/
     }
     public void setSongs(ArrayList<FilteredAlbum> albums){
-        allSongList.clear();
-        for(FilteredAlbum album : albums){
 
-            Log.d(TAG, "setSongs: "+album.getAlbum_id());
+        allSongList.clear();
+
+        for(FilteredAlbum album : albums){
+            showDialog();
+
             AndroidNetworking.post(AppConfig.GET_SONGS)
                     .addBodyParameter("album_id", album.getAlbum_id())
                     .setTag("Album Details")
@@ -350,14 +311,17 @@ public class LibraryFragment extends Fragment {
 
                             isLoading = false;
                             ((MainActivity)getActivity()).setVisibleFalse();
-                            Log.d(TAG, "onResponse: "+response);
+
 
                             try {
                                 ((MainActivity)getActivity()).setVisibleFalse();
 
                                 JSONArray array = response.getJSONArray("songs");
 
+
+
                                 for(int a = 0;a< array.length();a++){
+
                                     JSONObject songobject = array.getJSONObject(a);
                                     Songs s = new Songs();
                                     s.setAlbum_id(String.valueOf(songobject.get("album_id")));
@@ -372,8 +336,8 @@ public class LibraryFragment extends Fragment {
                                 }
 
                                 allSongAdapter.notifyDataSetChanged();
-                                Log.d(TAG, "onResponse: size = "+allSongList.size());
-
+                                Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+                                hideDialog();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -401,15 +365,15 @@ public class LibraryFragment extends Fragment {
                         public void onError(ANError error) {
                             Log.e(TAG, "onError: "+error.getErrorDetail());
                             Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onError: "+album.getAlbum_name());
                             ((MainActivity)getActivity()).setVisibleFalse();
                             isLoading =false;
                             hideDialog();
                         }
                     });
 
+
         }
-        allSongAdapter.notifyDataSetChanged();
-        hideDialog();
 
 
     }
@@ -428,9 +392,13 @@ public class LibraryFragment extends Fragment {
             albumList.addAll(values);
 
             if((sp.getAlbumFilter().equals("All Albums"))){
+
                 albumSpinner.setSelection(0);
+
             }else {
+
                 albumSpinner.setSelection(albumList.indexOf(sp.getAlbumFilter()));
+
             }
             dataAdapter2.notifyDataSetChanged();
 
@@ -444,9 +412,18 @@ public class LibraryFragment extends Fragment {
             heroList.add("All Heros");
             heroList.addAll(values);
             if((sp.getHeroFilter().equals("All Heros"))){
+
+
                 herospinner.setSelection(0);
+                herospinner.setTag(R.id.pos,0);
+
+
             }else {
+
                 herospinner.setSelection(heroList.indexOf(sp.getHeroFilter()));
+                herospinner.setTag(R.id.pos,heroList.indexOf(sp.getHeroFilter()));
+
+
             }
             dataAdapter3.notifyDataSetChanged();
         }
@@ -458,9 +435,15 @@ public class LibraryFragment extends Fragment {
             heroinList.add("All Heroins");
             heroinList.addAll(values);
             if((sp.getHeroinFilter().equals("All Heroins"))){
+
                 heroinSpinner.setSelection(0);
+                heroinSpinner.setTag(R.id.pos,0);
+
             }else {
+
                 heroinSpinner.setSelection(heroinList.indexOf(sp.getHeroinFilter()));
+                heroinSpinner.setTag(R.id.pos,heroinList.indexOf(sp.getHeroinFilter()));
+
             }
             dataAdapter4.notifyDataSetChanged();
         }
@@ -472,9 +455,13 @@ public class LibraryFragment extends Fragment {
             genreList.add("All Genre");
             genreList.addAll(values);
             if((sp.getGenreFilter().equals("All Genre"))){
+
                 genreSpinner.setSelection(0);
+
             }else {
+
                 genreSpinner.setSelection(genreList.indexOf(sp.getGenreFilter()));
+
             }
             dataAdapter6.notifyDataSetChanged();
         }
@@ -486,9 +473,15 @@ public class LibraryFragment extends Fragment {
             yearList.add("All Years");
             yearList.addAll(values);
             if((sp.getYearFilter().equals("All Years"))){
+
                 yearSpinner.setSelection(0);
+                yearSpinner.setTag(R.id.pos,0);
+
             }else {
+
                 yearSpinner.setSelection(yearList.indexOf(sp.getYearFilter()));
+                yearSpinner.setTag(R.id.pos,yearList.indexOf(sp.getYearFilter()));
+
             }
             dataAdapter5.notifyDataSetChanged();
         }
@@ -500,9 +493,16 @@ public class LibraryFragment extends Fragment {
             artistList.add("All Artist");
             artistList.addAll(values);
             if((sp.getArtistFilter().equals("All Artist"))){
+
+
                 artistSpinner.setSelection(0);
+                artistSpinner.setTag(R.id.pos,0);
+
             }else {
+
                 artistSpinner.setSelection(artistList.indexOf(sp.getArtistFilter()));
+                artistSpinner.setTag(R.id.pos,artistList.indexOf(sp.getArtistFilter()));
+
             }
             dataAdapter1.notifyDataSetChanged();
         }
@@ -538,6 +538,7 @@ public class LibraryFragment extends Fragment {
     }
 
     public void setSpinners(){
+
        pDialog.setMessage("Loading Songs");
        showDialog();
         //String artist = filters.getArtistFilter();
@@ -553,17 +554,10 @@ public class LibraryFragment extends Fragment {
         ArrayList<String> heroinNames = new ArrayList<>();
         ArrayList<String> years = new ArrayList<>();
 
-        ArrayList<FilteredAlbum> albums = AppController.getDb().getAlbumsByFilter(artist,hero,heroin,year);
+        albums = AppController.getDb().getAlbumsByFilter(artist,hero,heroin,year);
+
         for(FilteredAlbum album : albums){
-            Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_id());
-            Log.d(TAG, "callBackAfterNetworking: "+album.getAlbum_name());
-            Log.d(TAG, "callBackAfterNetworking: "+album.getArtist_id());
-            Log.d(TAG, "callBackAfterNetworking: "+album.getArtist_name());
-            Log.d(TAG, "callBackAfterNetworking: "+album.getHero_id());
-            Log.d(TAG, "callBackAfterNetworking: "+album.getHero_name());
-            Log.d(TAG, "callBackAfterNetworking: "+album.getHeroin_name());
-            Log.d(TAG, "callBackAfterNetworking: "+album.getYear());
-            Log.d(TAG, "callBackAfterNetworking: ------------------------------------------- \n");
+
             albumNames.add(album.getAlbum_name());
 
         }
@@ -578,7 +572,12 @@ public class LibraryFragment extends Fragment {
         setHeros(heroNames);
         setHeroins(heroinNames);
         setGenres(AppController.getDb().getGnereNames());
-        setSongs(albums);
+        if(sp.getAlbumFilter().equals("All Albums")){
+            setSongs(albums);
+        }else {
+            setSongByAlbumID(AppController.getDb().getAlbumIdByName(sp.getAlbumFilter().toString()));
+        }
+
 
     }
     private void showDialog() {
@@ -590,5 +589,177 @@ public class LibraryFragment extends Fragment {
         if (pDialog.isShowing())
             pDialog.dismiss();
     }
+
+
+    public void setSelection(){
+        artistSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onItemSelected: called artist spinner selection");
+                if(((int)artistSpinner.getTag(R.id.pos)!=position)) {
+                    sp.setArtistFilter(parent.getItemAtPosition(position).toString());
+                    setSpinners();
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        herospinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if(((int)herospinner.getTag(R.id.pos)!=position)) {
+
+                    sp.setHeroFilter(parent.getItemAtPosition(position).toString());
+                    setSpinners();
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        heroinSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if(((int)heroinSpinner.getTag(R.id.pos)!=position)) {
+                    sp.setHeroinFilter(parent.getItemAtPosition(position).toString());
+                    setSpinners();
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        yearSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                if(((int)yearSpinner.getTag(R.id.pos)!=position)) {
+                    sp.setYearFilter(parent.getItemAtPosition(position).toString());
+                    setSpinners();
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        albumSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sp.setAlbumilter(parent.getItemAtPosition(position).toString());
+                if(parent.getItemAtPosition(position).toString().equals("All Albums")){
+                    setSongs(albums);
+                }else {
+                    setSongByAlbumID(AppController.getDb().getAlbumIdByName(parent.getItemAtPosition(position).toString()));
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void setSongByAlbumID(String albumIdByName) {
+        allSongList.clear();
+
+
+            showDialog();
+
+            AndroidNetworking.post(AppConfig.GET_SONGS)
+                    .addBodyParameter("album_id", albumIdByName)
+                    .setTag("Album Details")
+                    .setPriority(Priority.MEDIUM)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            isLoading = false;
+                            ((MainActivity)getActivity()).setVisibleFalse();
+
+
+                            try {
+                                ((MainActivity)getActivity()).setVisibleFalse();
+
+                                JSONArray array = response.getJSONArray("songs");
+
+
+
+                                for(int a = 0;a< array.length();a++){
+
+                                    JSONObject songobject = array.getJSONObject(a);
+                                    Songs s = new Songs();
+                                    s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                    s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(albumIdByName)));
+                                    s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                    s.setSong_title(songobject.getString("song_title"));
+                                    if(!allSongList.contains(s)){
+                                        allSongList.add(s);
+                                    }
+
+
+                                }
+
+                                allSongAdapter.notifyDataSetChanged();
+                                Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+                                hideDialog();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                           /* try {
+                                JSONArray array = response.getJSONArray("album_details");
+                                for(int a = 0;a< array.length();a++){
+                                    JSONObject songobject = array.getJSONObject(a);
+
+                                    if(Integer.parseInt(s.getAlbum_id())==Integer.parseInt(String.valueOf(songobject.get("album_id")))){
+                                        //Log.d(TAG, "onResponse: song id = "+s.getAlbum_id()+" album id = "+songobject.get("album_id"));
+                                        int index = allSongList.indexOf(s);
+                                        allSongList.get(index).setAlbum_name(songobject.getString("album_name"));
+                                        allSongAdapter.notifyDataSetChanged();
+                                        isLoading = false;
+                                    }
+
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }*/
+
+                        }
+                        @Override
+                        public void onError(ANError error) {
+                            Log.e(TAG, "onError: "+error.getErrorDetail());
+                            Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+
+                            ((MainActivity)getActivity()).setVisibleFalse();
+                            isLoading =false;
+                            hideDialog();
+                        }
+                    });
+
+
+
+    }
+
 
 }
