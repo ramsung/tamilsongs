@@ -378,6 +378,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return genreName;
     }
+    public String getGenreId(String genre_name) {
+        String genreid = "";
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT genre_id FROM " + TABLE_GENRE+ " WHERE genre_name = '" + genre_name + "'";
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                genreid = c.getString(c.getColumnIndex(KEY_GENRE_ID));
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return genreid;
+    }
     public ArrayList<String> getArtistNames(){
         ArrayList<String> list = new ArrayList<>();
 

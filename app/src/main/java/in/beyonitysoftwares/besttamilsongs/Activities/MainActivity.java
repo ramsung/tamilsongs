@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -34,6 +35,18 @@ import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.inmobi.sdk.InMobiSdk;
 
 import org.json.JSONArray;
@@ -91,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     //db
     //DatabaseHandler db;
 
+    int SIGN_IN = 1;
+    GoogleSignInClient mGoogleSignInClient;
+    private FirebaseAuth mAuth;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -124,19 +140,49 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         InMobiSdk.init(MainActivity.this, "f8fcaf8d25c04b7586fb741b3dd266f8");
        pDialog = new ProgressDialog(this);
        pDialog.setCancelable(true);
-        pDialog.setMessage("Loading songs");
-        init();
+        pDialog.setMessage("Preparing database");
+        mAuth = FirebaseAuth.getInstance();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        signIn();
         showDialog();
         getupdatetime();
 
 
     }
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, SIGN_IN);
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+                // ...
+            }
+        }
+    }
     public void callBackAfterNetworking(){
         Log.d(TAG, "callBackAfterNetworking: "+updateAll);
         if(updateAll==6) {
             Log.d(TAG, "callBackAfterNetworking: called library");
-            libraryFragment.setSpinners();
+            //libraryFragment.setSpinners();
+            init();
+            hideDialog();
 
         }
     }
@@ -269,27 +315,27 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 Log.d(TAG, "onResponse: table name = "+table_name+" remote time = "+remote_time+" local time = "+local_time);
                                 if(local_time.equals("0")){
                                     if(table_name.equals("albums")){
-                                        updateAll++;
+
                                         getAlbums(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("artist")){
-                                        updateAll++;
+
                                         getArtists(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("hero")){
-                                        updateAll++;
+
                                         getHeros(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("heroin")){
-                                        updateAll++;
+
                                         getHeroins(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("lyricist")){
-                                        updateAll++;
+
                                         getLyricists(table_name,remote_time,local_time);
 
                                     }else if (table_name.equals("genre")){
-                                        updateAll++;
+
                                         getGenres(table_name,remote_time,local_time);
 
                                     }
@@ -297,27 +343,27 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else if(remote_time_long>local_time_long){
 
                                     if(table_name.equals("albums")){
-                                        updateAll++;
+
                                         getAlbums(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("artist")){
-                                        updateAll++;
+
                                         getArtists(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("hero")){
-                                        updateAll++;
+
                                         getHeros(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("heroin")){
-                                        updateAll++;
+
                                         getHeroins(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("lyricist")){
-                                        updateAll++;
+
                                         getLyricists(table_name, remote_time, local_time);
 
                                     }else if (table_name.equals("genre")){
-                                        updateAll++;
+
                                         getGenres(table_name, remote_time, local_time);
 
                                     }
@@ -357,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
 
                             }
-                            hideDialog();
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -369,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
-                        hideDialog();
+
                         setVisibleFalse();
                         //isLoading = false;
                     }
@@ -573,8 +619,33 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
 
         }
-    }
 
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+    }
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), "Authentication Failed.", Toast.LENGTH_SHORT).show();
+                            //updateUI(null);
+                        }
+
+                        // ...
+                    }
+                });
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -697,7 +768,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
 
-                                callBackAfterNetworking();
+
 
 
                                 Log.d(TAG, "onResponse: length " + array.length());
@@ -710,7 +781,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                             e.printStackTrace();
                         }
 
-
+                        Log.d(TAG, "oncallback: album called call back");
+                        updateAll++;
+                        callBackAfterNetworking();
 
                     }
                     @Override
@@ -755,7 +828,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
-                                callBackAfterNetworking();
+
 
                                 Log.d(TAG, "onResponse: length " + array.length());
 
@@ -767,7 +840,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                             e.printStackTrace();
                         }
 
-
+                        Log.d(TAG, "oncallback: artist called call back");
+                        updateAll++;
+                        callBackAfterNetworking();
 
 
 
@@ -815,7 +890,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
-                                callBackAfterNetworking();
+
 
                                 Log.d(TAG, "onResponse: length " + array.length());
 
@@ -827,7 +902,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                             e.printStackTrace();
                         }
 
-
+                        Log.d(TAG, "oncallback: heros called call back");
+                        updateAll++;
+                        callBackAfterNetworking();
 
                     }
                     @Override
@@ -874,7 +951,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
-                                callBackAfterNetworking();
+
 
                                 Log.d(TAG, "onResponse: length " + array.length());
 
@@ -887,7 +964,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         }
 
 
-
+                        Log.d(TAG, "oncallback: heroin called call back");
+                        updateAll++;
+                        callBackAfterNetworking();
 
 
                     }
@@ -934,7 +1013,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 }else {
                                     AppController.getDb().updateUpdateTable(table_name,remote_time);
                                 }
-                                callBackAfterNetworking();
+
                                 Log.d(TAG, "onResponse: length " + array.length());
 
                             }else {
@@ -945,8 +1024,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                             e.printStackTrace();
                         }
 
-
-
+                        Log.d(TAG, "oncallback: lyricist called call back");
+                        updateAll++;
+                        callBackAfterNetworking();
 
                     }
                     @Override
@@ -989,7 +1069,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     }else {
                                         AppController.getDb().updateUpdateTable(table_name,remote_time);
                                     }
-                                callBackAfterNetworking();
+
 
 
                                 Log.d(TAG, "onResponse: length " + array.length());
@@ -1001,6 +1081,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        Log.d(TAG, "oncallback: genre called call back");
+                        updateAll++;
+                        callBackAfterNetworking();
                     }
                     @Override
                     public void onError(ANError error) {

@@ -95,7 +95,9 @@ public class LibraryFragment extends Fragment {
     ProgressDialog pDialog;
     StorageUtil sp;
     int songCountsCalls = 0;
+    int totalCountCalls = 0;
     ArrayList<FilteredAlbum> albums;
+    boolean isSelectionSet = false;
     public LibraryFragment() {
         // Required empty public constructor
     }
@@ -133,7 +135,7 @@ public class LibraryFragment extends Fragment {
         heroinSpinner = (Spinner) view.findViewById(R.id.HeroinSpinner);
         yearSpinner = (Spinner) view.findViewById(R.id.YearSpinner);
         genreSpinner = (Spinner) view.findViewById(R.id.GenreSpinner);
-        setSelection();
+
 
 
         albumList = new ArrayList<>();
@@ -145,6 +147,7 @@ public class LibraryFragment extends Fragment {
         lyricistList = new ArrayList<>();
 
         setAdapters();
+
 
 
 
@@ -167,6 +170,8 @@ public class LibraryFragment extends Fragment {
             }
         }));
         //initSongs();
+        setSpinners();
+        //setSelection();
         return view;
     }
 
@@ -295,12 +300,105 @@ public class LibraryFragment extends Fragment {
     public void setSongs(ArrayList<FilteredAlbum> albums){
 
         allSongList.clear();
-
+        totalCountCalls = albums.size();
+        songCountsCalls = 0;
         for(FilteredAlbum album : albums){
-            showDialog();
 
             AndroidNetworking.post(AppConfig.GET_SONGS)
                     .addBodyParameter("album_id", album.getAlbum_id())
+                    .setTag("Album Details")
+                    .setPriority(Priority.MEDIUM)
+                    .build()
+                    .getAsJSONObject(new JSONObjectRequestListener() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+
+                            isLoading = false;
+                            ((MainActivity)getActivity()).setVisibleFalse();
+
+
+                            try {
+                                ((MainActivity)getActivity()).setVisibleFalse();
+
+                                JSONArray array = response.getJSONArray("songs");
+
+
+
+                                for(int a = 0;a< array.length();a++){
+
+                                    JSONObject songobject = array.getJSONObject(a);
+                                    Songs s = new Songs();
+                                    s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                    s.setAlbum_name(album.getAlbum_name());
+                                    s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                    s.setSong_title(songobject.getString("song_title"));
+                                    if(!allSongList.contains(s)){
+                                        allSongList.add(s);
+                                    }
+
+
+                                }
+
+                                allSongAdapter.notifyDataSetChanged();
+
+                                Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            songCountsCalls++;
+                            callBackAfterRV();
+                           /* try {
+                                JSONArray array = response.getJSONArray("album_details");
+                                for(int a = 0;a< array.length();a++){
+                                    JSONObject songobject = array.getJSONObject(a);
+
+                                    if(Integer.parseInt(s.getAlbum_id())==Integer.parseInt(String.valueOf(songobject.get("album_id")))){
+                                        //Log.d(TAG, "onResponse: song id = "+s.getAlbum_id()+" album id = "+songobject.get("album_id"));
+                                        int index = allSongList.indexOf(s);
+                                        allSongList.get(index).setAlbum_name(songobject.getString("album_name"));
+                                        allSongAdapter.notifyDataSetChanged();
+                                        isLoading = false;
+                                    }
+
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }*/
+
+                        }
+                        @Override
+                        public void onError(ANError error) {
+                            Log.e(TAG, "onError: "+error.getErrorDetail());
+                            Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onError: "+album.getAlbum_name());
+                            ((MainActivity)getActivity()).setVisibleFalse();
+                            isLoading =false;
+                            songCountsCalls++;
+                            callBackAfterRV();
+                        }
+                    });
+
+
+        }
+
+
+    }
+
+    public void setSongsByArrayAndGenre(ArrayList<FilteredAlbum> albums,String genre_id){
+
+        allSongList.clear();
+        totalCountCalls = albums.size();
+        songCountsCalls = 0;
+        for(FilteredAlbum album : albums){
+
+
+            AndroidNetworking.post(AppConfig.GET_SONGS_BY_GENRE)
+                    .addBodyParameter("album_id", album.getAlbum_id())
+                    .addBodyParameter("genre_id",genre_id)
                     .setTag("Album Details")
                     .setPriority(Priority.MEDIUM)
                     .build()
@@ -341,6 +439,8 @@ public class LibraryFragment extends Fragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            songCountsCalls++;
+                            callBackAfterRV();
                            /* try {
                                 JSONArray array = response.getJSONArray("album_details");
                                 for(int a = 0;a< array.length();a++){
@@ -368,7 +468,8 @@ public class LibraryFragment extends Fragment {
                             Log.d(TAG, "onError: "+album.getAlbum_name());
                             ((MainActivity)getActivity()).setVisibleFalse();
                             isLoading =false;
-                            hideDialog();
+                            songCountsCalls++;
+                            callBackAfterRV();
                         }
                     });
 
@@ -394,10 +495,12 @@ public class LibraryFragment extends Fragment {
             if((sp.getAlbumFilter().equals("All Albums"))){
 
                 albumSpinner.setSelection(0);
+                albumSpinner.setTag(R.id.pos,0);
 
             }else {
 
                 albumSpinner.setSelection(albumList.indexOf(sp.getAlbumFilter()));
+                albumSpinner.setTag(R.id.pos,albumList.indexOf(sp.getAlbumFilter()));
 
             }
             dataAdapter2.notifyDataSetChanged();
@@ -457,10 +560,12 @@ public class LibraryFragment extends Fragment {
             if((sp.getGenreFilter().equals("All Genre"))){
 
                 genreSpinner.setSelection(0);
+                genreSpinner.setTag(R.id.pos,0);
 
             }else {
 
                 genreSpinner.setSelection(genreList.indexOf(sp.getGenreFilter()));
+                genreSpinner.setTag(R.id.pos,genreList.indexOf(sp.getGenreFilter()));
 
             }
             dataAdapter6.notifyDataSetChanged();
@@ -540,7 +645,7 @@ public class LibraryFragment extends Fragment {
     public void setSpinners(){
 
        pDialog.setMessage("Loading Songs");
-       showDialog();
+        showDialog();
         //String artist = filters.getArtistFilter();
         String artist = sp.getArtistFilter();
         String hero = sp.getHeroFilter();
@@ -573,10 +678,20 @@ public class LibraryFragment extends Fragment {
         setHeroins(heroinNames);
         setGenres(AppController.getDb().getGnereNames());
         if(sp.getAlbumFilter().equals("All Albums")){
-            setSongs(albums);
+            if(sp.getGenreFilter().equals("All Genre")) {
+                setSongs(albums);
+            }else {
+                setSongsByArrayAndGenre(albums,AppController.getDb().getGenreId(sp.getGenreFilter().toString()));
+            }
         }else {
-            setSongByAlbumID(AppController.getDb().getAlbumIdByName(sp.getAlbumFilter().toString()));
+            if(sp.getGenreFilter().equals("All Genre")) {
+                setSongByAlbumID(AppController.getDb().getAlbumIdByName(sp.getAlbumFilter().toString()));
+            }else {
+                setSongByAlbumGenre(AppController.getDb().getAlbumIdByName(sp.getAlbumFilter().toString()),AppController.getDb().getGenreId(sp.getGenreFilter().toString()));
+            }
         }
+
+
 
 
     }
@@ -664,10 +779,45 @@ public class LibraryFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 sp.setAlbumilter(parent.getItemAtPosition(position).toString());
+                showDialog();
                 if(parent.getItemAtPosition(position).toString().equals("All Albums")){
-                    setSongs(albums);
+                    if(sp.getGenreFilter().equals("All Genre")) {
+                        setSongs(albums);
+                    }else {
+                        setSongsByArrayAndGenre(albums,AppController.getDb().getGenreId(sp.getGenreFilter().toString()));
+                    }
                 }else {
-                    setSongByAlbumID(AppController.getDb().getAlbumIdByName(parent.getItemAtPosition(position).toString()));
+                    if(sp.getGenreFilter().equals("All Genre")) {
+                        setSongByAlbumID(AppController.getDb().getAlbumIdByName(parent.getItemAtPosition(position).toString()));
+                    }else {
+                        setSongByAlbumGenre(AppController.getDb().getAlbumIdByName(parent.getItemAtPosition(position).toString()),AppController.getDb().getGenreId(sp.getGenreFilter().toString()));
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        genreSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                showDialog();
+                sp.setGenreFilter(parent.getItemAtPosition(position).toString());
+                if(sp.getAlbumFilter().toString().equals("All Albums")){
+                    if(parent.getItemAtPosition(position).toString().equals("All Genre")) {
+                        setSongs(albums);
+                    }else {
+                        setSongsByArrayAndGenre(albums,AppController.getDb().getGenreId(parent.getItemAtPosition(position).toString()));
+                    }
+                }else {
+                    if(parent.getItemAtPosition(position).toString().equals("All Genre")) {
+                        setSongByAlbumID(AppController.getDb().getAlbumIdByName(parent.getItemAtPosition(position).toString()));
+                    }else {
+                        setSongByAlbumGenre(AppController.getDb().getAlbumIdByName(sp.getAlbumFilter().toString()),AppController.getDb().getGenreId(parent.getItemAtPosition(position).toString()));
+                    }
                 }
             }
 
@@ -682,11 +832,11 @@ public class LibraryFragment extends Fragment {
         allSongList.clear();
 
 
-            showDialog();
+
 
             AndroidNetworking.post(AppConfig.GET_SONGS)
                     .addBodyParameter("album_id", albumIdByName)
-                    .setTag("Album Details")
+                    .setTag("songs")
                     .setPriority(Priority.MEDIUM)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
@@ -726,6 +876,9 @@ public class LibraryFragment extends Fragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            totalCountCalls = 1;
+                            songCountsCalls = 1;
+                            callBackAfterRV();
                            /* try {
                                 JSONArray array = response.getJSONArray("album_details");
                                 for(int a = 0;a< array.length();a++){
@@ -753,7 +906,9 @@ public class LibraryFragment extends Fragment {
 
                             ((MainActivity)getActivity()).setVisibleFalse();
                             isLoading =false;
-                            hideDialog();
+                            totalCountCalls = 1;
+                            songCountsCalls = 1;
+                            callBackAfterRV();
                         }
                     });
 
@@ -761,5 +916,107 @@ public class LibraryFragment extends Fragment {
 
     }
 
+    private void setSongByAlbumGenre(String albumIdByName,String genre_id) {
+        allSongList.clear();
+
+
+
+
+        AndroidNetworking.post(AppConfig.GET_SONGS_BY_GENRE)
+                .addBodyParameter("album_id", albumIdByName)
+                .addBodyParameter("genre_id",genre_id)
+                .setTag("songs")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        isLoading = false;
+                        ((MainActivity)getActivity()).setVisibleFalse();
+
+
+                        try {
+                            ((MainActivity)getActivity()).setVisibleFalse();
+
+                            JSONArray array = response.getJSONArray("songs");
+
+
+
+                            for(int a = 0;a< array.length();a++){
+
+                                JSONObject songobject = array.getJSONObject(a);
+                                Songs s = new Songs();
+                                s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(albumIdByName)));
+                                s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                s.setSong_title(songobject.getString("song_title"));
+                                if(!allSongList.contains(s)){
+                                    allSongList.add(s);
+                                }
+
+
+                            }
+
+                            allSongAdapter.notifyDataSetChanged();
+                            Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+                            hideDialog();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        totalCountCalls = 1;
+                        songCountsCalls = 1;
+                        callBackAfterRV();
+                           /* try {
+                                JSONArray array = response.getJSONArray("album_details");
+                                for(int a = 0;a< array.length();a++){
+                                    JSONObject songobject = array.getJSONObject(a);
+
+                                    if(Integer.parseInt(s.getAlbum_id())==Integer.parseInt(String.valueOf(songobject.get("album_id")))){
+                                        //Log.d(TAG, "onResponse: song id = "+s.getAlbum_id()+" album id = "+songobject.get("album_id"));
+                                        int index = allSongList.indexOf(s);
+                                        allSongList.get(index).setAlbum_name(songobject.getString("album_name"));
+                                        allSongAdapter.notifyDataSetChanged();
+                                        isLoading = false;
+                                    }
+
+                                }
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }*/
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+
+                        ((MainActivity)getActivity()).setVisibleFalse();
+                        isLoading =false;
+                        totalCountCalls = 1;
+                        songCountsCalls = 1;
+                        callBackAfterRV();
+                    }
+                });
+
+
+
+    }
+
+    public void callBackAfterRV(){
+
+        Log.d(TAG, "callBackAfterRV: totalcount = "+totalCountCalls +" songs count = "+songCountsCalls);
+        if(totalCountCalls == songCountsCalls&&!isSelectionSet){
+            setSelection();
+            isSelectionSet = true;
+            hideDialog();
+
+        }else if(totalCountCalls == songCountsCalls){
+            hideDialog();
+        }
+
+    }
 
 }

@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "848959091788",
+    "firebase_url": "https://tamil-songs-and-lyircs.firebaseio.com",
+    "project_id": "tamil-songs-and-lyircs",
+    "storage_bucket": "tamil-songs-and-lyircs.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848959091788:android:81d856192673da9f",
+        "android_client_info": {
+          "package_name": "in.beyonitysoftwares.besttamilsongs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848959091788-ad03v0rf3da303nrrr6euavjo47j1ik3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.beyonitysoftwares.besttamilsongs",
+            "certificate_hash": "e4033bc31c4322db0800a4029b5a81fd62ca5eb0"
+          }
+        },
+        {
+          "client_id": "848959091788-c0l5vs1tcqhqbd7umokl4k2sg8qlr5an.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.beyonitysoftwares.besttamilsongs",
+            "certificate_hash": "f090811f77bab00374821cff36dda40c80b6c4c6"
+          }
+        },
+        {
+          "client_id": "848959091788-61dp4pn934k00kuo3uhvh8r8ndgpn5lq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBphTXzdJHZtM_d-iKDv1NK3A7dS62SHMI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848959091788-61dp4pn934k00kuo3uhvh8r8ndgpn5lq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

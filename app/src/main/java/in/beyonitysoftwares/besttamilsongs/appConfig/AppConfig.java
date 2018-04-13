@@ -49,6 +49,8 @@ public class AppConfig {
 
 	//no of songs
 	public static String GET_SONGS= "https://beyonitysoftwares.cf/tamillyrics/api/getSongs.php";
+	//get songs by genre id
+	public static String GET_SONGS_BY_GENRE= "https://beyonitysoftwares.cf/tamillyrics/api/getSongsByGenre.php";
 
 
 
