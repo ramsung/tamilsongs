@@ -17,6 +17,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:id="@+id/songlistlayout"
+        android:clickable="true"
         android:layout_weight="1"
         android:orientation="vertical"
         android:paddingRight="10dp"
@@ -36,6 +38,17 @@
 
     </LinearLayout>
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="5dp"
+        android:clickable="true"
+        android:id="@+id/context"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_more_vert_black_24dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp" />
     <ImageButton
         android:id="@+id/imageButton6"
         android:layout_width="wrap_content"

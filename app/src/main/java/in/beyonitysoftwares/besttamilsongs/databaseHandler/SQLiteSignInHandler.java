@@ -27,7 +27,7 @@ public class SQLiteSignInHandler extends SQLiteOpenHelper {
 	private static final String TABLE_USER = "user";
 	// Login Table Columns names
 	private static final String KEY_ID = "id";
-	private static final String KEY_NAME = "displayName";
+	private static final String KEY_NAME = "name";
 	private static final String KEY_EMAIL = "email";
 
 
@@ -88,7 +88,7 @@ public class SQLiteSignInHandler extends SQLiteOpenHelper {
 		cursor.moveToFirst();
 		if (cursor.getCount() > 0) {
 			user.put("id",String.valueOf(cursor.getInt(0)));
-			user.put("displayName", cursor.getString(2));
+			user.put("name", cursor.getString(2));
 			user.put("email", cursor.getString(1));
 
 		}

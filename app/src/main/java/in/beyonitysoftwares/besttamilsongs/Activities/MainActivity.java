@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
@@ -17,6 +18,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -47,6 +49,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.inmobi.sdk.InMobiSdk;
 
 import org.json.JSONArray;
@@ -55,6 +60,7 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.adapters.playListAdapter;
@@ -63,6 +69,8 @@ import in.beyonitysoftwares.besttamilsongs.appConfig.AppController;
 import in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager;
 import in.beyonitysoftwares.besttamilsongs.customViews.SmoothProgressBar;
 import in.beyonitysoftwares.besttamilsongs.databaseHandler.DatabaseHandler;
+import in.beyonitysoftwares.besttamilsongs.databaseHandler.SQLiteSignInHandler;
+import in.beyonitysoftwares.besttamilsongs.databaseHandler.SessionManager;
 import in.beyonitysoftwares.besttamilsongs.fragments.AboutFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.FavouritesFragment;
 import in.beyonitysoftwares.besttamilsongs.fragments.LibraryFragment;
@@ -107,6 +115,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     int SIGN_IN = 1;
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
+    private SessionManager session;
+    private SQLiteSignInHandler db;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -148,9 +158,24 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        signIn();
-        showDialog();
-        getupdatetime();
+        db = new SQLiteSignInHandler(getApplicationContext());
+
+        // Session manager
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        session = new SessionManager(getApplicationContext());
+        if (!session.isLoggedIn()||user==null) {
+
+            signIn();
+
+        } else {
+            HashMap<String, String> details = db.getUserDetails();
+            Toast.makeText(this, "Welcome " + details.get("name"), Toast.LENGTH_SHORT).show();
+            showDialog();
+            getupdatetime();
+
+            //logoutUser();
+        }
+
 
 
     }
@@ -158,6 +183,30 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, SIGN_IN);
     }
+    public void signinTry() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+        builder.setTitle("Error While Connecting");
+        builder.setMessage("oops Looks like network issues make sure your internet connection is on and try again... ");
+        builder.setNegativeButton("Quit",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                        System.exit(1);
+                    }
+                });
+        builder.setPositiveButton("Try again",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                        signIn();
+                    }
+                });
+
+        builder.show();
+
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -169,13 +218,76 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
+                handleSignInResult(task);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
+                signinTry();
                 // ...
             }
         }
     }
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+
+            // Signed in successfully, show authenticated UI.
+            //updateUI(account);
+            Toast.makeText(this, "Welcome " + account.getDisplayName(), Toast.LENGTH_SHORT).show();
+            String name = account.getDisplayName();
+            String email = account.getEmail();
+
+
+            user(email, name, FirebaseInstanceId.getInstance().getToken());
+
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            signinTry();
+            //updateUI(null);
+        }
+    }
+
+    private void user(String email, String name, String token) {
+
+        AndroidNetworking.post(AppConfig.GET_LOGIN_REGISTER)
+                .addBodyParameter("email", email)
+                .addBodyParameter("name",name)
+                .addBodyParameter("fcmtoken",token)
+                .setTag("lyrics")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: "+response);
+                        try {
+
+                            boolean error = response.getBoolean("error");
+                            if (!error) {
+                                session.setLogin(true);
+                                JSONObject user = response.getJSONObject("user");
+
+                                db.addUser(response.getInt("id"),user.getString("email"),user.getString("name"));
+                                showDialog();
+                                getupdatetime();
+                            }
+                        }catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+                        signinTry();
+                    }
+                });
+    }
+
     public void callBackAfterNetworking(){
         Log.d(TAG, "callBackAfterNetworking: "+updateAll);
         if(updateAll==6) {
@@ -678,6 +790,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         Log.i(TAG, "onDestroy: am in destory");
+        session.setLogin(false);
+        db.deleteUsers();
 
         super.onDestroy();
 
@@ -698,10 +812,16 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         sendBroadcast(setplaylist);
         Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
         sendBroadcast(broadcastIntent);
+    }
 
-
-
-
+    public void addToQueue(Songs song){
+        StorageUtil storageUtil = new StorageUtil(getApplicationContext());
+        ArrayList<Songs> list = storageUtil.loadAudio();
+        list.add(song);
+        playlist.add(song);
+        playlistadapter.notifyDataSetChanged();
+        storageUtil.storeAudio(list);
+        player.getPlaylist().add(song);
     }
     @Override
     public void onBackPressed() {

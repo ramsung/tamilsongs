@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -50,10 +51,12 @@ import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.getApp
 /**
  * A simple {@link Fragment} subclass.
  */
-public class LibraryFragment extends Fragment {
+public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterCallback{
 
 
     CustomViewPager viewPager;
+
+
     public enum filterSongBy{
         song,year,movie;
     }
@@ -98,6 +101,8 @@ public class LibraryFragment extends Fragment {
     int totalCountCalls = 0;
     ArrayList<FilteredAlbum> albums;
     boolean isSelectionSet = false;
+
+
     public LibraryFragment() {
         // Required empty public constructor
     }
@@ -158,17 +163,18 @@ public class LibraryFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         allsongsrv.setLayoutManager(layoutManager);
         allSongAdapter = new AllSongAdapter(getContext(),allSongList);
+        allSongAdapter.setMainCallbacks(this);
         allsongsrv.setAdapter(allSongAdapter);
-        allsongsrv.addOnItemTouchListener(new RecyclerItemClickListener(getContext(), new RecyclerItemClickListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Songs clickedItem = allSongAdapter.getItem(position);
-                LoadingVisibleTrue();
-                getLyrics(clickedItem);
-                ((MainActivity)getActivity()).playSong(clickedItem);
 
+
+        allsongsrv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+
+                return false;
             }
-        }));
+        });
         //initSongs();
         setSpinners();
         //setSelection();
@@ -1016,6 +1022,20 @@ public class LibraryFragment extends Fragment {
         }else if(totalCountCalls == songCountsCalls){
             hideDialog();
         }
+
+    }
+    @Override
+    public void MenuCall(int position) {
+        Songs clickedItem = allSongAdapter.getItem(position);
+        ((MainActivity)getActivity()).addToQueue(clickedItem);
+    }
+
+    @Override
+    public void songCallBack(int position) {
+        Songs clickedItem = allSongAdapter.getItem(position);
+        LoadingVisibleTrue();
+        getLyrics(clickedItem);
+        ((MainActivity)getActivity()).playSong(clickedItem);
 
     }
 

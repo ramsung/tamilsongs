@@ -53,6 +53,10 @@ public class AppConfig {
 	public static String GET_SONGS_BY_GENRE= "https://beyonitysoftwares.cf/tamillyrics/api/getSongsByGenre.php";
 
 
+	//login register
+	public static String GET_LOGIN_REGISTER= "https://beyonitysoftwares.cf/tamillyrics/api/users.php";
+
+
 
 	public static String ARTIST_NAME = "AR Rahman";
 	public static int ARTIST_DB_ID = 1;
