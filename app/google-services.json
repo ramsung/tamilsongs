@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "848959091788-9v6v60todln03f844euksdgadh5i92ci.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.beyonitysoftwares.besttamilsongs",
+            "certificate_hash": "2fb1257c5e1a33a28fb6d3b5976b3cc0837ab212"
+          }
+        },
+        {
           "client_id": "848959091788-ad03v0rf3da303nrrr6euavjo47j1ik3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

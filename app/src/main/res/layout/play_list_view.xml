@@ -26,12 +26,14 @@
             android:id="@+id/songTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/convergence"
             android:text="TextView" />
 
         <TextView
             android:id="@+id/albumTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/convergence"
             android:text="TextView" />
 
     </LinearLayout>

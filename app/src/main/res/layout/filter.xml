@@ -15,26 +15,29 @@
         <Spinner
             android:id="@+id/ArtistSpinner"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:gravity="center" />
+            android:textAlignment="center" />
 
         <Spinner
             android:id="@+id/HeroSpinner"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:gravity="center" />
+            android:textAlignment="center" />
+
         <Spinner
             android:id="@+id/HeroinSpinner"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:gravity="center" />
+            android:textAlignment="center" />
 
 
 
@@ -50,30 +53,32 @@
         android:orientation="horizontal">
 
 
-
-
         <Spinner
             android:id="@+id/YearSpinner"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:gravity="center" />
+            android:textAlignment="center" />
 
         <Spinner
             android:id="@+id/AlbumSpinner"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:gravity="center" />
+            android:textAlignment="center" />
+
         <Spinner
             android:id="@+id/GenreSpinner"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:gravity="center" />
+            android:textAlignment="center" />
     </LinearLayout>
     <!-- <LinearLayout
         android:layout_width="match_parent"

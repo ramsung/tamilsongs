@@ -917,7 +917,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         Log.d(TAG, "getAlbumsByFilter: "+st);
-        Cursor c = db.rawQuery(st, null);
+         Cursor c = db.rawQuery(st, null);
         if (c != null) {
             while (c.moveToNext()) {
                 String album_id = c.getString(c.getColumnIndex(KEY_ALBUM_ID));
