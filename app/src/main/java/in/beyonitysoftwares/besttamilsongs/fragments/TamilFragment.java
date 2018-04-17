@@ -89,7 +89,7 @@ public class TamilFragment extends Fragment {
 
 
         AdRequest adRequest1 = new AdRequest.Builder()
-                .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
+              //  .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
                 .build();
         adViewtop.loadAd(adRequest1);
         adViewtop.setAdListener(new AdListener() {
@@ -126,7 +126,7 @@ public class TamilFragment extends Fragment {
             }
         });
         AdRequest adRequest2 = new AdRequest.Builder()
-                 .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
+              //   .addTestDevice("45AEA33662E36BBB9B11FE55E4EFA874")
                  .build();
         adViewMiddle.loadAd(adRequest2);
         adViewMiddle.setAdListener(new AdListener() {
