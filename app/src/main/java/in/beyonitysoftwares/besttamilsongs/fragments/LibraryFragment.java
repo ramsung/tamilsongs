@@ -167,14 +167,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         allsongsrv.setAdapter(allSongAdapter);
 
 
-        allsongsrv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
 
-
-                return false;
-            }
-        });
         //initSongs();
         setSpinners();
         //setSelection();
@@ -1039,4 +1032,8 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
 
     }
 
+    @Override
+    public void notifyAdapter() {
+        allSongAdapter.notifyDataSetChanged();
+    }
 }

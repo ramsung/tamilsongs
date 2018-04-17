@@ -52,6 +52,9 @@ public class AppConfig {
 	//get songs by genre id
 	public static String GET_SONGS_BY_GENRE= "https://beyonitysoftwares.cf/tamillyrics/api/getSongsByGenre.php";
 
+	//get songs by id
+	public static String GET_SONGS_BY_ID= "https://beyonitysoftwares.cf/tamillyrics/api/getSongsById.php";
+
 
 	//login register
 	public static String GET_LOGIN_REGISTER= "https://beyonitysoftwares.cf/tamillyrics/api/users.php";

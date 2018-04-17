@@ -173,6 +173,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             showDialog();
             getupdatetime();
 
+
             //logoutUser();
         }
 
@@ -272,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 db.addUser(response.getInt("id"),user.getString("email"),user.getString("name"));
                                 showDialog();
                                 getupdatetime();
+
                             }
                         }catch (JSONException e) {
                             e.printStackTrace();
@@ -293,8 +295,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         if(updateAll==6) {
             Log.d(TAG, "callBackAfterNetworking: called library");
             //libraryFragment.setSpinners();
-            init();
-            hideDialog();
+            getFav();
 
         }
     }
@@ -1208,6 +1209,60 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     @Override
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading genre from the database", Toast.LENGTH_SHORT).show();
+                        setVisibleFalse();
+
+                        //isLoading = false;
+                    }
+                });
+
+
+    }
+
+    public void getFav(){
+
+        AndroidNetworking.post(AppConfig.GET_FAV)
+                .addBodyParameter("user_id", db.getUserDetails().get("id"))
+                .setTag("fav")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        boolean answer = false;
+                        Log.d(TAG, "onResponse: fav "+response);
+                        try {
+
+                            boolean error = response.getBoolean("error");
+                            if (!error) {
+                                JSONArray array = response.getJSONArray("favs");
+                                for (int a = 0; a < array.length(); a++) {
+                                    JSONObject object = array.getJSONObject(a);
+                                    int id = object.getInt("id");
+                                    int user_id = object.getInt("user_id");
+                                    int song_id = object.getInt("song_id");
+
+
+                                    AppController.getDb().insertFavorites(id,user_id, song_id);
+
+                                }
+                                init();
+                                hideDialog();
+
+                            }
+
+
+
+                            //hideDialog();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: fav"+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading genre from the database", Toast.LENGTH_SHORT).show();
                         setVisibleFalse();
 

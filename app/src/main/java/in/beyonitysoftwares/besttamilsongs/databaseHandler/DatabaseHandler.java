@@ -10,9 +10,11 @@ import android.util.Log;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Filter;
 
 import in.beyonitysoftwares.besttamilsongs.models.FilteredAlbum;
+import in.beyonitysoftwares.besttamilsongs.models.Songs;
 
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
@@ -991,4 +993,81 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         return id;
     }
+
+
+    public boolean insertFavorites(int id,int user_id, int song_id) {
+
+        Log.d(TAG, "insertFavorites: gonna call isfavExists"+user_id +" "+song_id);
+        if(!isFavExists(user_id,song_id)){
+            SQLiteDatabase db = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(KEY_FAVORITE_ID,id);
+            contentValues.put(KEY_USER_ID, user_id);
+            contentValues.put(KEY_SONG_ID, song_id);
+
+            db.insert(TABLE_FAVORITE, null, contentValues);
+            Log.d(TAG, "insertFavorites: successfully added fav");
+            return true;
+        }
+
+        return false;
+
+
+    }
+    public boolean deleteFavorites(int user_id, int song_id) {
+
+        SQLiteDatabase db = getWritableDatabase();
+        String st = "DELETE FROM "+TABLE_FAVORITE+" WHERE user_id = '"+user_id+"' AND song_id = '"+song_id+"'";
+        db.execSQL(st);
+        return true;
+
+
+    }
+
+    public List<Integer> getFavorites(int user_id){
+        List<Integer> songList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_FAVORITE +" WHERE user_id = '"+user_id+"'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        //cursor.moveToFirst();
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                int song_id = cursor.getInt(cursor.getColumnIndex(KEY_SONG_ID));
+                songList.add(song_id);
+            }
+        }
+        // return user
+
+        if(cursor != null){
+            cursor.close();
+        }
+        return songList;
+    }
+
+    public boolean isFavExists(int user_id,int song_id){
+        List<Songs> songList = new ArrayList<>();
+        String selectQuery = "SELECT  * FROM " + TABLE_FAVORITE +" WHERE user_id = '"+user_id+"' AND song_id = '"+song_id+"'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        //cursor.moveToFirst();
+        int count = cursor.getCount();
+        Log.d(TAG, "isFavExists: "+count);
+
+        if(cursor != null){
+            cursor.close();
+        }
+        if(count == 0){
+            return false;
+        }else {
+            return true;
+        }
+
+        // return user
+
+    }
+
 }

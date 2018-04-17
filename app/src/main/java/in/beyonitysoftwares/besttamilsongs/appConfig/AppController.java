@@ -14,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 import com.danikula.videocache.HttpProxyCacheServer;
 
 import in.beyonitysoftwares.besttamilsongs.databaseHandler.DatabaseHandler;
+import in.beyonitysoftwares.besttamilsongs.databaseHandler.SQLiteSignInHandler;
 import in.beyonitysoftwares.besttamilsongs.untils.mediaCache;
 
 public class AppController extends Application {
@@ -25,6 +26,8 @@ public class AppController extends Application {
 	private static String APP_LINK = "https://besttamilsongs.beyonitysoftwares.in";
 	private static AppController mInstance;
 	private static DatabaseHandler db;
+	private static SQLiteSignInHandler signDb;
+
 
 	@Override
 	public void onCreate() {
@@ -32,6 +35,7 @@ public class AppController extends Application {
 		StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
 		StrictMode.setVmPolicy(builder.build());
 		db = new DatabaseHandler(this);
+		signDb = new SQLiteSignInHandler(this);
 		mInstance = this;
 	}
 
@@ -87,5 +91,8 @@ public class AppController extends Application {
 
 	public static DatabaseHandler getDb(){
 		return db;
+	}
+	public static SQLiteSignInHandler getSignDb(){
+		return signDb;
 	}
 }

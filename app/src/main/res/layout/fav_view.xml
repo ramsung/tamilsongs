@@ -58,5 +58,5 @@
         android:layout_marginRight="5dp"
         android:layout_marginStart="5dp"
         android:background="@android:color/transparent"
-        app:srcCompat="@drawable/heart_outline" />
+        app:srcCompat="@drawable/heart_added" />
 </LinearLayout>
