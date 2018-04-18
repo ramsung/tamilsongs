@@ -33,6 +33,8 @@ import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppController;
 import in.beyonitysoftwares.besttamilsongs.databaseHandler.SessionManager;
+import in.beyonitysoftwares.besttamilsongs.fragments.LibraryFragment;
+import in.beyonitysoftwares.besttamilsongs.fragments.LyricsFragment;
 import in.beyonitysoftwares.besttamilsongs.models.Songs;
 import in.beyonitysoftwares.besttamilsongs.music.MusicService;
 
@@ -42,13 +44,17 @@ import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
  * Created by mohan on 20/3/18.
  */
 
-public class AllSongAdapter extends RecyclerView.Adapter<AllSongAdapter.viewHolder> {
+public class AllSongAdapter extends RecyclerView.Adapter<AllSongAdapter.viewHolder>{
 
 
     Context context;
     List<Songs> allSongsList;
     String link = "https://beyonitysoftwares.cf/tamillyrics/img/";
     AdapterCallback adapterCallback;
+
+
+
+
 
     public interface AdapterCallback {
         void MenuCall(int position);
@@ -58,6 +64,8 @@ public class AllSongAdapter extends RecyclerView.Adapter<AllSongAdapter.viewHold
     public AllSongAdapter(Context context, List<Songs> allSongsList) {
         this.context = context;
         this.allSongsList = allSongsList;
+
+
     }
 
     @NonNull
@@ -205,9 +213,6 @@ public class AllSongAdapter extends RecyclerView.Adapter<AllSongAdapter.viewHold
                                     AppController.getDb().insertFavorites(id,user_id, song_id);
                                     holder.fav.setImageResource(R.drawable.heart_added);
                                     adapterCallback.notifyAdapter();
-
-
-
 
                             }
 

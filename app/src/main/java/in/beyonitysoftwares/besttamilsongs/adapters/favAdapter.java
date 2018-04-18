@@ -24,7 +24,9 @@ import com.bumptech.glide.Glide;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.appConfig.AppConfig;
@@ -80,7 +82,13 @@ public class favAdapter extends RecyclerView.Adapter<favAdapter.viewHolder> {
         Songs song = allSongsList.get(position);
         holder.albumTitle.setText(song.getAlbum_name());
         holder.songTitle.setText(song.getSong_title());
-
+        boolean isThere = AppController.getDb().isFavExists(Integer.parseInt(AppController.getSignDb().getUserDetails().get("id")), Integer.parseInt(song
+                .getSong_id()));
+        if(isThere){
+            holder.fav.setImageResource(R.drawable.heart_added);
+        }else {
+            holder.fav.setImageResource(R.drawable.heart_outline);
+        }
 
         Glide.with(context).load(link+""+song.getAlbum_id()+".png").into(holder.albumview);
         holder.songlayout.setOnClickListener(new View.OnClickListener() {
@@ -187,9 +195,13 @@ public class favAdapter extends RecyclerView.Adapter<favAdapter.viewHolder> {
                                 //JSONArray array = response.getJSONArray("fav");
                                 AppController.getDb().deleteFavorites(Integer.parseInt(AppController.getSignDb().getUserDetails().get("id")), Integer.parseInt(song_id));
                                 holder.fav.setImageResource(R.drawable.heart_outline);
-                                for(Songs s : allSongsList){
+                                List<Songs> dummy = new CopyOnWriteArrayList<>();
+
+                                dummy.addAll(allSongsList);
+                                for(Songs s : dummy){
                                     if(s.getSong_id().equals(song_id)){
                                         allSongsList.remove(s);
+
                                     }
                                 }
                                 adapterCallback.notifyAdapter();
@@ -207,8 +219,6 @@ public class favAdapter extends RecyclerView.Adapter<favAdapter.viewHolder> {
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(context, "error loading songs from the database", Toast.LENGTH_SHORT).show();
-
-
 
                     }
                 });

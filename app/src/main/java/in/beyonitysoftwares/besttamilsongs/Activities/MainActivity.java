@@ -61,6 +61,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.adapters.playListAdapter;
@@ -81,7 +82,7 @@ import in.beyonitysoftwares.besttamilsongs.music.MusicService;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
 
-public class MainActivity extends AppCompatActivity implements MusicService.mainActivityCallback,View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements MusicService.mainActivityCallback,View.OnClickListener, playListAdapter.AdapterCallback{
 
     private TextView mTextMessage;
     int updateAll = 0;
@@ -345,7 +346,11 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         viewPager.setPagingEnabled(false);
 
 
+
         playlist = new ArrayList<>();
+        if(new StorageUtil(this).loadAudio()!=null){
+            playlist.addAll(new StorageUtil(this).loadAudio());
+        }
         mTextMessage = (TextView) findViewById(R.id.message);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -399,6 +404,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         playlistadapter = new playListAdapter(getApplicationContext(),playlist);
         rvPlayList.setAdapter(playlistadapter);
         playlistadapter.notifyDataSetChanged();
+        playlistadapter.setMainCallbacks(this);
         mHandler.post(runnable);
 
     }
@@ -803,16 +809,30 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
         StorageUtil storageUtil = new StorageUtil(getApplicationContext());
         setVisibleTrue();
-        playlist.clear();
-        playlist.add(song);
-        playlistadapter.notifyDataSetChanged();
-        storageUtil.storeAudio(playlist);
-        storageUtil.storeAudioIndex(0);
-        Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
-        Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
-        sendBroadcast(setplaylist);
-        Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
-        sendBroadcast(broadcastIntent);
+        int index = 0;
+        if(!playlist.contains(song)){
+            List<Songs> dummy = new ArrayList<>();
+            dummy.addAll(playlist);
+            playlist.clear();
+            playlist.add(0,song);
+            playlist.addAll(dummy);
+            playlistadapter.notifyDataSetChanged();
+            storageUtil.storeAudio(playlist);
+            storageUtil.storeAudioIndex(0);
+            Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
+            Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
+            sendBroadcast(setplaylist);
+            Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+            sendBroadcast(broadcastIntent);
+        }else {
+            index = playlist.indexOf(song);
+            storageUtil.storeAudioIndex(index);
+            Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
+            Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+            sendBroadcast(broadcastIntent);
+        }
+
+
     }
 
     public void addToQueue(Songs song){
@@ -829,10 +849,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (drawer.isDrawerOpen(GravityCompat.END)) {
-            drawer.closeDrawer(GravityCompat.END);
         } else {
-
             super.onBackPressed();
         }
     }
@@ -841,8 +858,6 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (drawer.isDrawerOpen(GravityCompat.END)) {
-            drawer.closeDrawer(GravityCompat.END);
         }
     }
 
@@ -1241,14 +1256,10 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     int id = object.getInt("id");
                                     int user_id = object.getInt("user_id");
                                     int song_id = object.getInt("song_id");
-
-
                                     AppController.getDb().insertFavorites(id,user_id, song_id);
-
                                 }
                                 init();
                                 hideDialog();
-
                             }
 
 
@@ -1273,4 +1284,43 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
     }
 
+    public void reloadFav(){
+            favouritesFragment.reload();
+    }
+
+    public void removeFavImageFromAllSongs(){
+        libraryFragment.updateAdapter();
+    }
+
+
+    @Override
+    public void removeThis(int position) {
+            playlist.remove(position);
+            playlistadapter.notifyDataSetChanged();
+            new StorageUtil(this).storeAudio(playlist);
+
+    }
+
+    @Override
+    public void removeAll() {
+            if(playlist!=null){
+                playlist.clear();
+                new StorageUtil(this).clearCachedAudioPlaylist();
+                playlistadapter.notifyDataSetChanged();
+            }
+    }
+
+    @Override
+    public void songCallBack(int position) {
+            getLyrics(playlist.get(position));
+            playSong(playlist.get(position));
+
+    }
+
+    @Override
+    public void notifyAdapter() {
+            libraryFragment.updateAdapter();
+            favouritesFragment.reload();
+    }
 }
+

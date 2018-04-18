@@ -51,6 +51,7 @@ public class FavouritesFragment extends Fragment implements favAdapter.AdapterCa
     }
 
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class FavouritesFragment extends Fragment implements favAdapter.AdapterCa
     @Override
     public void notifyAdapter() {
         adapter.notifyDataSetChanged();
+        ((MainActivity)getActivity()).removeFavImageFromAllSongs();
     }
     public void getSongs(){
         Log.d(TAG, "getSongs: "+songids.size());
@@ -109,6 +111,7 @@ public class FavouritesFragment extends Fragment implements favAdapter.AdapterCa
                                 s.setAlbum_id(String.valueOf(songobject.get("album_id")));
                                 s.setSong_id(String.valueOf(songobject.get("song_id")));
                                 s.setSong_title(songobject.getString("song_title"));
+                                s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(songobject.getString("album_id"))));
                                 if(!favlist.contains(s)){
                                     favlist.add(s);
                                 }
@@ -173,5 +176,19 @@ public class FavouritesFragment extends Fragment implements favAdapter.AdapterCa
                     }
                 });
 
+    }
+
+    public void reload(){
+        songids = AppController.getDb().getFavorites(Integer.parseInt(AppController.getSignDb().getUserDetails().get("id")));
+        favsongsrv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
+        favsongsrv.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        favsongsrv.setLayoutManager(layoutManager);
+        favlist.clear();
+        adapter = new favAdapter(getContext(),favlist);
+        adapter.setMainCallbacks(this);
+        favsongsrv.setAdapter(adapter);
+        getSongs();
+        adapter.notifyDataSetChanged();
     }
     }

@@ -17,6 +17,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:id="@+id/songlistlayout"
+        android:clickable="true"
         android:layout_weight="1"
         android:orientation="vertical"
         android:paddingRight="10dp"
@@ -26,20 +28,29 @@
             android:id="@+id/songTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/convergence"
             android:text="TextView" />
 
         <TextView
             android:id="@+id/albumTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/convergence"
             android:text="TextView" />
 
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/imageButton6"
+        android:id="@+id/context"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:src="@drawable/ic_more_vert_black_24dp" />
+    <ImageButton
+        android:id="@+id/fav"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginEnd="5dp"

@@ -103,6 +103,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
     boolean isSelectionSet = false;
 
 
+
     public LibraryFragment() {
         // Required empty public constructor
     }
@@ -1034,6 +1035,22 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
 
     @Override
     public void notifyAdapter() {
+        allSongAdapter.notifyDataSetChanged();
+        ((MainActivity)getActivity()).reloadFav();
+
+    }
+
+    public void updateAdapter(){
+        /*int position = -1;
+        for(Songs s : allSongList){
+            if(s.getSong_id().equals(song.getSong_id())){
+                position = allSongList.indexOf(s);
+            }
+        }
+        Log.d(TAG, "removeFav: "+position);
+        allsongsrv.findViewHolderForAdapterPosition(position);
+        allSongAdapter.removeFav(song);*/
+
         allSongAdapter.notifyDataSetChanged();
     }
 }
