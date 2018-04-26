@@ -3,6 +3,8 @@
     <string name="title_player">Music Box</string>
     <string name="title_gallery">Library</string>
     <string name="title_Favourites">Favourites</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_about">About</string>
     <string name="app_summary">The Best Tamil Song Streaming App with Lyrics</string>
     <string name="share">Share</string>

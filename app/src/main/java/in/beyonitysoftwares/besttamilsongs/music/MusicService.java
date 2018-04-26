@@ -948,11 +948,13 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
 			//Get the new media index form SharedPreferences
 			audioIndex = new StorageUtil(getApplicationContext()).loadAudioIndex();
-			Log.d(TAG, "onItemClick: am in new song");
+			Log.d(TAG, "onItemClick: am in new song audio index"+audioIndex+" condition"+(audioIndex != -1 && audioIndex < playlist.size()));
 			if (audioIndex != -1 && audioIndex < playlist.size()) {
 				//index is in a valid range
 				Songs s = new StorageUtil(getApplicationContext()).loadAudio().get(audioIndex);
+				Log.d(TAG, "onItemClick: "+s.getSong_title());
 				for (Songs sg : playlist) {
+
 					if (s.getSong_title().equals(sg.getSong_title())) {
 						audioIndex = playlist.indexOf(sg);
 						activeSong = playlist.get(audioIndex);

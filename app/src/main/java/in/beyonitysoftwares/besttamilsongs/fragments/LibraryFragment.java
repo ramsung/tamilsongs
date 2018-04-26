@@ -198,10 +198,10 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                                 String lyrics_four = object.getString("lyrics_four");
                                 ((MainActivity)getActivity()).setLyrics(lyrics_one,lyrics_two,lyrics_three,lyrics_four);
 
-                                LoadingVisibleFalse();
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                LoadingVisibleFalse();
+
                             }
 
 
@@ -210,7 +210,6 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                         public void onError(ANError error) {
                             Log.e(TAG, "onError: "+error.getErrorDetail());
                             Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
-                            LoadingVisibleFalse();
 
                             //isLoading = false;
                         }
@@ -315,11 +314,10 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                         public void onResponse(JSONObject response) {
 
                             isLoading = false;
-                            ((MainActivity)getActivity()).setVisibleFalse();
+
 
 
                             try {
-                                ((MainActivity)getActivity()).setVisibleFalse();
 
                                 JSONArray array = response.getJSONArray("songs");
 
@@ -375,7 +373,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                             Log.e(TAG, "onError: "+error.getErrorDetail());
                             Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onError: "+album.getAlbum_name());
-                            ((MainActivity)getActivity()).setVisibleFalse();
+
                             isLoading =false;
                             songCountsCalls++;
                             callBackAfterRV();
@@ -408,11 +406,10 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                         public void onResponse(JSONObject response) {
 
                             isLoading = false;
-                            ((MainActivity)getActivity()).setVisibleFalse();
+
 
 
                             try {
-                                ((MainActivity)getActivity()).setVisibleFalse();
 
                                 JSONArray array = response.getJSONArray("songs");
 
@@ -466,7 +463,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                             Log.e(TAG, "onError: "+error.getErrorDetail());
                             Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onError: "+album.getAlbum_name());
-                            ((MainActivity)getActivity()).setVisibleFalse();
+
                             isLoading =false;
                             songCountsCalls++;
                             callBackAfterRV();
@@ -479,12 +476,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
 
     }
 
-    public void LoadingVisibleTrue(){
-        ((MainActivity) getActivity()).setVisibleTrue();
-    }
-    public void LoadingVisibleFalse(){
-        ((MainActivity) getActivity()).setVisibleFalse();
-    }
+
 
     public void setAlbums(ArrayList<String> values){
         if(albumList !=null){
@@ -845,11 +837,10 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                         public void onResponse(JSONObject response) {
 
                             isLoading = false;
-                            ((MainActivity)getActivity()).setVisibleFalse();
 
 
                             try {
-                                ((MainActivity)getActivity()).setVisibleFalse();
+
 
                                 JSONArray array = response.getJSONArray("songs");
 
@@ -904,7 +895,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                             Log.e(TAG, "onError: "+error.getErrorDetail());
                             Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
 
-                            ((MainActivity)getActivity()).setVisibleFalse();
+
                             isLoading =false;
                             totalCountCalls = 1;
                             songCountsCalls = 1;
@@ -934,11 +925,10 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                     public void onResponse(JSONObject response) {
 
                         isLoading = false;
-                        ((MainActivity)getActivity()).setVisibleFalse();
 
 
                         try {
-                            ((MainActivity)getActivity()).setVisibleFalse();
+
 
                             JSONArray array = response.getJSONArray("songs");
 
@@ -993,7 +983,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
 
-                        ((MainActivity)getActivity()).setVisibleFalse();
+
                         isLoading =false;
                         totalCountCalls = 1;
                         songCountsCalls = 1;
@@ -1027,7 +1017,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
     @Override
     public void songCallBack(int position) {
         Songs clickedItem = allSongAdapter.getItem(position);
-        LoadingVisibleTrue();
+
         getLyrics(clickedItem);
         ((MainActivity)getActivity()).playSong(clickedItem);
 

@@ -18,6 +18,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     playListAdapter playlistadapter;
     RecyclerView rvPlayList;
     private static final String TAG = "MainActivity";
-
+    DrawerLayout drawer;
     private ProgressDialog pDialog;
     //db
     //DatabaseHandler db;
@@ -285,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
-                        setVisibleFalse();
+
                         signinTry();
                     }
                 });
@@ -332,8 +333,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         lyricsFragment = new LyricsFragment();
         favouritesFragment = new FavouritesFragment();
         libraryFragment = new LibraryFragment();
-        loading = (SmoothProgressBar) findViewById(R.id.google_now);
-        loading.setVisibility(View.INVISIBLE);
+
         viewPager = (CustomViewPager) findViewById(R.id.mainVG);
         FragmentPageAdapter pageAdapter = new FragmentPageAdapter(getSupportFragmentManager());
         pageAdapter.addFragment(lyricsFragment,"Lyrics");
@@ -354,6 +354,10 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         mTextMessage = (TextView) findViewById(R.id.message);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -379,8 +383,6 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             }
         });
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
 
         playlistButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -394,7 +396,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         });
 
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+       NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View view = navigationView.getHeaderView(0);
         rvPlayList = (RecyclerView) findViewById(R.id.rvPlaylist);
         rvPlayList.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
@@ -535,7 +537,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
 
-                        setVisibleFalse();
+
                         //isLoading = false;
                     }
                 });
@@ -604,6 +606,10 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             MusicService.LocalBinder binder = (MusicService.LocalBinder) service;
             player = binder.getService();
             player.setMainCallbacks(MainActivity.this);
+            if(new StorageUtil(getApplicationContext()).loadAudio()!=null) {
+                Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
+                sendBroadcast(setplaylist);
+            }
             update();
             serviceBound = true;
             Log.d(TAG, "calls: now service bound true");
@@ -622,12 +628,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         }
 
     };
-        public void setVisibleTrue(){
-        loading.setVisibility(View.VISIBLE);
-    }
-    public void setVisibleFalse(){
-        loading.setVisibility(View.INVISIBLE);
-    }
+
 
     public void setLyrics(String l1,String l2,String l3, String l4){
         lyricsFragment.setLyrics(l1,l2,l3,l4);
@@ -647,7 +648,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                 if(l1.equals("")||l2.equals("")||l3.equals("")||l4.equals("")){
                     getLyrics(player.getActiveSong());
                 }
-                setVisibleFalse();
+
 
                 /*if (checkFavoriteItem()) {
                     fav.setImageResource(R.drawable.favon);
@@ -693,10 +694,10 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                 String lyrics_four = object.getString("lyrics_four");
                                 setLyrics(lyrics_one,lyrics_two,lyrics_three,lyrics_four);
 
-                                setVisibleFalse();
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
-                                setVisibleFalse();
+
                             }
 
 
@@ -705,7 +706,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         public void onError(ANError error) {
                             Log.e(TAG, "onError: "+error.getErrorDetail());
                             Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
-                           setVisibleFalse();
+
                             //isLoading = false;
                         }
                     });
@@ -808,9 +809,10 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     public void playSong(Songs song){
 
         StorageUtil storageUtil = new StorageUtil(getApplicationContext());
-        setVisibleTrue();
+
         int index = 0;
         if(!playlist.contains(song)){
+            Log.d(TAG, "playSong: am in if");
             List<Songs> dummy = new ArrayList<>();
             dummy.addAll(playlist);
             playlist.clear();
@@ -827,7 +829,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         }else {
             index = playlist.indexOf(song);
             storageUtil.storeAudioIndex(index);
-            Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
+            Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size()+" index  = "+index);
             Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
             sendBroadcast(broadcastIntent);
         }
@@ -926,7 +928,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading albums from the database", Toast.LENGTH_SHORT).show();
-                        setVisibleFalse();
+
                         //isLoading = false;
                     }
                 });
@@ -987,7 +989,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading artists from the database", Toast.LENGTH_SHORT).show();
-                        setVisibleFalse();
+
                         //isLoading = false;
                     }
                 });
@@ -1047,7 +1049,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading heros from the database", Toast.LENGTH_SHORT).show();
-                        setVisibleFalse();
+
                         //isLoading = false;
                     }
                 });
@@ -1110,7 +1112,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading heroins from the database", Toast.LENGTH_SHORT).show();
-                        setVisibleFalse();
+
                         //isLoading = false;
                     }
                 });
@@ -1169,7 +1171,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading lyricists from the database", Toast.LENGTH_SHORT).show();
-                        setVisibleFalse();
+
                         //isLoading = false;
                     }
                 });
@@ -1225,7 +1227,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: "+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading genre from the database", Toast.LENGTH_SHORT).show();
-                        setVisibleFalse();
+
 
                         //isLoading = false;
                     }
@@ -1275,7 +1277,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     public void onError(ANError error) {
                         Log.e(TAG, "onError: fav"+error.getErrorDetail());
                         Toast.makeText(getApplicationContext(), "error loading genre from the database", Toast.LENGTH_SHORT).show();
-                        setVisibleFalse();
+
 
                         //isLoading = false;
                     }
@@ -1313,6 +1315,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     @Override
     public void songCallBack(int position) {
             getLyrics(playlist.get(position));
+            Songs s = playlist.get(position);
+            Log.d(TAG, "songCallBack: "+s.getAlbum_name()+" album id = "+s.getAlbum_id());
             playSong(playlist.get(position));
 
     }
@@ -1322,5 +1326,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             libraryFragment.updateAdapter();
             favouritesFragment.reload();
     }
+
+
 }
 
