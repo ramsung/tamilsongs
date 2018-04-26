@@ -53,8 +53,7 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
 
     public interface AdapterCallback {
         void removeThis(int position);
-        void removeAll();
-        void songCallBack(int position);
+       void songCallBack(int position);
         void notifyAdapter();
     }
     public void setMainCallbacks(AdapterCallback callbacks) {
@@ -99,30 +98,10 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
             }
         });
 
-        holder.menu.setOnClickListener(new View.OnClickListener() {
+        holder.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupMenu popup = new PopupMenu(context, holder.menu);
-                //inflating menu from xml resource
-                popup.inflate(R.menu.songscontext);
-                //adding click listener
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.remove:
-                                adapterCallback.removeThis(position);
-                                break;
-                            case R.id.removeAll:
-                                adapterCallback.removeAll();
-                                break;
-
-                        }
-                        return false;
-                    }
-                });
-                //displaying the popup
-                popup.show();
+                adapterCallback.removeThis(position);
             }
         });
 
@@ -158,7 +137,7 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
     public class viewHolder extends RecyclerView.ViewHolder{
 
         ImageView albumview;
-        ImageButton menu, fav;
+        ImageButton remove, fav;
         LinearLayout songlayout;
         TextView songTitle, albumTitle;
         public viewHolder(View itemView) {
@@ -166,7 +145,7 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
             albumview = (ImageView) itemView.findViewById(R.id.albumView);
             songTitle = (TextView) itemView.findViewById(R.id.songTitle);
             albumTitle = (TextView) itemView.findViewById(R.id.albumTitle);
-            menu = (ImageButton) itemView.findViewById(R.id.context);
+            remove = (ImageButton) itemView.findViewById(R.id.remove);
             fav = (ImageButton) itemView.findViewById(R.id.fav);
 
             songlayout = (LinearLayout) itemView.findViewById(R.id.songlistlayout);

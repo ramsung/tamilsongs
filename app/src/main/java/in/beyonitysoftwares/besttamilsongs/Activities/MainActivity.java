@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -82,6 +83,7 @@ import in.beyonitysoftwares.besttamilsongs.models.Songs;
 import in.beyonitysoftwares.besttamilsongs.music.MusicService;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
+import info.hoang8f.android.segmented.SegmentedGroup;
 
 public class MainActivity extends AppCompatActivity implements MusicService.mainActivityCallback,View.OnClickListener, playListAdapter.AdapterCallback{
 
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     private ProgressDialog pDialog;
     //db
     //DatabaseHandler db;
-
+    SegmentedGroup segmentedGroup;
     int SIGN_IN = 1;
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
@@ -314,6 +316,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
     public void init(){
         //init
+
         playpause = (FloatingActionButton) findViewById(R.id.PlayButton);
         skipnext = (FloatingActionButton) findViewById(R.id.SkipNext);
         skipprev = (FloatingActionButton) findViewById(R.id.SkipPrev);
@@ -407,9 +410,12 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         rvPlayList.setAdapter(playlistadapter);
         playlistadapter.notifyDataSetChanged();
         playlistadapter.setMainCallbacks(this);
+
         mHandler.post(runnable);
 
     }
+
+
 
     private void getupdatetime() {
 
@@ -811,39 +817,55 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         StorageUtil storageUtil = new StorageUtil(getApplicationContext());
 
         int index = 0;
-        if(!playlist.contains(song)){
-            Log.d(TAG, "playSong: am in if");
-            List<Songs> dummy = new ArrayList<>();
-            dummy.addAll(playlist);
-            playlist.clear();
-            playlist.add(0,song);
-            playlist.addAll(dummy);
-            playlistadapter.notifyDataSetChanged();
-            storageUtil.storeAudio(playlist);
-            storageUtil.storeAudioIndex(0);
-            Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
-            Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
-            sendBroadcast(setplaylist);
-            Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
-            sendBroadcast(broadcastIntent);
-        }else {
-            index = playlist.indexOf(song);
-            storageUtil.storeAudioIndex(index);
-            Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size()+" index  = "+index);
-            Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
-            sendBroadcast(broadcastIntent);
+
+        for(Songs s : playlist){
+            if(s.getSong_id().equals(song.getSong_id())){
+                index = playlist.indexOf(s);
+                storageUtil.storeAudioIndex(index);
+                Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size()+" index  = "+index);
+                Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+                sendBroadcast(broadcastIntent);
+                return;
+            }
         }
+
+        Log.d(TAG, "playSong: am in if");
+        List<Songs> dummy = new ArrayList<>();
+        dummy.addAll(playlist);
+        playlist.clear();
+        playlist.add(0,song);
+        playlist.addAll(dummy);
+        playlistadapter.notifyDataSetChanged();
+        storageUtil.storeAudio(playlist);
+        storageUtil.storeAudioIndex(0);
+        Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
+        Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
+        sendBroadcast(setplaylist);
+        Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+        sendBroadcast(broadcastIntent);
+
 
 
     }
 
     public void addToQueue(Songs song){
         StorageUtil storageUtil = new StorageUtil(getApplicationContext());
-        ArrayList<Songs> list = storageUtil.loadAudio();
-        list.add(song);
+
+
+        for(Songs s : playlist){
+            if(s.getSong_id().equals(song.getSong_id())){
+                return;
+            }
+        }
+
+        ArrayList<Songs> dummylist = new ArrayList<>();
+        dummylist.add(song);
+        if(new StorageUtil(this).loadAudio()!=null){
+            dummylist.addAll(new StorageUtil(this).loadAudio());
+        }
         playlist.add(song);
         playlistadapter.notifyDataSetChanged();
-        storageUtil.storeAudio(list);
+        storageUtil.storeAudio(dummylist);
         player.getPlaylist().add(song);
     }
     @Override
@@ -1288,6 +1310,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
     public void reloadFav(){
             favouritesFragment.reload();
+
+       updatePlaylist();
     }
 
     public void removeFavImageFromAllSongs(){
@@ -1303,14 +1327,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
     }
 
-    @Override
-    public void removeAll() {
-            if(playlist!=null){
-                playlist.clear();
-                new StorageUtil(this).clearCachedAudioPlaylist();
-                playlistadapter.notifyDataSetChanged();
-            }
-    }
+
 
     @Override
     public void songCallBack(int position) {
@@ -1325,8 +1342,32 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     public void notifyAdapter() {
             libraryFragment.updateAdapter();
             favouritesFragment.reload();
+            updatePlaylist();
+
+
     }
 
+    public void updatePlaylist(){
+        if(playlist!=null){
+            playlist.clear();
+            if(new StorageUtil(this).loadAudio()!=null){
+                playlist.addAll(new StorageUtil(this).loadAudio());
+                playlistadapter.notifyDataSetChanged();
+                Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
+                sendBroadcast(setplaylist);
+            }
+
+        }
+
+    }
+
+    public void clearPlayList(View v){
+        if(playlist!=null){
+            playlist.clear();
+            new StorageUtil(this).clearCachedAudioPlaylist();
+            playlistadapter.notifyDataSetChanged();
+        }
+    }
 
 }
 

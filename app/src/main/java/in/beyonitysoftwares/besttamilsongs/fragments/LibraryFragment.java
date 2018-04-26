@@ -1042,5 +1042,6 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         allSongAdapter.removeFav(song);*/
 
         allSongAdapter.notifyDataSetChanged();
+
     }
 }

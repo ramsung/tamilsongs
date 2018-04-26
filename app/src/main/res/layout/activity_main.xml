@@ -117,6 +117,7 @@
 
 
         </LinearLayout>
+
         <in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager
             android:layout_width="match_parent"
             android:layout_below="@+id/navigation"
@@ -156,9 +157,19 @@
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/rvPlaylist">
+                android:id="@+id/rvPlaylist"
+                android:layout_above="@+id/clearall">
 
             </android.support.v7.widget.RecyclerView>
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/clearall"
+                android:onClick="clearPlayList"
+                android:layout_alignParentBottom="true"
+                android:text="Clear All"
+                android:clickable="true"
+                />
 
         </RelativeLayout>
 

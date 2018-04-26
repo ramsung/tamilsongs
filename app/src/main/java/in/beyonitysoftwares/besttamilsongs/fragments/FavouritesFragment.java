@@ -88,6 +88,7 @@ public class FavouritesFragment extends Fragment implements favAdapter.AdapterCa
     public void notifyAdapter() {
         adapter.notifyDataSetChanged();
         ((MainActivity)getActivity()).removeFavImageFromAllSongs();
+        ((MainActivity)getActivity()).updatePlaylist();
     }
     public void getSongs(){
         Log.d(TAG, "getSongs: "+songids.size());

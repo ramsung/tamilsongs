@@ -6,20 +6,19 @@
     tools:context="in.beyonitysoftwares.besttamilsongs.fragments.LibraryFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <include
+        android:id="@+id/media_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/language_select"/>
   <in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:layout_below="@id/media_tabs"
       android:id="@+id/lyrcisVG">
 
 
 
   </in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager>
-    <android.support.design.widget.TabLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/tabs"
-        app:tabBackground="@drawable/tab_selector"
-        android:layout_alignParentBottom="true"
-        app:tabGravity="center"
-        app:tabIndicatorHeight="0dp"/>
+
 </RelativeLayout>
