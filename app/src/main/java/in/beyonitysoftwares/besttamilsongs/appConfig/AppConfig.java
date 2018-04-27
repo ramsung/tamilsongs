@@ -59,6 +59,15 @@ public class AppConfig {
 	//login register
 	public static String GET_LOGIN_REGISTER= "https://beyonitysoftwares.cf/tamillyrics/api/users.php";
 
+	//request
+	public static String PUT_REQUEST= "https://beyonitysoftwares.cf/tamillyrics/api/request.php";
+
+	//request album
+	public static String PUT_REQUEST_ALBUM= "https://beyonitysoftwares.cf/tamillyrics/api/requestAlbum.php";
+
+	//request song
+	public static String PUT_REQUEST_SONG= "https://beyonitysoftwares.cf/tamillyrics/api/requestSong.php";
+
 
 
 	public static String ARTIST_NAME = "AR Rahman";

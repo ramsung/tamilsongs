@@ -52,7 +52,7 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
     }
 
     public interface AdapterCallback {
-        void removeThis(int position);
+        void removeThis(int position,Songs s);
        void songCallBack(int position);
         void notifyAdapter();
     }
@@ -101,7 +101,7 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
         holder.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                adapterCallback.removeThis(position);
+                adapterCallback.removeThis(position,song);
             }
         });
 

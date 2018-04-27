@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -30,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
+import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -122,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     private SessionManager session;
     private SQLiteSignInHandler db;
 
+    List<Songs>  originalPlayList;
+    SearchView songSearch;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -152,8 +156,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         MobileAds.initialize(this, "ca-app-pub-7987343674758455~6065686189");
         //db = new DatabaseHandler(getApplicationContext());
         InMobiSdk.init(MainActivity.this, "f8fcaf8d25c04b7586fb741b3dd266f8");
-       pDialog = new ProgressDialog(this);
-       pDialog.setCancelable(true);
+        pDialog = new ProgressDialog(this);
+        pDialog.setCancelable(true);
         pDialog.setMessage("Preparing database");
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -167,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         // Session manager
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         session = new SessionManager(getApplicationContext());
-        if (!session.isLoggedIn()||user==null) {
+        if (!session.isLoggedIn() || user == null) {
 
             signIn();
 
@@ -182,7 +186,11 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         }
 
 
-
+        // ATTENTION: This was auto-generated to handle app links.
+        Intent appLinkIntent = getIntent();
+        String appLinkAction = appLinkIntent.getAction();
+        Uri appLinkData = appLinkIntent.getData();
+        Log.d(TAG, "onCreate: got app link");
     }
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -317,6 +325,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     public void init(){
         //init
 
+        originalPlayList = new ArrayList<>();
         playpause = (FloatingActionButton) findViewById(R.id.PlayButton);
         skipnext = (FloatingActionButton) findViewById(R.id.SkipNext);
         skipprev = (FloatingActionButton) findViewById(R.id.SkipPrev);
@@ -353,6 +362,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         playlist = new ArrayList<>();
         if(new StorageUtil(this).loadAudio()!=null){
             playlist.addAll(new StorageUtil(this).loadAudio());
+            originalPlayList.addAll(playlist);
         }
         mTextMessage = (TextView) findViewById(R.id.message);
         navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -401,6 +411,54 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         View view = navigationView.getHeaderView(0);
+        songSearch = (SearchView) view.findViewById(R.id.songsearch);
+        songSearch.setQueryHint("Search Songs in Playlist");
+        songSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (newText.length()<0 || newText.isEmpty()){
+                    if(playlist!=null){
+                        playlist.clear();
+                        playlist.addAll(originalPlayList);
+                            new StorageUtil(getApplicationContext()).storeAudio(playlist);
+                            playlistadapter.notifyDataSetChanged();
+                            Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
+                            sendBroadcast(setplaylist);
+
+
+                    }
+                    return false;
+                }else if(newText.length()>0){
+                    List<Songs> filteredList = new ArrayList<>();
+                    for (Songs s : originalPlayList){
+                        Log.d(TAG, "onQueryTextChange: "+s.getSong_title()+" new text = "+newText);
+                        if(s.getSong_title().toLowerCase().contains(newText.toLowerCase())){
+                            filteredList.add(s);
+                        }
+                    }
+                    Log.d(TAG, "onQueryTextChange: size "+filteredList.size());
+                    if(filteredList.size()>0){
+                        if(playlist!=null){
+                            playlist.clear();
+                            playlist.addAll(filteredList);
+                                new StorageUtil(getApplicationContext()).storeAudio(playlist);
+                                playlistadapter.notifyDataSetChanged();
+                                Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
+                                sendBroadcast(setplaylist);
+
+
+                        }
+                    }
+
+                }
+                return false;
+            }
+        });
         rvPlayList = (RecyclerView) findViewById(R.id.rvPlaylist);
         rvPlayList.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
         rvPlayList.setItemAnimator(new DefaultItemAnimator());
@@ -809,7 +867,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
         super.onDestroy();
 
-
+        if(originalPlayList!=null&&originalPlayList.size()>0){
+            new StorageUtil(getApplicationContext()).storeAudio((ArrayList<Songs>) originalPlayList);
+        }
     }
 
     public void playSong(Songs song){
@@ -1320,8 +1380,13 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
 
     @Override
-    public void removeThis(int position) {
+    public void removeThis(int position,Songs s) {
             playlist.remove(position);
+            for(Songs song : originalPlayList){
+                if(song.getSong_id().equals(s.getSong_id())){
+                    originalPlayList.remove(song);
+                }
+            }
             playlistadapter.notifyDataSetChanged();
             new StorageUtil(this).storeAudio(playlist);
 
@@ -1364,6 +1429,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     public void clearPlayList(View v){
         if(playlist!=null){
             playlist.clear();
+            originalPlayList.clear();
             new StorageUtil(this).clearCachedAudioPlaylist();
             playlistadapter.notifyDataSetChanged();
         }
