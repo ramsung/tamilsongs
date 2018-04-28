@@ -11,6 +11,8 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Filter;
 
 import in.beyonitysoftwares.besttamilsongs.models.FilteredAlbum;
@@ -397,6 +399,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return genreid;
     }
     public ArrayList<String> getArtistNames(){
+        SortedSet s = new TreeSet();
         ArrayList<String> list = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
@@ -405,13 +408,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (c != null) {
             while (c.moveToNext()) {
                 String artistname= c.getString(c.getColumnIndex(KEY_ARTIST_NAME));
-                list.add(artistname);
+                s.add(artistname);
             }
         }
         if(c!=null){
             c.close();
         }
 
+        list.addAll(s);
         return list;
     }
 
@@ -435,6 +439,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public ArrayList<String> getHeroNamesByArtist(String artist){
+        SortedSet s = new TreeSet();
         ArrayList<String> list = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
@@ -457,13 +462,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         ArrayList<String> names = new ArrayList<>();
         for(String id : list){
-            names.add(getHeroName(Integer.parseInt(id)));
+            s.add(getHeroName(Integer.parseInt(id)));
         }
-
+        names.addAll(s);
         return names;
     }
 
     public ArrayList<String> getHeroinNamesByFilters(String artist,String hero){
+        SortedSet s = new TreeSet();
         ArrayList<String> list = new ArrayList<>();
         int count = 0;
         SQLiteDatabase db = getReadableDatabase();
@@ -499,12 +505,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         ArrayList<String> names = new ArrayList<>();
         for(String id : list){
-            names.add(getHeroinName(Integer.parseInt(id)));
+            s.add(getHeroinName(Integer.parseInt(id)));
         }
+        names.addAll(s);
         return names;
     }
 
     public ArrayList<String> getYearsByFilters(String artist,String hero,String heroin){
+        SortedSet s=new TreeSet();
         ArrayList<String> list = new ArrayList<>();
         int count = 0;
         SQLiteDatabase db = getReadableDatabase();
@@ -542,13 +550,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (c != null) {
             while (c.moveToNext()) {
                 String year = c.getString(c.getColumnIndex(KEY_ALBUM_YEAR));
-                list.add(year);
+                s.add(year);
             }
         }
         if(c!=null){
             c.close();
         }
 
+        list.addAll(s);
         return list;
     }
 
@@ -571,6 +580,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return list;
     }
     public ArrayList<String> getGnereNames(){
+        SortedSet s = new TreeSet();
         ArrayList<String> list = new ArrayList<>();
 
         SQLiteDatabase db = getReadableDatabase();
@@ -579,13 +589,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (c != null) {
             while (c.moveToNext()) {
                 String name= c.getString(c.getColumnIndex(KEY_GENRE_NAME));
-                list.add(name);
+                s.add(name);
             }
         }
         if(c!=null){
             c.close();
         }
-
+        list.addAll(s);
         return list;
     }
 

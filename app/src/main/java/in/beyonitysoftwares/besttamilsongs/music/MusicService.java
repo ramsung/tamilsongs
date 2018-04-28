@@ -145,7 +145,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 				public void onCallStateChanged(int state, String incomingNumber) {
 					if (state == TelephonyManager.CALL_STATE_RINGING) {
 						if (mediaPlayer != null) {
-							if (mediaPlayer.isPlaying()) {
+							if (isPlaying()) {
 								pauseMedia();
 								ongoingcall = true;
 
@@ -192,7 +192,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 			switch (i){
 				case AudioManager.AUDIOFOCUS_LOSS:{
 					if(mediaPlayer != null){
-						if(mediaPlayer.isPlaying()){
+						if(isPlaying()){
 							pauseMedia();
 							if(maincallback != null){
 								maincallback.update();
@@ -222,7 +222,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
 				case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:{
 					if(mediaPlayer != null){
-						if(mediaPlayer.isPlaying()){
+						if(isPlaying()){
 							pauseMedia();
 							lostFocusLoss = true;
 							if(maincallback != null){
@@ -988,7 +988,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
 	private void stopMedia() {
 		if (mediaPlayer == null) return;
-		if (mediaPlayer.isPlaying()) {
+		if (isPlaying()) {
 
 			mediaPlayer.stop();
 			isPaused = false;
@@ -1006,7 +1006,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 	}
 
 	public void pauseMedia() {
-		if (mediaPlayer.isPlaying()) {
+		if (isPlaying()) {
 			mediaPlayer.pause();
 			updateMetaData();
 			buildNotification(PlaybackStatus.PAUSED);
@@ -1019,7 +1019,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 	public void resumeMedia() {
 		resumePosition = new StorageUtil(getApplicationContext()).getResumePosition();
 		if (mediaPlayer != null) {
-			if (!mediaPlayer.isPlaying()) {
+			if (!isPlaying()) {
 				if (resumePosition != -1) {
 					mediaPlayer.seekTo(resumePosition);
 					mediaPlayer.start();
@@ -1084,11 +1084,17 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 	}
 
 	public boolean isPlaying() {
-		if (mediaPlayer == null) {
+		try{
+			if (mediaPlayer == null) {
+				return false;
+			} else if (mediaPlayer.isPlaying()) {
+				return true;
+			}
+
+		}catch (IllegalStateException e){
 			return false;
-		} else if (mediaPlayer.isPlaying()) {
-			return true;
 		}
+
 		return false;
 	}
 

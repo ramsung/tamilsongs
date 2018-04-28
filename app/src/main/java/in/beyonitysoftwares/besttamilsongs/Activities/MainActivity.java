@@ -40,6 +40,7 @@ import com.androidnetworking.AndroidNetworking;
 import com.androidnetworking.common.Priority;
 import com.androidnetworking.error.ANError;
 import com.androidnetworking.interfaces.JSONObjectRequestListener;
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -86,9 +87,8 @@ import in.beyonitysoftwares.besttamilsongs.music.MusicService;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
 import info.hoang8f.android.segmented.SegmentedGroup;
-
-import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
+
 
 public class MainActivity extends AppCompatActivity implements MusicService.mainActivityCallback,View.OnClickListener, playListAdapter.AdapterCallback{
 

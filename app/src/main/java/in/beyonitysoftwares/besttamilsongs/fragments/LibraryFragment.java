@@ -32,6 +32,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import in.beyonitysoftwares.besttamilsongs.Activities.MainActivity;
 import in.beyonitysoftwares.besttamilsongs.R;
@@ -101,7 +103,8 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
     int totalCountCalls = 0;
     ArrayList<FilteredAlbum> albums;
     boolean isSelectionSet = false;
-
+    SortedSet<String> sorted = new TreeSet();
+    List<Songs> dummyList = new ArrayList<>();
 
 
     public LibraryFragment() {
@@ -297,7 +300,8 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                 });*/
     }
     public void setSongs(ArrayList<FilteredAlbum> albums){
-
+        sorted.clear();
+        dummyList.clear();
         allSongList.clear();
         totalCountCalls = albums.size();
         songCountsCalls = 0;
@@ -331,14 +335,15 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                                     s.setAlbum_name(album.getAlbum_name());
                                     s.setSong_id(String.valueOf(songobject.get("song_id")));
                                     s.setSong_title(songobject.getString("song_title"));
-                                    if(!allSongList.contains(s)){
+                                    sorted.add(s.getSong_title());
+                                    dummyList.add(s);
+                                   /* if(!allSongList.contains(s)){
                                         allSongList.add(s);
-                                    }
+                                    }*/
 
 
                                 }
 
-                                allSongAdapter.notifyDataSetChanged();
 
                                 Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
 
@@ -371,7 +376,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                         @Override
                         public void onError(ANError error) {
                             Log.e(TAG, "onError: "+error.getErrorDetail());
-                            Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onError: "+album.getAlbum_name());
 
                             isLoading =false;
@@ -387,7 +392,8 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
     }
 
     public void setSongsByArrayAndGenre(ArrayList<FilteredAlbum> albums,String genre_id){
-
+        sorted.clear();
+        dummyList.clear();
         allSongList.clear();
         totalCountCalls = albums.size();
         songCountsCalls = 0;
@@ -423,15 +429,16 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                                     s.setAlbum_name(album.getAlbum_name());
                                     s.setSong_id(String.valueOf(songobject.get("song_id")));
                                     s.setSong_title(songobject.getString("song_title"));
-                                    if(!allSongList.contains(s)){
+                                    sorted.add(s.getSong_title());
+                                    dummyList.add(s);
+                                    /*if(!allSongList.contains(s)){
                                         allSongList.add(s);
-                                    }
+                                    }*/
 
 
                                 }
 
-                                allSongAdapter.notifyDataSetChanged();
-                                Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+
                                 hideDialog();
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -461,7 +468,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                         @Override
                         public void onError(ANError error) {
                             Log.e(TAG, "onError: "+error.getErrorDetail());
-                            Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onError: "+album.getAlbum_name());
 
                             isLoading =false;
@@ -653,17 +660,17 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         ArrayList<String> years = new ArrayList<>();
 
         albums = AppController.getDb().getAlbumsByFilter(artist,hero,heroin,year);
-
+        SortedSet s = new TreeSet();
         for(FilteredAlbum album : albums){
 
-            albumNames.add(album.getAlbum_name());
+            s.add(album.getAlbum_name());
 
         }
 
         heroNames = AppController.getDb().getHeroNamesByArtist(artist);
         heroinNames = AppController.getDb().getHeroinNamesByFilters(artist,hero);
         years = AppController.getDb().getYearsByFilters(artist,hero,heroin);
-
+        albumNames.addAll(s);
         setAlbums(albumNames);
         setYears(years);
         setArtists(AppController.getDb().getArtistNames());
@@ -1000,13 +1007,34 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
 
         Log.d(TAG, "callBackAfterRV: totalcount = "+totalCountCalls +" songs count = "+songCountsCalls);
         if(totalCountCalls == songCountsCalls&&!isSelectionSet){
+            for(String name :sorted){
+                for(Songs songs : dummyList){
+                    if(name.equals(songs.getSong_title())){
+                        allSongList.add(songs);
+                    }
+                }
+            }
+            Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+
+            allSongAdapter.notifyDataSetChanged();
             setSelection();
             isSelectionSet = true;
             hideDialog();
 
         }else if(totalCountCalls == songCountsCalls){
+            for(String name :sorted){
+                for(Songs songs : dummyList){
+                    if(name.equals(songs.getSong_title())){
+                        allSongList.add(songs);
+                    }
+                }
+            }
+            Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+            allSongAdapter.notifyDataSetChanged();
             hideDialog();
         }
+
+
 
     }
     @Override
