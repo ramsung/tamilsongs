@@ -29,7 +29,7 @@
     <!-- TODO: Update blank fragment layout -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/allSongsrv"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="5dp"
         android:layout_below="@id/filterlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

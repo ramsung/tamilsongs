@@ -2,9 +2,11 @@
 <CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@android:id/text1"
     style="?android:attr/spinnerDropDownItemStyle"
-    android:fontFamily="@font/convergence"
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
+    android:background="#333"
     android:ellipsize="marquee"
+    android:fontFamily="@font/convergence"
+    android:textAlignment="center"
     android:textColor="@color/grey_300"
-    android:background="@drawable/gradient"/>
+    android:textStyle="bold" />

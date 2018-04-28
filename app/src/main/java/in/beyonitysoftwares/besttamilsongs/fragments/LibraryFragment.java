@@ -607,19 +607,20 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
 
 
     public void setAdapters(){
-        dataAdapter1 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, artistList);
+        dataAdapter1 = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, artistList);
 
-        dataAdapter3 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, heroList);
-        dataAdapter4 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, heroinList);
-        dataAdapter5 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, yearList);
-        dataAdapter6 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, genreList);
 
-        dataAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dataAdapter3 = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, heroList);
+        dataAdapter4 = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, heroinList);
+        dataAdapter5 = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, yearList);
+        dataAdapter6 = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, genreList);
 
-        dataAdapter3.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dataAdapter4.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dataAdapter5.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        dataAdapter6.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dataAdapter1.setDropDownViewResource(R.layout.spinner_dropdown_item);
+
+        dataAdapter3.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        dataAdapter4.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        dataAdapter5.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        dataAdapter6.setDropDownViewResource(R.layout.spinner_dropdown_item);
 
 
         artistSpinner.setAdapter(dataAdapter1);
@@ -629,8 +630,8 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         yearSpinner.setAdapter(dataAdapter5);
         genreSpinner.setAdapter(dataAdapter6);
 
-        dataAdapter2 = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, albumList);
-        dataAdapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        dataAdapter2 = new ArrayAdapter<String>(getContext(), R.layout.spinner_item, albumList);
+        dataAdapter2.setDropDownViewResource(R.layout.spinner_dropdown_item);
         albumSpinner.setAdapter(dataAdapter2);
     }
 
