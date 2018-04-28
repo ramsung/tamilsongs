@@ -87,6 +87,9 @@ import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
 import info.hoang8f.android.segmented.SegmentedGroup;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
+
 public class MainActivity extends AppCompatActivity implements MusicService.mainActivityCallback,View.OnClickListener, playListAdapter.AdapterCallback{
 
     private TextView mTextMessage;
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
         MobileAds.initialize(this, "ca-app-pub-7987343674758455~6065686189");
         //db = new DatabaseHandler(getApplicationContext());

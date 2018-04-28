@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -62,6 +67,11 @@ dependencies {
     implementation 'com.inmobi.monetization:inmobi-ads:7.0.2'
     implementation 'com.android.support:multidex:1.0.3'
 
+    //fabrics
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
+        transitive = true;
+    }
 
 }
 apply plugin: 'com.google.gms.google-services'
