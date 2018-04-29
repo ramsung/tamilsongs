@@ -1,6 +1,7 @@
 package in.beyonitysoftwares.besttamilsongs.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -41,8 +42,9 @@ import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHolder> {
 
     AdapterCallback adapterCallback;
-
+    int selectedPosition=-1;
     Context context;
+    int lastSelectedPosition = -1;
     List<Songs> allSongsList;
     String link = "https://beyonitysoftwares.cf/tamillyrics/img/";
 
@@ -90,10 +92,15 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
         }else {
             holder.fav.setImageResource(R.drawable.heart_outline);
         }
+
+
+
+
         Glide.with(context).load(link+""+song.getAlbum_id()+".png").into(holder.albumview);
         holder.songlayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 adapterCallback.songCallBack(position);
             }
         });
@@ -101,6 +108,7 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
         holder.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 adapterCallback.removeThis(position,song);
             }
         });
@@ -244,8 +252,6 @@ public class playListAdapter extends RecyclerView.Adapter<playListAdapter.viewHo
 
                     }
                 });
-
-
 
     }
 }

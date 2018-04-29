@@ -9,6 +9,8 @@
     <color name="teal_800">#00695C</color>
     <color name="amber_800">#ff8f00</color>
     <color name="amber_900">#ff6f00</color>
+    <color name="pressed_color">#4d90fe</color>
+    <color name="default_color">#ffffff</color>
     <!--"control" means checkbox / radio button-->
 
     <!--LIGHT-->

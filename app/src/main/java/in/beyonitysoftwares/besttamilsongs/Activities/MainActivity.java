@@ -26,6 +26,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -85,15 +86,21 @@ import in.beyonitysoftwares.besttamilsongs.models.FilteredAlbum;
 import in.beyonitysoftwares.besttamilsongs.models.Songs;
 import in.beyonitysoftwares.besttamilsongs.music.MusicService;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
+import in.beyonitysoftwares.besttamilsongs.untils.Helper;
+import in.beyonitysoftwares.besttamilsongs.untils.RecyclerItemClickListener;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
 import info.hoang8f.android.segmented.SegmentedGroup;
 import io.fabric.sdk.android.Fabric;
+
+import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 
 
 public class MainActivity extends AppCompatActivity implements MusicService.mainActivityCallback,View.OnClickListener, playListAdapter.AdapterCallback{
 
     private TextView mTextMessage;
     int updateAll = 0;
+
+    TextView songsdetails;
     //fragments
     AboutFragment aboutFragment;
     FavouritesFragment favouritesFragment;
@@ -118,6 +125,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     private static final String TAG = "MainActivity";
     DrawerLayout drawer;
     private ProgressDialog pDialog;
+    String des;
+    String titleFromfirebase;
     //db
     //DatabaseHandler db;
     SegmentedGroup segmentedGroup;
@@ -163,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(true);
         pDialog.setMessage("Preparing database");
+        Log.d("Firebase", "token "+ FirebaseInstanceId.getInstance().getToken());
         mAuth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -333,6 +343,11 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         playpause = (FloatingActionButton) findViewById(R.id.PlayButton);
         skipnext = (FloatingActionButton) findViewById(R.id.SkipNext);
         skipprev = (FloatingActionButton) findViewById(R.id.SkipPrev);
+        songsdetails = (TextView) findViewById(R.id.songdetails);
+        songsdetails.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        songsdetails.setMarqueeRepeatLimit(-1);
+        songsdetails.setSingleLine(true);
+        songsdetails.setSelected(true);
 
         playpause.setOnClickListener(this);
         skipprev.setOnClickListener(this);
@@ -468,12 +483,19 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         rvPlayList.setItemAnimator(new DefaultItemAnimator());
         LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         rvPlayList.setLayoutManager(layoutManager);
+        rvPlayList.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(), new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                view.setSelected(true);
+            }
+        }));
         playlistadapter = new playListAdapter(getApplicationContext(),playlist);
         rvPlayList.setAdapter(playlistadapter);
         playlistadapter.notifyDataSetChanged();
         playlistadapter.setMainCallbacks(this);
 
         mHandler.post(runnable);
+        update();
 
     }
 
@@ -678,7 +700,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                 Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
                 sendBroadcast(setplaylist);
             }
-            update();
+            //update();
             serviceBound = true;
             Log.d(TAG, "calls: now service bound true");
 
@@ -708,13 +730,12 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     public void update() {
         if (player != null && player.mediaPlayer != null) {
             if (player.isPlaying()) {
-
-
                 seekBar.setMax(player.getDuration());
                 //totalTime.setText(Helper.durationCalculator(player.getDuration()));
                 playpause.setImageResource(R.drawable.pause);
                 if(l1.equals("")||l2.equals("")||l3.equals("")||l4.equals("")){
                     getLyrics(player.getActiveSong());
+                    songsdetails.setText(player.getActiveSong().getSong_title()+" | "+player.getActiveSong().getAlbum_name());
                 }
 
 
@@ -736,6 +757,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                 //playpause.setImageResource(android.R.drawable.ic_media_play);
             }
 
+            hideDialog();
 
         }
 
@@ -794,6 +816,13 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     public void showDialog(Songs s) {
 
     }
+
+    @Override
+    public void errorloading() {
+        Toast.makeText(this, "Error loading song from the server try again later", Toast.LENGTH_LONG).show();
+        hideDialog();
+    }
+
     @Override
     protected void onStart() {
         Log.i(TAG, "calls: on start called");
@@ -802,7 +831,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             Intent playerIntent = new Intent(MainActivity.this, MusicService.class);
             startService(playerIntent);
             bindService(playerIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-            update();
+            //update();
             Log.i("calls", "service bounded");
 
 
@@ -845,7 +874,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     Log.d(TAG, "calls: playing");
                     //downloadLyrics(player.getActiveSong());
                 }
-                update();
+               // update();
 
             }
         }
@@ -878,6 +907,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
     public void playSong(Songs song){
 
+        pDialog.setMessage("Loading "+song.getSong_title() +" from "+song.getAlbum_name());
+        showDialog();
         StorageUtil storageUtil = new StorageUtil(getApplicationContext());
 
         int index = 0;
@@ -1347,6 +1378,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                                     AppController.getDb().insertFavorites(id,user_id, song_id);
                                 }
                                 init();
+                                handleNotificationsAndLinks();
                                 hideDialog();
                             }
 
@@ -1401,6 +1433,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     @Override
     public void songCallBack(int position) {
             getLyrics(playlist.get(position));
+            closeDrawer();
             Songs s = playlist.get(position);
             Log.d(TAG, "songCallBack: "+s.getAlbum_name()+" album id = "+s.getAlbum_id());
             playSong(playlist.get(position));
@@ -1439,5 +1472,186 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         }
     }
 
-}
+    public void handleNotificationsAndLinks(){
+        String songIdFromFirebase = "";
+
+        Log.d(TAG, "handleIntent: called");
+        if (getIntent().getStringExtra("id") != null&&getIntent().getStringExtra("des")!=null&&getIntent().getStringExtra("title")!=null) {
+            Log.d(TAG, "onCreate: " + getIntent().getStringExtra("id"));
+            songIdFromFirebase = getIntent().getStringExtra("id");
+            des = getIntent().getStringExtra("des");
+            titleFromfirebase = getIntent().getStringExtra("title");
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+            builder.setTitle(titleFromfirebase);
+
+
+            builder.setMessage(des);
+
+            builder.setNegativeButton("Don't Play",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            return;
+                        }
+                    });
+            String finalSongIdFromFirebase = songIdFromFirebase;
+            builder.setPositiveButton("Play Now!",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            handleSongRequest(finalSongIdFromFirebase);
+                        }
+                    });
+
+            builder.show();
+        }/*else if(getIntent().getStringExtra("album")!=null&&getIntent().getStringExtra("des")!=null){
+
+            String albumName  = getIntent().getStringExtra("album");
+            Log.d(TAG, "handleNotificationsAndLinks: "+albumName);
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+            builder.setTitle(Helper.FirstLetterCaps(albumName));
+
+
+            builder.setMessage(getIntent().getStringExtra("des")+" check out album list now");
+
+            builder.setNegativeButton("Don't Play",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            return;
+                        }
+                    });
+            String finalSongIdFromFirebase = songIdFromFirebase;
+            builder.setPositiveButton("Play Songs!",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                            int which) {
+                            handleAlbumRequest(albumName);
+                        }
+                    });
+
+            builder.show();
+
+
+
+        }*/else {
+
+            Log.d(TAG, "handleIntent: am inside else");
+            Intent appLinkIntent = getIntent();
+            String appLinkAction = appLinkIntent.getAction();
+            Uri appLinkData = appLinkIntent.getData();
+            if (appLinkData != null) {
+                String songId = appLinkData.getQueryParameter("song");
+                Log.d(TAG, "calls: song =  " + songId);
+                if (songId == null) {
+                    return;
+                }
+                handleSongRequest(songId);
+
+            }else {
+                //checkForUpdate();
+            }
+        }
+
+
+
+    }
+
+    public void handleSongRequest(String songId) {
+        /*Log.d(TAG, "handleSongRequest: "+songId);
+        songId = songId.replaceAll("%20", " ");
+        songId = songId.toUpperCase();
+        StorageUtil storageUtil = new StorageUtil(getApplicationContext());
+        Songs song = AppController.getDb().getSongBySongTitle(songId);
+        if (song == null) {
+            Toast.makeText(player, songId + " is not found in our database", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (storageUtil.loadAudio() == null || totalSongs > storageUtil.loadAudio().size()) {
+            Log.d(TAG, "calls: its null");
+            for (song songs : songList) {
+                song s = new song(songs.getSong_id(), songs.getSong_title(), songs.getAlbum_id(), songs.getAlbum_name(), songs.getDownload_link(), songs.getLyricist(), songs.getTrack_no());
+                playlist.add(s);
+            }
+            Log.d(TAG, "calls: playlist = " + playlist.size());
+            int index = 0;
+            for (song s : playlist) {
+                if (s.getSong_title().equals(song.getSong_title()) && s.getAlbum_name().equals(song.getAlbum_name())) {
+                    index = playlist.indexOf(s);
+                    Log.d(TAG, "calls: " + s);
+                }
+            }
+            storageUtil.storeAudio(playlist);
+            storageUtil.storeAudioIndex(index);
+            Log.d(TAG, "calls: storage = " + storageUtil.loadAudio().size() + " service bond = " + serviceBound);
+            Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
+            sendBroadcast(setplaylist);
+            Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+            sendBroadcast(broadcastIntent);
+
+
+        } else {
+            int index = 0;
+            Log.i(TAG, "calls: " + song.getSong_title() + " " + song.getAlbum_name());
+            ArrayList<song> array = new StorageUtil(getApplicationContext()).loadAudio();
+            for (song s : array) {
+                if (s.getSong_title().equals(song.getSong_title()) && s.getAlbum_name().equals(song.getAlbum_name())) {
+                    Log.i(TAG, "calls: " + s.getSong_title() + " " + s.getAlbum_name());
+                    index = array.indexOf(s);
+                    Log.i(TAG, "ca;;s: " + s.getSong_title() + " " + s.getAlbum_name() + " " + index);
+                }
+            }
+            storageUtil.storeAudioIndex(index);
+            Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
+            sendBroadcast(broadcastIntent);
+
+        }*/
+
+
+        AndroidNetworking.post(AppConfig.GET_SONGS_BY_ID)
+                .addBodyParameter("song_id", songId)
+                .setTag("test")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "getSongs fav "+response);
+                        Songs s = new Songs();
+                        try {
+
+                            JSONArray array = response.getJSONArray("songs");
+                            for(int a = 0;a< array.length();a++){
+                                JSONObject songobject = array.getJSONObject(a);
+
+                                s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                s.setSong_title(songobject.getString("song_title"));
+                                s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(songobject.getString("album_id"))));
+
+                           }
+                                                        //Log.d(TAG, "onResponse: size = "+allSongList.size());
+                            playSong(s);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getMessage());
+                        Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+
+                        //isLoading = false;
+                    }
+                });
+    }
+
+
+    }
+
+
+
+
 

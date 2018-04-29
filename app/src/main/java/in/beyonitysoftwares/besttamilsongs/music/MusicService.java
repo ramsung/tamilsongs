@@ -41,9 +41,12 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.danikula.videocache.CacheListener;
 import com.danikula.videocache.HttpProxyCacheServer;
+import com.danikula.videocache.ProxyCacheException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -129,6 +132,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
 		void updateSongDownload(MediaPlayer mediaPlayer, int Progress);
 		void showDialog(Songs s);
+		void errorloading();
 
 
 	}
@@ -427,7 +431,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
 						Bitmap icon = resource;
 						NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(MusicService.this, CHANNEL_ID)
-								.setSmallIcon(R.drawable.nicon)
+								.setSmallIcon(R.mipmap.ic_launcher_foreground)
 								.setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle(){
 									@Override
 									public android.support.v4.media.app.NotificationCompat.MediaStyle setShowCancelButton(boolean show) {
@@ -472,7 +476,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 							NotificationManager notifManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 							notifManager.createNotificationChannel(channel);
 // notificationId is a unique int for each notification that you must define
-							notifManager.notify(NOTIFICATION_ID, mBuilder.build());
+							//notifManager.notify(NOTIFICATION_ID, mBuilder.build());
+							startForeground(NOTIFICATION_ID,mBuilder.build());
 							if (playbackStatus == PlaybackStatus.PLAYING) {
 								mBuilder.setOngoing(true);
 							} else if (playbackStatus == PlaybackStatus.PAUSED) {
@@ -482,7 +487,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 						}else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
 							NotificationManager notifManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 							// notificationId is a unique int for each notification that you must define
-							notifManager.notify(NOTIFICATION_ID, mBuilder.build());
+							//notifManager.notify(NOTIFICATION_ID, mBuilder.build());
+							startForeground(NOTIFICATION_ID,mBuilder.build());
 
 						}
 					}
@@ -799,6 +805,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
 	@Override
 	public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+		Log.d(TAG, "onBufferingUpdate: "+i);
 		if(maincallback !=null && activeSong !=null){
 			double ratio = i / 100.0;
 			int bufferingLevel = (int)(mediaPlayer.getDuration() * ratio);
@@ -867,19 +874,23 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 		mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		try {
 			// Set the data source to the mediaFile location
-			Log.i(TAG, "initMediaPlayer: " + playLink+activeSong.getAlbum_id()+"/"+activeSong.getSong_id()+".ogg");
-			mediaPlayer.setDataSource(setProxyUrl(playLink+activeSong.getAlbum_id()+"/"+activeSong.getSong_id())+".ogg");
-			//Log.i(TAG, "initMediaPlayer: " + playLink+activeSong.getAlbum_id()+"/"+activeSong.getSong_id());
+
+
+				Log.i(TAG, "initMediaPlayer: " + playLink+activeSong.getAlbum_id()+"/"+activeSong.getSong_id()+".ogg");
+				mediaPlayer.setDataSource(setProxyUrl(playLink+activeSong.getAlbum_id()+"/"+activeSong.getSong_id())+".ogg");
+				equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
+				equalizer.setEnabled(true);
+				mediaPlayer.prepareAsync();
+				if(maincallback != null) {
+					maincallback.showDialog(activeSong);
+				}
+
+						//Log.i(TAG, "initMediaPlayer: " + playLink+activeSong.getAlbum_id()+"/"+activeSong.getSong_id());
 		} catch (IOException e) {
 			e.printStackTrace();
 			stopSelf();
 		}
-		equalizer = new Equalizer(0, mediaPlayer.getAudioSessionId());
-		equalizer.setEnabled(true);
-		mediaPlayer.prepareAsync();
-		if(maincallback != null) {
-			maincallback.showDialog(activeSong);
-		}
+
 
 	}
 
@@ -1184,4 +1195,21 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
     public ArrayList<Songs> getPlaylist() {
         return playlist;
     }
+
+	public static boolean exists(String URLName) {
+		try {
+			HttpURLConnection.setFollowRedirects(false);
+			// note : you may also need
+			//        HttpURLConnection.setInstanceFollowRedirects(false)
+			HttpURLConnection con =
+					(HttpURLConnection) new URL(URLName).openConnection();
+			con.setRequestMethod("HEAD");
+
+			return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return false;
+		}
+	}
 }

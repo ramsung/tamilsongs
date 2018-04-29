@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import in.beyonitysoftwares.besttamilsongs.Activities.MainActivity;
 
 
 /**
@@ -31,7 +32,7 @@ public class PushNotificaiton extends FirebaseMessagingService {
         }
 
         // Check if message contains a notification payload.
-        /*if (remoteMessage.getNotification() != null) {
+        if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
             if(remoteMessage.getData().containsKey("song")) {
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
@@ -41,15 +42,8 @@ public class PushNotificaiton extends FirebaseMessagingService {
                 i.putExtra("des",remoteMessage.getData().get("des"));
 
                 startActivity(i);
-            }else if(remoteMessage.getData().containsKey("update")){
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.putExtra("update", remoteMessage.getData().get("update"));
-                i.putExtra("version",remoteMessage.getData().get("version"));
-                startActivity(i);
-
             }
-        }*/
+        }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
         // message, here is where that should be initiated. See sendNotification method below.

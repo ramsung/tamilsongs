@@ -62,6 +62,7 @@
             app:fabSize="mini"
             app:srcCompat="@drawable/back" />
 
+
         <LinearLayout
             android:id="@+id/bottomlayout"
             android:layout_width="match_parent"
@@ -71,6 +72,7 @@
             android:layout_alignParentStart="true"
             android:layout_gravity="bottom"
             android:orientation="vertical">
+
 
 
 
@@ -126,7 +128,22 @@
             android:id="@+id/mainVG">
 
         </in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/songdetails"
 
+            android:layout_toStartOf="@+id/SkipPrev"
+            android:fontFamily="@font/convergence"
+            android:shadowColor="#000"
+            android:shadowDx="0"
+            android:shadowDy="0"
+            android:shadowRadius="50"
+            android:textColor="#FBFBFB"
+
+            android:textStyle="bold"
+            android:paddingStart="20dp"
+            android:layout_above="@id/bottomlayout"/>
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
@@ -137,7 +154,7 @@
             app:menu="@menu/navigation" />
 
     </RelativeLayout>
-    <android.support.design.widget.NavigationView
+   <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
@@ -157,6 +174,7 @@
             <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+
                 android:id="@+id/rvPlaylist"
                 android:layout_above="@+id/clearall">
 
