@@ -300,6 +300,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                 });*/
     }
     public void setSongs(ArrayList<FilteredAlbum> albums){
+        Log.d(TAG, "setSongs: album count "+albums.size());
         sorted.clear();
         dummyList.clear();
         allSongList.clear();
@@ -392,6 +393,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
     }
 
     public void setSongsByArrayAndGenre(ArrayList<FilteredAlbum> albums,String genre_id){
+        Log.d(TAG, "setSongs: album count "+albums.size());
         sorted.clear();
         dummyList.clear();
         allSongList.clear();
@@ -814,7 +816,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                     }
                 }else {
                     if(parent.getItemAtPosition(position).toString().equals("All Genre")) {
-                        setSongByAlbumID(AppController.getDb().getAlbumIdByName(parent.getItemAtPosition(position).toString()));
+                        setSongByAlbumID(AppController.getDb().getAlbumIdByName(sp.getAlbumFilter().toString()));
                     }else {
                         setSongByAlbumGenre(AppController.getDb().getAlbumIdByName(sp.getAlbumFilter().toString()),AppController.getDb().getGenreId(parent.getItemAtPosition(position).toString()));
                     }
@@ -829,9 +831,11 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
     }
 
     private void setSongByAlbumID(String albumIdByName) {
+        sorted.clear();
+        dummyList.clear();
         allSongList.clear();
-
-
+        totalCountCalls = albums.size();
+        songCountsCalls = 0;
 
 
             AndroidNetworking.post(AppConfig.GET_SONGS)
@@ -862,16 +866,20 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                                     s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(albumIdByName)));
                                     s.setSong_id(String.valueOf(songobject.get("song_id")));
                                     s.setSong_title(songobject.getString("song_title"));
-                                    if(!allSongList.contains(s)){
+                                    sorted.add(s.getSong_title());
+                                    dummyList.add(s);
+                                   /* if(!allSongList.contains(s)){
                                         allSongList.add(s);
-                                    }
+                                    }*/
+
+
 
 
                                 }
 
-                                allSongAdapter.notifyDataSetChanged();
+                                //allSongAdapter.notifyDataSetChanged();
                                 Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
-                                hideDialog();
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -916,11 +924,11 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
     }
 
     private void setSongByAlbumGenre(String albumIdByName,String genre_id) {
+        sorted.clear();
+        dummyList.clear();
         allSongList.clear();
-
-
-
-
+        totalCountCalls = albums.size();
+        songCountsCalls = 0;
         AndroidNetworking.post(AppConfig.GET_SONGS_BY_GENRE)
                 .addBodyParameter("album_id", albumIdByName)
                 .addBodyParameter("genre_id",genre_id)
@@ -950,14 +958,17 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                                 s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(albumIdByName)));
                                 s.setSong_id(String.valueOf(songobject.get("song_id")));
                                 s.setSong_title(songobject.getString("song_title"));
-                                if(!allSongList.contains(s)){
-                                    allSongList.add(s);
-                                }
+                                sorted.add(s.getSong_title());
+                                dummyList.add(s);
+                                   /* if(!allSongList.contains(s)){
+                                        allSongList.add(s);
+                                    }*/
+
 
 
                             }
 
-                            allSongAdapter.notifyDataSetChanged();
+                            //allSongAdapter.notifyDataSetChanged();
                             Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
                             hideDialog();
                         } catch (JSONException e) {

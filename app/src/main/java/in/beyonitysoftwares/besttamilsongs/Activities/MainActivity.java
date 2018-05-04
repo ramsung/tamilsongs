@@ -30,6 +30,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.SearchView;
@@ -169,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         MobileAds.initialize(this, "ca-app-pub-7987343674758455~6065686189");
         //db = new DatabaseHandler(getApplicationContext());
         InMobiSdk.init(MainActivity.this, "f8fcaf8d25c04b7586fb741b3dd266f8");
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         pDialog = new ProgressDialog(this);
         pDialog.setCancelable(true);
         pDialog.setMessage("Preparing database");
