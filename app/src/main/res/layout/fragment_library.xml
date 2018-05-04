@@ -16,7 +16,7 @@
 
     </in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager>-->
 
-    <include
+   <include
         android:id="@+id/filterlayout"
         layout="@layout/filter"
         android:layout_width="match_parent"
@@ -26,6 +26,15 @@
 
     </include>
 
+   <!-- <include
+        android:id="@+id/filterlayout2"
+        layout="@layout/filter2"
+        android:layout_width="match_parent"
+        android:layout_below="@id/filterlayout"
+        android:layout_height="wrap_content">
+
+
+    </include>-->
     <!-- TODO: Update blank fragment layout -->
     <android.support.v7.widget.RecyclerView
         android:id="@+id/allSongsrv"

@@ -1,6 +1,8 @@
 package in.beyonitysoftwares.besttamilsongs.fragments;
 
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,15 +11,19 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidnetworking.AndroidNetworking;
@@ -105,8 +111,9 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
     boolean isSelectionSet = false;
     SortedSet<String> sorted = new TreeSet();
     List<Songs> dummyList = new ArrayList<>();
+    TextView filter;
 
-
+    Dialog dialog;
     public LibraryFragment() {
         // Required empty public constructor
     }
@@ -117,6 +124,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_library, container, false);
+
 
        /* allSongsFragment = new AllSongsFragment();
         artistFragment = new ArtistFragment();
@@ -145,7 +153,38 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         yearSpinner = (Spinner) view.findViewById(R.id.YearSpinner);
         genreSpinner = (Spinner) view.findViewById(R.id.GenreSpinner);
 
+    /*    filter = (TextView) view.findViewById(R.id.filter);
+        filter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+            }
+        });
+
+        filter.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                int x = (int)event.getX();
+                int y = (int)event.getY();
+                Log.e("onTouchListener", "User touch at X:" + x + " Y:" + y);
+                long length = 0;
+                if(action == MotionEvent.ACTION_DOWN){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    dialog = builder.create();
+                    dialog.setTitle("my dialog");
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+
+                wmlp.x = x;   //x position
+                wmlp.y = y;   //y position
+                    dialog.show();
+                }
+
+
+                return false;
+            }
+        });*/
 
         albumList = new ArrayList<>();
         artistList = new ArrayList<>();
@@ -158,7 +197,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         setAdapters();
 
 
-
+        dialog = new Dialog(getContext());
 
         allSongList = new ArrayList<>();
         allsongsrv = (RecyclerView) view.findViewById(R.id.allSongsrv);
@@ -1084,4 +1123,6 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         allSongAdapter.notifyDataSetChanged();
 
     }
+
+
 }
