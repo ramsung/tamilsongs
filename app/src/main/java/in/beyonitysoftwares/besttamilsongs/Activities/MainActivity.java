@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -902,9 +904,9 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
         super.onDestroy();
 
-        if(originalPlayList!=null&&originalPlayList.size()>0){
+        /*if(originalPlayList!=null&&originalPlayList.size()>0){
             new StorageUtil(getApplicationContext()).storeAudio((ArrayList<Songs>) originalPlayList);
-        }
+        }*/
     }
 
     public void playSong(Songs song){
@@ -929,19 +931,19 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         Log.d(TAG, "playSong: am in if");
         List<Songs> dummy = new ArrayList<>();
         dummy.addAll(playlist);
+        originalPlayList.clear();
         playlist.clear();
         playlist.add(0,song);
         playlist.addAll(dummy);
         playlistadapter.notifyDataSetChanged();
         storageUtil.storeAudio(playlist);
+        originalPlayList.addAll(playlist);
         storageUtil.storeAudioIndex(0);
         Log.d(TAG, "onItemClick: storage = " + storageUtil.loadAudio().size());
         Intent setplaylist = new Intent(MainActivity.Broadcast_NEW_ALBUM);
         sendBroadcast(setplaylist);
         Intent broadcastIntent = new Intent(MainActivity.Broadcast_PLAY_NEW_AUDIO);
         sendBroadcast(broadcastIntent);
-
-
 
     }
 
@@ -1553,7 +1555,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                 handleSongRequest(songId);
 
             }else {
-                //checkForUpdate();
+                checkForUpdate();
             }
         }
 
@@ -1649,7 +1651,78 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     }
                 });
     }
+    public void checkForUpdate(){
+        AndroidNetworking.post(AppConfig.GET_APP_UPDATE)
+                .addBodyParameter("app", "app")
+                .setTag("update")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d(TAG, "onResponse: "+response);
+                        try {
+                            if(response.getString("error").equals("false")) {
 
+                                try {
+                                    PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                                    String version = pInfo.versionName;
+                                    int versioncode = pInfo.versionCode;
+                                    Log.d(TAG, "onResponse: versionname = " + version + " version code = " + versioncode);
+
+                                    JSONArray array = response.getJSONArray("app");
+                                    JSONObject object = array.getJSONObject(0);
+                                    int vc = object.getInt("version_code");
+                                    String versionName = object.getString("version_name");
+                                    if(vc>versioncode){
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                                        builder.setTitle("Update Available");
+
+
+                                        builder.setMessage("A new Version ("+versionName+"("+vc+")) available with performance improvement,stability and important bug fixes, please udpate now");
+
+                                        builder.setNegativeButton("Not Now",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog,
+                                                                        int which) {
+                                                        return;
+                                                    }
+                                                });
+
+                                        builder.setPositiveButton("Update Now!",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog,
+                                                                        int which) {
+                                                        final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+                                                        try {
+                                                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+                                                        } catch (android.content.ActivityNotFoundException anfe) {
+                                                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+                                                        }
+                                                    }
+                                                });
+
+                                        builder.show();
+                                    }
+                                } catch (PackageManager.NameNotFoundException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "Error checking for updates", Toast.LENGTH_SHORT).show();
+
+                        //isLoading = false;
+                    }
+                });
+    }
 
     }
 

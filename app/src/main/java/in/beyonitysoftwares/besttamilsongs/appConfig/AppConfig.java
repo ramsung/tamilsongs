@@ -69,6 +69,11 @@ public class AppConfig {
 	public static String PUT_REQUEST_SONG= "https://beyonitysoftwares.cf/tamillyrics/api/requestSong.php";
 
 
+	//app update
+	public static String GET_APP_UPDATE= "https://beyonitysoftwares.cf/tamillyrics/api/appupdate.php";
+
+
+
 
 	public static String ARTIST_NAME = "AR Rahman";
 	public static int ARTIST_DB_ID = 1;
