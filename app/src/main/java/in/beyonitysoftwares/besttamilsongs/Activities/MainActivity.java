@@ -88,6 +88,7 @@ import in.beyonitysoftwares.besttamilsongs.fragments.LyricsFragment;
 import in.beyonitysoftwares.besttamilsongs.models.FilteredAlbum;
 import in.beyonitysoftwares.besttamilsongs.models.Songs;
 import in.beyonitysoftwares.besttamilsongs.music.MusicService;
+import in.beyonitysoftwares.besttamilsongs.music.PlaybackStatus;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.Helper;
 import in.beyonitysoftwares.besttamilsongs.untils.RecyclerItemClickListener;
@@ -376,7 +377,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         pageAdapter.addFragment(favouritesFragment,"Favorites");
         pageAdapter.addFragment(aboutFragment,"About");
 
-        viewPager.setOffscreenPageLimit(4);
+        viewPager.setOffscreenPageLimit(8);
         viewPager.setAdapter(pageAdapter);
         viewPager.setPagingEnabled(false);
 
@@ -664,6 +665,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                     } else {
                         if (player.mediaPlayer != null) {
                             if (player.getCurrentPosition() > 0) player.resumeMedia();
+                            getLyrics(player.getActiveSong());
                             playpause.setImageResource(R.drawable.pause);
                         }
                     }
@@ -896,19 +898,39 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             player.setMainCallbacks(null);
         }
 
-        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
+        /*NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();*/
         Log.i(TAG, "onDestroy: am in destory");
-        session.setLogin(false);
-        db.deleteUsers();
+        //session.setLogin(false);
+        //db.deleteUsers();
 
         super.onDestroy();
 
         /*if(originalPlayList!=null&&originalPlayList.size()>0){
             new StorageUtil(getApplicationContext()).storeAudio((ArrayList<Songs>) originalPlayList);
         }*/
+
+
+
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i("calls", "am in stop");
+        if (serviceBound) {
+            if (player != null) {
+                player.setMainCallbacks(null);
+                //player.stopForeground(true);
+
+
+            }
+        }
+
+
+        Log.i("calls", "finished");
+
+    }
     public void playSong(Songs song){
 
         pDialog.setMessage("Loading "+song.getSong_title() +" from "+song.getAlbum_name());

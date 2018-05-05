@@ -121,7 +121,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 	public static final String ACTION_PREVIOUS = "in.beyonitysoftwares.besttamilsongs.ACTION_PREVIOUS";
 	public static final String ACTION_NEXT = "in.beyonitysoftwares.besttamilsongs.ACTION_NEXT";
 	public static final String ACTION_STOP = "in.beyonitysoftwares.besttamilsongs.ACTION_STOP";
-	String link = "https://beyonitysoftwares.cf/tamillyrics/img/";
+	String imge_link = "https://beyonitysoftwares.cf/tamillyrics/img/";
 	@Override
 	public void onCacheAvailable(File cacheFile, String url, int percentsAvailable) {
 
@@ -388,7 +388,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 	}
 
 
-	private void buildNotification(PlaybackStatus playbackStatus) {
+	public void buildNotification(PlaybackStatus playbackStatus) {
 
 
 		int notificationAction = android.R.drawable.ic_media_pause;//needs to be initialized
@@ -404,8 +404,8 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 			//create the play action
 			play_pauseAction = playbackAction(0);
 		}
-		CharSequence name = "Best tamil songs";
-		String description = ("Tamil Songs and Lyrics");
+		CharSequence name = "Tamil Songs";
+		String description = ("Best Tamil Songs and Lyrics");
 		String CHANNEL_ID = "in.beyonitysoftwares.besttamilsongs";
 		NotificationCompat.Action prev = new NotificationCompat.Action(R.drawable.skip_previous_amber,"",playbackAction(3));
 		NotificationCompat.Action next = new NotificationCompat.Action(R.drawable.skip_next_amber,"",playbackAction(2));
@@ -413,7 +413,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 
 		Intent intent = new Intent(MusicService.this, MainActivity.class);
 		intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		PendingIntent pendInt = PendingIntent.getActivity(MusicService.this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		PendingIntent pendInt = PendingIntent.getActivity(MusicService.this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
 
@@ -424,7 +424,7 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 		Glide.with(getApplicationContext())
 				.setDefaultRequestOptions(requestOptions)
 				.asBitmap()
-				.load(link + activeSong.getAlbum_id()+ ".png")
+				.load(imge_link + activeSong.getAlbum_id()+ ".png")
 				.into(new SimpleTarget<Bitmap>(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL) {
 					@Override
 					public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -443,14 +443,14 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 										return super.setShowActionsInCompactView(actions);
 									}
 								})
-								.setPriority(NotificationCompat.PRIORITY_MAX)
+								.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 								.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
 								.setShowWhen(false)
 								.setAutoCancel(false)
 								.setSound(null)
 								.setLargeIcon(icon)
 								.setContentTitle(Helper.FirstLetterCaps(activeSong.getSong_title()))
-								.setColor(ContextCompat.getColor(getApplicationContext(), R.color.md_red_A200))
+								.setColor(ContextCompat.getColor(getApplicationContext(), R.color.amber_900))
 								.setContentText(Helper.FirstLetterCaps(activeSong.getAlbum_name()))
 								.addAction(prev)
 								.addAction(playpause)
@@ -476,19 +476,25 @@ public class MusicService extends Service implements MediaPlayer.OnCompletionLis
 							NotificationManager notifManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 							notifManager.createNotificationChannel(channel);
 // notificationId is a unique int for each notification that you must define
-							//notifManager.notify(NOTIFICATION_ID, mBuilder.build());
-							startForeground(NOTIFICATION_ID,mBuilder.build());
+							notifManager.notify(NOTIFICATION_ID, mBuilder.build());
+							//startForeground(NOTIFICATION_ID,mBuilder.build());
 							if (playbackStatus == PlaybackStatus.PLAYING) {
 								mBuilder.setOngoing(true);
 							} else if (playbackStatus == PlaybackStatus.PAUSED) {
 								mBuilder.setOngoing(false);
 							}
 
+
 						}else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
 							NotificationManager notifManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
 							// notificationId is a unique int for each notification that you must define
-							//notifManager.notify(NOTIFICATION_ID, mBuilder.build());
-							startForeground(NOTIFICATION_ID,mBuilder.build());
+							notifManager.notify(NOTIFICATION_ID, mBuilder.build());
+							//startForeground(NOTIFICATION_ID,mBuilder.build());
+							if (playbackStatus == PlaybackStatus.PLAYING) {
+								mBuilder.setOngoing(true);
+							} else if (playbackStatus == PlaybackStatus.PAUSED) {
+								mBuilder.setOngoing(false);
+							}
 
 						}
 					}
