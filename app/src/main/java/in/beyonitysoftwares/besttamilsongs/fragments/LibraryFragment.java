@@ -51,6 +51,7 @@ import in.beyonitysoftwares.besttamilsongs.models.FilteredAlbum;
 import in.beyonitysoftwares.besttamilsongs.models.Songs;
 import in.beyonitysoftwares.besttamilsongs.untils.RecyclerItemClickListener;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
+import in.beyonitysoftwares.besttamilsongs.untils.WrapContentLinearLayoutManager;
 
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.getAppLink;
@@ -203,7 +204,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         allsongsrv = (RecyclerView) view.findViewById(R.id.allSongsrv);
         allsongsrv.addItemDecoration(new DividerItemDecoration(getContext(), LinearLayoutManager.VERTICAL));
         allsongsrv.setItemAnimator(new DefaultItemAnimator());
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        WrapContentLinearLayoutManager layoutManager = new WrapContentLinearLayoutManager(getContext());
         allsongsrv.setLayoutManager(layoutManager);
         allSongAdapter = new AllSongAdapter(getContext(),allSongList);
         allSongAdapter.setMainCallbacks(this);
@@ -480,7 +481,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                                 }
 
 
-                                hideDialog();
+
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -509,6 +510,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                         @Override
                         public void onError(ANError error) {
                             Log.e(TAG, "onError: "+error.getErrorDetail());
+                            Log.e(TAG, "onError: "+error.getResponse() );
                             //Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
                             Log.d(TAG, "onError: "+album.getAlbum_name());
 
@@ -685,7 +687,7 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
 
     public void setSpinners(){
 
-       pDialog.setMessage("Loading Songs");
+        pDialog.setMessage("Loading Songs");
         showDialog();
         //String artist = filters.getArtistFilter();
         String artist = sp.getArtistFilter();
@@ -877,36 +879,36 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
         songCountsCalls = 0;
 
 
-            AndroidNetworking.post(AppConfig.GET_SONGS)
-                    .addBodyParameter("album_id", albumIdByName)
-                    .setTag("songs")
-                    .setPriority(Priority.MEDIUM)
-                    .build()
-                    .getAsJSONObject(new JSONObjectRequestListener() {
+        AndroidNetworking.post(AppConfig.GET_SONGS)
+                .addBodyParameter("album_id", albumIdByName)
+                .setTag("songs")
+                .setPriority(Priority.MEDIUM)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
 
-                        @Override
-                        public void onResponse(JSONObject response) {
+                    @Override
+                    public void onResponse(JSONObject response) {
 
-                            isLoading = false;
-
-
-                            try {
+                        isLoading = false;
 
 
-                                JSONArray array = response.getJSONArray("songs");
+                        try {
+
+
+                            JSONArray array = response.getJSONArray("songs");
 
 
 
-                                for(int a = 0;a< array.length();a++){
+                            for(int a = 0;a< array.length();a++){
 
-                                    JSONObject songobject = array.getJSONObject(a);
-                                    Songs s = new Songs();
-                                    s.setAlbum_id(String.valueOf(songobject.get("album_id")));
-                                    s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(albumIdByName)));
-                                    s.setSong_id(String.valueOf(songobject.get("song_id")));
-                                    s.setSong_title(songobject.getString("song_title"));
-                                    sorted.add(s.getSong_title());
-                                    dummyList.add(s);
+                                JSONObject songobject = array.getJSONObject(a);
+                                Songs s = new Songs();
+                                s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(albumIdByName)));
+                                s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                s.setSong_title(songobject.getString("song_title"));
+                                sorted.add(s.getSong_title());
+                                dummyList.add(s);
                                    /* if(!allSongList.contains(s)){
                                         allSongList.add(s);
                                     }*/
@@ -914,17 +916,17 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
 
 
 
-                                }
-
-                                //allSongAdapter.notifyDataSetChanged();
-                                Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
                             }
-                            totalCountCalls = 1;
-                            songCountsCalls = 1;
-                            callBackAfterRV();
+
+                            //allSongAdapter.notifyDataSetChanged();
+                            Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        totalCountCalls = 1;
+                        songCountsCalls = 1;
+                        callBackAfterRV();
                            /* try {
                                 JSONArray array = response.getJSONArray("album_details");
                                 for(int a = 0;a< array.length();a++){
@@ -944,19 +946,19 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                                 e.printStackTrace();
                             }*/
 
-                        }
-                        @Override
-                        public void onError(ANError error) {
-                            Log.e(TAG, "onError: "+error.getErrorDetail());
-                            Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
 
 
-                            isLoading =false;
-                            totalCountCalls = 1;
-                            songCountsCalls = 1;
-                            callBackAfterRV();
-                        }
-                    });
+                        isLoading =false;
+                        totalCountCalls = 1;
+                        songCountsCalls = 1;
+                        callBackAfterRV();
+                    }
+                });
 
 
 
@@ -1065,7 +1067,8 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                 }
             }
             Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
-
+            WrapContentLinearLayoutManager layoutManager = new WrapContentLinearLayoutManager(getContext());
+            allsongsrv.setLayoutManager(layoutManager);
             allSongAdapter.notifyDataSetChanged();
             setSelection();
             isSelectionSet = true;
@@ -1080,6 +1083,8 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                 }
             }
             Log.d(TAG, "onResponse: no of songs = "+allSongList.size());
+            WrapContentLinearLayoutManager layoutManager = new WrapContentLinearLayoutManager(getContext());
+            allsongsrv.setLayoutManager(layoutManager);
             allSongAdapter.notifyDataSetChanged();
             hideDialog();
         }

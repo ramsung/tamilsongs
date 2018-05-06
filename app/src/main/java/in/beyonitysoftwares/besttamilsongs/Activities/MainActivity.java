@@ -677,7 +677,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             case R.id.SkipPrev: {
                 if (player != null) {
                     if (player.isPlaying()) {
-                        if (new StorageUtil(getApplicationContext()).loadAudio().size() > 0) {
+                        if (new StorageUtil(getApplicationContext()).loadAudio() !=null &&  new StorageUtil(getApplicationContext()).loadAudio().size()> 0) {
                             player.skipToPrevious();
                         }
                     }
@@ -687,7 +687,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             case R.id.SkipNext: {
                 if (player != null) {
                     if (player.isPlaying()) {
-                        if (new StorageUtil(getApplicationContext()).loadAudio().size() > 0) {
+                        if (new StorageUtil(getApplicationContext()).loadAudio() !=null &&  new StorageUtil(getApplicationContext()).loadAudio().size()> 0) {
                             player.skipToNext();
                         }
                     }

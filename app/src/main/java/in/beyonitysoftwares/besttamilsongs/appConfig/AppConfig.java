@@ -47,10 +47,17 @@ public class AppConfig {
 
 	public static String GET_UPDATE_TIME= "https://beyonitysoftwares.cf/tamillyrics/api/getUpdateTime.php";
 
-	//no of songs
+	//get of songs
 	public static String GET_SONGS= "https://beyonitysoftwares.cf/tamillyrics/api/getSongs.php";
+
+	//get all of songs
+	public static String GET_ALL_SONGS= "https://beyonitysoftwares.cf/tamillyrics/api/getAllSongs.php";
+
 	//get songs by genre id
 	public static String GET_SONGS_BY_GENRE= "https://beyonitysoftwares.cf/tamillyrics/api/getSongsByGenre.php";
+
+	//get all songs by genre id
+	public static String GET_ALL_SONGS_BY_GENRE= "https://beyonitysoftwares.cf/tamillyrics/api/getAllSongsByGenre.php";
 
 	//get songs by id
 	public static String GET_SONGS_BY_ID= "https://beyonitysoftwares.cf/tamillyrics/api/getSongById.php";
