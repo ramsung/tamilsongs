@@ -392,7 +392,7 @@
 
     <!-- Black & White -->
     <color name="md_black_1000">#000000</color>
-    <color name="md_white_1000">#FFFFFF</color>
+    <color name="md_white_1000">#ffffff</color>
 
     <integer-array name="colors">
         <item>@color/holo_blue_dark</item>
