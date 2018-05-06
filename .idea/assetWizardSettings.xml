@@ -23,7 +23,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="51" />
+                                                <entry key="scalingPercent" value="67" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -35,9 +35,7 @@
                                     <map>
                                       <entry key="backgroundAssetType" value="COLOR" />
                                       <entry key="backgroundColor" value="f4f4f4" />
-                                      <entry key="foregroundImage" value="C:\Users\Tony Stark\Desktop\musicnote.png" />
-                                      <entry key="legacyIconShape" value="HRECT" />
-                                      <entry key="webIconShape" value="VRECT" />
+                                      <entry key="foregroundImage" value="C:\Users\Tony Stark\Desktop\icon.png" />
                                     </map>
                                   </option>
                                 </PersistentState>
