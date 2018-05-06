@@ -93,7 +93,7 @@ import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
 import in.beyonitysoftwares.besttamilsongs.untils.Helper;
 import in.beyonitysoftwares.besttamilsongs.untils.RecyclerItemClickListener;
 import in.beyonitysoftwares.besttamilsongs.untils.StorageUtil;
-import info.hoang8f.android.segmented.SegmentedGroup;
+
 import io.fabric.sdk.android.Fabric;
 
 import static in.beyonitysoftwares.besttamilsongs.appConfig.AppController.TAG;
@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     LibraryFragment libraryFragment;
     LyricsFragment lyricsFragment;
     CustomViewPager viewPager;
+    TextView currentTime, totalTime;
     public SmoothProgressBar loading;
     BottomNavigationView navigation;
     public static final String Broadcast_PLAY_NEW_AUDIO = "in.beyonitysoftwares.besttamilsongs.Activites.PlayNewAudio";
@@ -133,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
     String titleFromfirebase;
     //db
     //DatabaseHandler db;
-    SegmentedGroup segmentedGroup;
+
     int SIGN_IN = 1;
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
@@ -288,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                 .addBodyParameter("name",name)
                 .addBodyParameter("fcmtoken",token)
                 .setTag("lyrics")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -353,7 +354,8 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         songsdetails.setMarqueeRepeatLimit(-1);
         songsdetails.setSingleLine(true);
         songsdetails.setSelected(true);
-
+        currentTime = (TextView) findViewById(R.id.currentTime);
+        totalTime = (TextView) findViewById(R.id.totalTime);
         playpause.setOnClickListener(this);
         skipprev.setOnClickListener(this);
         skipnext.setOnClickListener(this);
@@ -511,7 +513,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_UPDATE_TIME)
                 .addBodyParameter("updated", "checking update")
                 .setTag("update time")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -645,7 +647,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                 if (player.isPlaying()) {
                     int position = player.getCurrentPosition();
                     seekBar.setProgress(position);
-                    //currentTime.setText(Helper.durationCalculator(position));
+                    currentTime.setText(Helper.durationCalculator(position));
 
                 }
             }
@@ -737,7 +739,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         if (player != null && player.mediaPlayer != null) {
             if (player.isPlaying()) {
                 seekBar.setMax(player.getDuration());
-                //totalTime.setText(Helper.durationCalculator(player.getDuration()));
+                totalTime.setText(Helper.durationCalculator(player.getDuration()));
                 playpause.setImageResource(R.drawable.pause);
                 if(l1.equals("")||l2.equals("")||l3.equals("")||l4.equals("")){
                     getLyrics(player.getActiveSong());
@@ -774,7 +776,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             AndroidNetworking.post(AppConfig.GET_LYRICS)
                     .addBodyParameter("song_id", clickedItem.getSong_id())
                     .setTag("lyrics")
-                    .setPriority(Priority.MEDIUM)
+                    .setPriority(Priority.HIGH)
                     .build()
                     .getAsJSONObject(new JSONObjectRequestListener() {
                         @Override
@@ -922,8 +924,6 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
             if (player != null) {
                 player.setMainCallbacks(null);
                 //player.stopForeground(true);
-
-
             }
         }
 
@@ -1012,7 +1012,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_ALBUMS)
                 .addBodyParameter("albums", "all")
                 .setTag("albums")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -1081,7 +1081,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_ARTISTS)
                 .addBodyParameter("artist", "all")
                 .setTag("artists")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -1142,7 +1142,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_HEROS)
                 .addBodyParameter("hero", "all")
                 .setTag("heros")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -1203,7 +1203,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_HEROINS)
                 .addBodyParameter("heroin", "all")
                 .setTag("heroins")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -1265,7 +1265,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_LYRICISTS)
                 .addBodyParameter("lyricist", "all")
                 .setTag("lyricists")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -1325,7 +1325,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_GENRES)
                 .addBodyParameter("genre", "all")
                 .setTag("genres")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -1384,7 +1384,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_FAV)
                 .addBodyParameter("user_id", db.getUserDetails().get("id"))
                 .setTag("fav")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -1639,7 +1639,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_SONGS_BY_ID)
                 .addBodyParameter("song_id", songId)
                 .setTag("test")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override
@@ -1677,7 +1677,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
         AndroidNetworking.post(AppConfig.GET_APP_UPDATE)
                 .addBodyParameter("app", "app")
                 .setTag("update")
-                .setPriority(Priority.MEDIUM)
+                .setPriority(Priority.HIGH)
                 .build()
                 .getAsJSONObject(new JSONObjectRequestListener() {
                     @Override

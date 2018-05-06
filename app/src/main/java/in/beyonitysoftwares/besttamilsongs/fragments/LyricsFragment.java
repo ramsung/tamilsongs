@@ -15,7 +15,7 @@ import in.beyonitysoftwares.besttamilsongs.Activities.MainActivity;
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.customViews.CustomViewPager;
 import in.beyonitysoftwares.besttamilsongs.pageAdapters.FragmentPageAdapter;
-import info.hoang8f.android.segmented.SegmentedGroup;
+
 
 
 /**
@@ -26,7 +26,6 @@ public class LyricsFragment extends Fragment {
     CustomViewPager viewPager;
     EnglishFragment englishFragment;
     TamilFragment tamilFragment;
-    SegmentedGroup segmentedGroup;
     public LyricsFragment() {
         // Required empty public constructor
     }
@@ -38,9 +37,9 @@ public class LyricsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_lyrics, container, false);
-        segmentedGroup = (SegmentedGroup) view.findViewById(R.id.segmented);
+        /*segmentedGroup = (SegmentedGroup) view.findViewById(R.id.segmented);
         segmentedGroup.setTintColor(getResources().getColor(R.color.amber_900));
-        segmentedGroup.check(R.id.tamil);
+        segmentedGroup.check(R.id.tamil);*/
         englishFragment = new EnglishFragment();
         tamilFragment = new TamilFragment();
 
@@ -51,7 +50,9 @@ public class LyricsFragment extends Fragment {
         viewPager = (CustomViewPager) view.findViewById(R.id.lyrcisVG);
         viewPager.setAdapter(pageAdapter);
 
-        segmentedGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager, true);
+        /*segmentedGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 switch (i) {
@@ -63,8 +64,8 @@ public class LyricsFragment extends Fragment {
                         break;
                 }
             }
-        });
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        });*/
+        /*viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -79,7 +80,7 @@ public class LyricsFragment extends Fragment {
             @Override
             public void onPageScrollStateChanged(int state) {
             }
-        });
+        });*/
         return view;
     }
 
@@ -88,7 +89,7 @@ public class LyricsFragment extends Fragment {
         tamilFragment.setLyrics(l3,l4);
     }
 
-    public void setPageByNumber(int num){
+   /* public void setPageByNumber(int num){
         viewPager.setCurrentItem(num);
     }
     public void setSelectedLyricPage(int position){
@@ -98,5 +99,5 @@ public class LyricsFragment extends Fragment {
         }else if(position ==1){
             segmentedGroup.check(R.id.english);
         }
-    }
+    }*/
 }
