@@ -38,6 +38,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_GENRE = "genre";
     private static final String TABLE_FAVORITE = "favorite";
     private static final String TABLE_UPDATE = "updatedetails";
+    private static final String TABLE_SONGS =  "songs";
 
 
     //album
@@ -79,6 +80,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_TABLE_NAME = "table_name";
     private static final String KEY_UPDATE_TIME = "timestamp";
 
+    //songs
+    private static final String KEY_SONG_TITLE = "song_title";
+    private static final String KEY_DOWNLOAD_LINK = "download_link";
+    private static final String KEY_TRACK_NO = "tack_no";
+
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -93,6 +99,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         String CREATE_GENRE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_GENRE + " (" + KEY_GENRE_ID + " INTEGER UNIQUE, " + KEY_GENRE_NAME + " varchar(255))";
         String CREATE_FAVORITE_TABLE = "CREATE TABLE IF NOT EXISTS "+TABLE_FAVORITE +" (" +KEY_FAVORITE_ID+ " INTEGER  UNIQUE, "+KEY_USER_ID+ " INTEGER, "+KEY_SONG_ID + " INTEGER)";
         String CREATE_UPDATE_TABLE = "CREATE TABLE IF NOT EXISTS "+TABLE_UPDATE +" (" +KEY_TABLE_NAME+ " varchar(50) UNIQUE, "+KEY_UPDATE_TIME+ " DATETIME)";
+        String CREATE_SONGS_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_SONGS + " (" + KEY_SONG_ID + " INTEGER UNIQUE, " + KEY_ALBUM_NAME + " varchar(100),"
+                + KEY_SONG_TITLE + " varchar(255)," + KEY_DOWNLOAD_LINK + " text," +KEY_GENRE_NAME +" varchar(150)," + KEY_LYRICIST_NAME + " varchar(100)," + KEY_TRACK_NO + " INTEGER)";
 
         db.execSQL(CREATE_ALBUMS_TABLE);
         db.execSQL(CREATE_ARTIST_TABLE);
@@ -102,13 +110,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         db.execSQL(CREATE_GENRE_TABLE);
         db.execSQL(CREATE_FAVORITE_TABLE);
         db.execSQL(CREATE_UPDATE_TABLE);
+        db.execSQL(CREATE_SONGS_TABLE);
+
 
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
+        onCreate(db);
     }
 
 
@@ -129,6 +139,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 
     }
+
+    public boolean insertSongs(Songs s) {
+
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_SONG_ID, s.getSong_id());
+        contentValues.put(KEY_ALBUM_NAME, s.getAlbum_name());
+        contentValues.put(KEY_SONG_TITLE, s.getSong_title());
+        contentValues.put(KEY_DOWNLOAD_LINK, s.getDownload_link());
+        contentValues.put(KEY_LYRICIST_NAME, s.getLyricist_name());
+        contentValues.put(KEY_GENRE_NAME, s.getGenre_name());
+        contentValues.put(KEY_TRACK_NO,s.getTrack_no());
+
+
+        db.insert(TABLE_SONGS, null, contentValues);
+        return true;
+
+    }
+
+
 
     public ArrayList<Integer> getAlbumIds() {
         ArrayList<Integer> ids = new ArrayList<>();
@@ -381,6 +411,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         return genreName;
+    }
+
+    public String getLyricistName(int lyricist_id) {
+        String lyricistName = "";
+        SQLiteDatabase db = getReadableDatabase();
+        String st = "SELECT lyricist_name FROM " + TABLE_LYRICIST+ " WHERE lyricist_id = '" + lyricist_id + "'";
+        Cursor c = db.rawQuery(st, null);
+        if (c != null) {
+            while (c.moveToNext()) {
+                lyricistName = c.getString(c.getColumnIndex(KEY_LYRICIST_NAME));
+            }
+        }
+        if(c!=null){
+            c.close();
+        }
+
+        return lyricistName;
     }
     public String getGenreId(String genre_name) {
         String genreid = "";

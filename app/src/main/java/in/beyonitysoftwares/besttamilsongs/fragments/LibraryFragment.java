@@ -381,8 +381,6 @@ public class LibraryFragment extends Fragment implements AllSongAdapter.AdapterC
                                    /* if(!allSongList.contains(s)){
                                         allSongList.add(s);
                                     }*/
-
-
                                 }
 
 

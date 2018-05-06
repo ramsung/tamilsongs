@@ -71,6 +71,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import in.beyonitysoftwares.besttamilsongs.R;
 import in.beyonitysoftwares.besttamilsongs.adapters.playListAdapter;
@@ -324,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
 
     public void callBackAfterNetworking(){
         Log.d(TAG, "callBackAfterNetworking: "+updateAll);
-        if(updateAll==6) {
+        if(updateAll==7) {
             Log.d(TAG, "callBackAfterNetworking: called library");
             //libraryFragment.setSpinners();
             getFav();
@@ -522,105 +524,122 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         try {
                             JSONArray update = response.getJSONArray("update");
                             //Log.d(TAG, "onResponse: length = "+update.length());
-                            for(int a =0;a<update.length();a++){
+
+                            SortedSet<String> sortedSet = new TreeSet();
+                            for(int a =0;a<update.length();a++) {
                                 JSONObject object = update.getJSONObject(a);
-
-                                String table_name = String.valueOf(object.get("table_name"));
-                                String remote_time = String.valueOf(object.get("update_time"));
-                                String local_time = AppController.getDb().getUpdateDetails(table_name);
-                                long local_time_long = Long.parseLong(local_time);
-                                long remote_time_long = Long.parseLong(remote_time);
-                                Log.d(TAG, "onResponse: table name = "+table_name+" remote time = "+remote_time+" local time = "+local_time);
-                                if(local_time.equals("0")){
-                                    if(table_name.equals("albums")){
-
-                                        getAlbums(table_name,remote_time,local_time);
-
-                                    }else if (table_name.equals("artist")){
-
-                                        getArtists(table_name,remote_time,local_time);
-
-                                    }else if (table_name.equals("hero")){
-
-                                        getHeros(table_name,remote_time,local_time);
-
-                                    }else if (table_name.equals("heroin")){
-
-                                        getHeroins(table_name,remote_time,local_time);
-
-                                    }else if (table_name.equals("lyricist")){
-
-                                        getLyricists(table_name,remote_time,local_time);
-
-                                    }else if (table_name.equals("genre")){
-
-                                        getGenres(table_name,remote_time,local_time);
-
-                                    }
-
-                                }else if(remote_time_long>local_time_long){
-
-                                    if(table_name.equals("albums")){
-
-                                        getAlbums(table_name, remote_time, local_time);
-
-                                    }else if (table_name.equals("artist")){
-
-                                        getArtists(table_name, remote_time, local_time);
-
-                                    }else if (table_name.equals("hero")){
-
-                                        getHeros(table_name, remote_time, local_time);
-
-                                    }else if (table_name.equals("heroin")){
-
-                                        getHeroins(table_name, remote_time, local_time);
-
-                                    }else if (table_name.equals("lyricist")){
-
-                                        getLyricists(table_name, remote_time, local_time);
-
-                                    }else if (table_name.equals("genre")){
-
-                                        getGenres(table_name, remote_time, local_time);
-
-                                    }
-
-
-                                }else{
-                                    if(table_name.equals("albums")){
-                                        updateAll++;
-                                        callBackAfterNetworking();
-
-
-                                    }else  if(table_name.equals("artist")){
-                                        updateAll++;
-                                        callBackAfterNetworking();
-
-                                    }else  if(table_name.equals("hero")){
-                                        updateAll++;
-                                        callBackAfterNetworking();
-
-                                    }else  if(table_name.equals("heroin")){
-                                        updateAll++;
-                                        callBackAfterNetworking();
-
-
-                                    }else  if(table_name.equals("genre")){
-                                        updateAll++;
-                                        callBackAfterNetworking();
-
-                                    }else  if(table_name.equals("lyricist")){
-                                        updateAll++;
-                                        callBackAfterNetworking();
-
-                                    }
-                                }
-
-
-
-
+                                sortedSet.add(String.valueOf(object.get("table_name")));
                             }
+                            for(String table : sortedSet){
+                                for(int a =0;a<update.length();a++){
+                                    JSONObject object = update.getJSONObject(a);
+
+                                    String table_name = String.valueOf(object.get("table_name"));
+                                    String remote_time = String.valueOf(object.get("update_time"));
+                                    String local_time = AppController.getDb().getUpdateDetails(table_name);
+                                    long local_time_long = Long.parseLong(local_time);
+                                    long remote_time_long = Long.parseLong(remote_time);
+                                    Log.d(TAG, "onResponse: table name = "+table_name+" remote time = "+remote_time+" local time = "+local_time);
+                                    if(table.equals(table_name)) {
+                                        if (local_time.equals("0")) {
+                                            if (table_name.equals("albums")) {
+
+                                                getAlbums(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("artist")) {
+
+                                                getArtists(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("hero")) {
+
+                                                getHeros(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("heroin")) {
+
+                                                getHeroins(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("lyricist")) {
+
+                                                getLyricists(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("genre")) {
+
+                                                getGenres(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("songs")) {
+                                                getSongs(table_name, remote_time, local_time);
+                                            }
+
+                                        } else if (remote_time_long > local_time_long) {
+
+                                            if (table_name.equals("albums")) {
+
+                                                getAlbums(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("artist")) {
+
+                                                getArtists(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("hero")) {
+
+                                                getHeros(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("heroin")) {
+
+                                                getHeroins(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("lyricist")) {
+
+                                                getLyricists(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("genre")) {
+
+                                                getGenres(table_name, remote_time, local_time);
+
+                                            } else if (table_name.equals("songs")) {
+                                                getSongs(table_name, remote_time, local_time);
+                                            }
+
+
+                                        } else {
+                                            if (table_name.equals("albums")) {
+                                                updateAll++;
+                                                callBackAfterNetworking();
+
+
+                                            } else if (table_name.equals("artist")) {
+                                                updateAll++;
+                                                callBackAfterNetworking();
+
+                                            } else if (table_name.equals("hero")) {
+                                                updateAll++;
+                                                callBackAfterNetworking();
+
+                                            } else if (table_name.equals("heroin")) {
+                                                updateAll++;
+                                                callBackAfterNetworking();
+
+
+                                            } else if (table_name.equals("genre")) {
+                                                updateAll++;
+                                                callBackAfterNetworking();
+
+                                            } else if (table_name.equals("lyricist")) {
+                                                updateAll++;
+                                                callBackAfterNetworking();
+
+                                            }else if(table_name.equals("songs")){
+                                                updateAll++;
+                                                callBackAfterNetworking();
+                                            }
+                                        }
+
+                                    }
+
+
+                                }
+                            }
+
 
 
                         } catch (JSONException e) {
@@ -1744,6 +1763,79 @@ public class MainActivity extends AppCompatActivity implements MusicService.main
                         //isLoading = false;
                     }
                 });
+    }
+    public void getSongs(String table_name, String remote_time, String local_time){
+
+        AndroidNetworking.post(AppConfig.GET_ALL_SONGS)
+                .addBodyParameter("album", "album")
+                .setTag("album")
+                .setPriority(Priority.HIGH)
+                .build()
+                .getAsJSONObject(new JSONObjectRequestListener() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        boolean answer = false;
+                        Log.d(TAG, "onResponse: songs "+response);
+                        try {
+                            if(response.getString("error").equals("false")) {
+                                if(!local_time.equals("0")){
+                                    AppController.getDb().deleteRecords(table_name);
+                                }
+                                JSONArray array = response.getJSONArray("songs");
+
+                                Log.d(TAG, "onResponse: songs "+array.length());
+
+                                for(int a = 0;a< array.length();a++){
+
+                                    JSONObject songobject = array.getJSONObject(a);
+                                    Songs s = new Songs();
+                                    s.setAlbum_id(String.valueOf(songobject.get("album_id")));
+                                    s.setAlbum_name(AppController.getDb().getAlbumName(Integer.parseInt(String.valueOf(songobject.get("album_id")))));
+                                    s.setSong_id(String.valueOf(songobject.get("song_id")));
+                                    s.setSong_title(songobject.getString("song_title"));
+                                    s.setDownload_link(songobject.getString("download_link"));
+                                    s.setGenre_name(AppController.getDb().getGenreName(Integer.parseInt(String.valueOf(songobject.get("genre_id")))));
+                                    s.setLyricist_name(AppController.getDb().getLyricistName(Integer.parseInt(String.valueOf(songobject.get("lyricist_id")))));
+                                    s.setTrack_no(songobject.getString("track_no"));
+                                    AppController.getDb().insertSongs(s);
+                                   /* if(!allSongList.contains(s)){
+                                        allSongList.add(s);
+                                    }*/
+
+
+                                }
+                                if(local_time.equals("0")){
+                                    AppController.getDb().insertUpdate(table_name,remote_time);
+                                }else {
+                                    AppController.getDb().updateUpdateTable(table_name,remote_time);
+                                }
+
+
+
+                                Log.d(TAG, "onResponse: length " + array.length());
+
+                            }else {
+                                Toast.makeText(getApplicationContext(), "Failed to get songs from database", Toast.LENGTH_SHORT).show();
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        Log.d(TAG, "oncallback: songs called call back");
+                        updateAll++;
+                        callBackAfterNetworking();
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                        Log.e(TAG, "onError: "+error.getErrorDetail());
+                        Toast.makeText(getApplicationContext(), "error loading songs from the database", Toast.LENGTH_SHORT).show();
+
+
+                        //isLoading = false;
+                    }
+                });
+
+
     }
 
     }

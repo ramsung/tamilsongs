@@ -9,8 +9,44 @@ public class Songs {
     String album_id;
     String song_title;
     String album_name;
+    String download_link;
+    String genre_name;
+    String lyricist_name;
+    String track_no;
 
-   public Songs(){
+    public String getTrack_no() {
+        return track_no;
+    }
+
+    public void setTrack_no(String track_no) {
+        this.track_no = track_no;
+    }
+
+    public String getDownload_link() {
+        return download_link;
+    }
+
+    public void setDownload_link(String download_link) {
+        this.download_link = download_link;
+    }
+
+    public String getGenre_name() {
+        return genre_name;
+    }
+
+    public void setGenre_name(String genre_name) {
+        this.genre_name = genre_name;
+    }
+
+    public String getLyricist_name() {
+        return lyricist_name;
+    }
+
+    public void setLyricist_name(String lyricist_name) {
+        this.lyricist_name = lyricist_name;
+    }
+
+    public Songs(){
 
    }
 
